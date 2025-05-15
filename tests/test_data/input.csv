@@ -1,0 +1,2 @@
+assembly,genomesize,reads
+Col-0_2MB,8000,https://raw.githubusercontent.com/nf-core/test-datasets/genomeassembler/A_thaliana_Col-0_2mb/ONT-Col-0_test_data.fastq.gz

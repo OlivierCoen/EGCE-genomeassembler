@@ -3,11 +3,18 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
+include { MULTIQC                      } from '../modules/nf-core/multiqc/main'
+include { PORECHOP_ABI                 } from '../modules/nf-core/porechop/abi/main'
+include { SEQKIT_SEQ                   } from '../modules/nf-core/seqkit/seq/main'
+include { FLYE                         } from '../modules/nf-core/flye/main'
+include { MEDAKA                       } from '../modules/nf-core/medaka/main'
+
+include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
+
+include { paramsSummaryMap             } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc         } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { customSoftwareVersionsToYAML } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
+include { methodsDescriptionText       } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,22 +25,66 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_geno
 workflow GENOMEASSEMBLER {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_input // channel: samplesheet read in from --input
+
     main:
 
-    ch_versions = Channel.empty()
+    if ( params.skip_assembly ) {
+        if ( !params.assembly_fasta ) {
+            error( "When setting --skip_assembly, you must also provide an assembly with --assembly_fasta" )
+        } else {
+            Channel.fromPath(params.assembly_fasta, checkIfExists: true)
+                    .map {
+                        fasta_file ->
+                            def meta = [ id: fasta_file.getBaseName() ]
+                            [ meta, fasta_file ]
+                    }
+                    .set { ch_assembly_fasta }
+        }
+
+    if ( !params.skip_trimming ) {
+        ch_customer_reads = Channel.of( [] )
+        PORECHOP_ABI( ch_input, ch_customer_reads )
+        PORECHOP_ABI.out.reads.set { ch_reads }
+    }
+
+    if ( !params.skip_filtering ) {
+        SEQKIT_SEQ( ch_reads )
+        SEQKIT_SEQ.out.reads.set { ch_reads }
+    }
+
+    if ( !params.skip_assembly ) {
+        FLYE(
+            ch_reads,
+            params.flye_mode
+            )
+        FLYE.out.fasta.set { ch_assembly_fasta }
+    }
+
+    if ( !params.skip_polishing ) {
+        MEDAKA( ch_assembly_fasta )
+        MEDAKA.out.assembly.set { ch_assembly_fasta }
+    }
+
+    if ( !params.skip_purging ) {
+        HAPLOTIG_CLEANING( ch_assembly_fasta, ch_reads )
+
+
+
     ch_multiqc_files = Channel.empty()
 
     //
     // Collate and save software versions
+    // TODO: use the nf-core functions when they are adapted to channel topics
     //
-    softwareVersionsToYAML(ch_versions)
+
+    ch_collated_versions = customSoftwareVersionsToYAML( Channel.topic('versions') )
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name:  'genomeassembler_software_'  + 'mqc_'  + 'versions.yml',
+            name: 'genomeassembler_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
-        ).set { ch_collated_versions }
+        )
 
 
     //
@@ -77,7 +128,6 @@ workflow GENOMEASSEMBLER {
     )
 
     emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
 
 }
 

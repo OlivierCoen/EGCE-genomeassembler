@@ -2,6 +2,8 @@
 // Subworkflow with functionality specific to the EGCE/genomeassembler pipeline
 //
 
+import org.yaml.snakeyaml.Yaml
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS
@@ -15,6 +17,7 @@ include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
+include { workflowVersionToYAML     } from '../../nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,8 +36,6 @@ workflow PIPELINE_INITIALISATION {
     input             //  string: Path to input samplesheet
 
     main:
-
-    ch_versions = Channel.empty()
 
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
@@ -68,27 +69,10 @@ workflow PIPELINE_INITIALISATION {
 
     Channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
-        }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
-        }
         .set { ch_samplesheet }
 
     emit:
     samplesheet = ch_samplesheet
-    versions    = ch_versions
 }
 
 /*
@@ -217,5 +201,37 @@ def methodsDescriptionText(mqc_methods_yaml) {
     def description_html = engine.createTemplate(methods_text).make(meta)
 
     return description_html.toString()
+}
+
+//
+// Get software versions for pipeline
+// temporary replacements of the native processVersionsFromYAML
+//
+def customProcessVersionsFromYAML(yaml_file) {
+    Yaml yaml = new Yaml()
+    versions = yaml.load(yaml_file)
+    return yaml.dumpAsMap(versions).trim()
+}
+
+//
+// Get channel of software versions used in pipeline in YAML format
+// temporary replacements of the native softwareVersionsToYAML
+//
+def customSoftwareVersionsToYAML(versions) {
+    return Channel.of(workflowVersionToYAML())
+            .concat(
+                versions
+                .unique()
+                .map {
+                    name, tool, version -> [ name.tokenize(':').last(), [ tool, version ] ]
+                }
+                .groupTuple()
+                .map {
+                    processName, toolInfo ->
+                        def toolVersions = toolInfo.collect { tool, version -> "    ${tool}: ${version}" }.join('\n')
+                        "${processName}:\n${toolVersions}\n"
+                }
+                .map { customProcessVersionsFromYAML(it) }
+            )
 }
 
