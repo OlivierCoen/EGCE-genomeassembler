@@ -4,14 +4,14 @@ process MINIMAP2_SELF_ALIGNMENT {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/YOUR-TOOL-HERE':
-        'biocontainers/YOUR-TOOL-HERE' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/d6/d6b2df22c4ad4b0be8d2ec398104559880f9234ebefe1b37bd86ba22e0d788f3/data':
+        'community.wave.seqera.io/library/minimap2:2.29--dde575a222b05b03' }"
 
     input:
     tuple val(meta), path(assembly_fasta)
 
     output:
-    tuple val(meta), path("*.paf"), emit: paf
+    tuple val(meta), path("*.paf.gz"), emit: paf
     path "versions.yml"           , emit: versions
 
     when:
@@ -21,15 +21,18 @@ process MINIMAP2_SELF_ALIGNMENT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+    gzip -df $assembly_fasta
+    cp ${assembly_fasta.baseName} ${assembly_fasta.baseName}.copy
+
     minimap2 \
         -xasm5 \
-        -DP $sassembly_fasta $sassembly_fasta \
+        -DP ${assembly_fasta.baseName} ${assembly_fasta.baseName}.copy \
         | gzip -c - \
         > ${prefix}.split.self.paf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        minimap2: \$(samtools --version |& sed '1!d ; s/samtools //')
+        minimap2: \$(minimap2 --version 2>&1)
     END_VERSIONS
     """
 
@@ -41,7 +44,7 @@ process MINIMAP2_SELF_ALIGNMENT {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        minimap2: \$(samtools --version |& sed '1!d ; s/samtools //')
+        minimap2: \$(minimap2 --version 2>&1)
     END_VERSIONS
     """
 }

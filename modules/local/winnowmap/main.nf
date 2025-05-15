@@ -22,13 +22,12 @@ process WINNOWMAP {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     winnowmap \
-        -a \
         -x map-ont \
         -W $repetitive_kmers \
          $ref_fasta \
          $ont_reads \
          | gzip -c - \
-         > ${prefix}.paf
+         > ${prefix}.paf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

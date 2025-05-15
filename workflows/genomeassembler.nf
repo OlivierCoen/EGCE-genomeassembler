@@ -4,11 +4,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 include { MULTIQC                      } from '../modules/nf-core/multiqc/main'
-include { PORECHOP_ABI                 } from '../modules/nf-core/porechop/abi/main'
-include { SEQKIT_SEQ                   } from '../modules/nf-core/seqkit/seq/main'
-include { FLYE                         } from '../modules/nf-core/flye/main'
-include { MEDAKA                       } from '../modules/nf-core/medaka/main'
 
+include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_preparation/main'
+include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
 
 include { paramsSummaryMap             } from 'plugin/nf-schema'
@@ -29,47 +27,17 @@ workflow GENOMEASSEMBLER {
 
     main:
 
-    if ( params.skip_assembly ) {
-        if ( !params.assembly_fasta ) {
-            error( "When setting --skip_assembly, you must also provide an assembly with --assembly_fasta" )
-        } else {
-            Channel.fromPath(params.assembly_fasta, checkIfExists: true)
-                    .map {
-                        fasta_file ->
-                            def meta = [ id: fasta_file.getBaseName() ]
-                            [ meta, fasta_file ]
-                    }
-                    .set { ch_assembly_fasta }
-        }
+    ONT_READ_PREPARATION ( ch_input )
+    ch_reads = ONT_READ_PREPARATION.out.prepared_reads
 
-    if ( !params.skip_trimming ) {
-        ch_customer_reads = Channel.of( [] )
-        PORECHOP_ABI( ch_input, ch_customer_reads )
-        PORECHOP_ABI.out.reads.set { ch_reads }
-    }
+    ASSEMBLY ( ch_reads )
+    ch_assembly_fasta = ASSEMBLY.out.assembly_fasta
 
-    if ( !params.skip_filtering ) {
-        SEQKIT_SEQ( ch_reads )
-        SEQKIT_SEQ.out.reads.set { ch_reads }
-    }
-
-    if ( !params.skip_assembly ) {
-        FLYE(
-            ch_reads,
-            params.flye_mode
-            )
-        FLYE.out.fasta.set { ch_assembly_fasta }
-    }
-
-    if ( !params.skip_polishing ) {
-        MEDAKA( ch_assembly_fasta )
-        MEDAKA.out.assembly.set { ch_assembly_fasta }
-    }
-
+    ch_haplotigs = Channel.empty()
     if ( !params.skip_purging ) {
         HAPLOTIG_CLEANING( ch_assembly_fasta, ch_reads )
-
-
+        ch_haplotigs = HAPLOTIG_CLEANING.out.haplotigs
+    }
 
     ch_multiqc_files = Channel.empty()
 

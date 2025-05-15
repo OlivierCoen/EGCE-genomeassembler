@@ -24,11 +24,18 @@ workflow HAPLOTIG_CLEANING {
     )
     MERYL_PRINT( MERYL_COUNT.out.meryl_db )
 
-    WINNOWMAP (
-        MERYL_PRINT.out.repetitive_kmers,
-        ch_assembly_fasta,
-        ch_ont_reads
-    )
+    // Grouping by meta and giving to Winnowmap
+    MERYL_PRINT.out.repetitive_kmers
+        .concat( ch_assembly_fasta )
+        .concat( ch_ont_reads )
+        .groupTuple()
+        .map {
+            meta, list ->
+                [ meta, *list ]
+        }
+        .set { ch_winnowmap_input }
+
+    WINNOWMAP ( ch_winnowmap_input )
 
     PURGEDUPS_PBCSTAT( WINNOWMAP.out.paf )
     PURGEDUPS_CALCUTS( PURGEDUPS_PBCSTAT.out.stat )
@@ -36,24 +43,37 @@ workflow HAPLOTIG_CLEANING {
     PURGEDUPS_SPLITFA ( ch_assembly_fasta )
     MINIMAP2_SELF_ALIGNMENT ( PURGEDUPS_SPLITFA.out.split_fasta )
 
+    // Purge dups
+    PURGEDUPS_PBCSTAT.out.basecov
+        .concat( PURGEDUPS_CALCUTS.out.cutoff )
+        .concat( MINIMAP2_SELF_ALIGNMENT.out.paf )
+        .groupTuple()
+        .map {
+            meta, list ->
+                [ meta, *list ]
+        }
+        .set { ch_purgedups_input}
 
-    PURGEDUPS_PURGEDUPS (
-        PURGEDUPS_PBCSTAT.out.basecov,
-        PURGEDUPS_CALCUTS.out.cutoff,
-        MINIMAP2_SELF_ALIGNMENT.out.paf
-    )
+    PURGEDUPS_PURGEDUPS ( ch_purgedups_input )
 
+    // Get seqs
+    ch_assembly_fasta
+        .concat( PURGEDUPS_PURGEDUPS.out.bed )
+        .groupTuple()
+        .map {
+            meta, list ->
+                [ meta, *list ]
+        }
+        .set { ch_getseqs_input }
 
-    PURGEDUPS_GETSEQS (
-        ch_assembly_fasta,
-        PURGEDUPS_PURGEDUPS.out.bed
-    )
-    PURGEDUPS_GETSEQS.out.haplotigs
+    PURGEDUPS_GETSEQS ( ch_getseqs_input )
+
+    PURGEDUPS_GETSEQS.out.haplotigs.view()
 
 
 
     emit:
-
+    haplotigs = PURGEDUPS_GETSEQS.out.haplotigs
 
     versions = ch_versions                     // channel: [ versions.yml ]
 }

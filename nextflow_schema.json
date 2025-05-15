@@ -206,6 +206,11 @@
                     "type": "boolean",
                     "description": "Skip the polishing step",
                     "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step",
+                    "fa_icon": "fas fa-hand-scissors"
                 }
             },
             "fa_icon": "fas fa-forward"
