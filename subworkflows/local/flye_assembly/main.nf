@@ -2,7 +2,7 @@ include { FLYE                         } from '../../../modules/nf-core/flye/mai
 include { PIGZ_UNCOMPRESS              } from '../../../modules/nf-core/pigz/uncompress/main'
 include { MEDAKA                       } from '../../../modules/nf-core/medaka/main'
 
-workflow ASSEMBLY {
+workflow FLYE_ASSEMBLY {
 
     take:
     ch_reads
