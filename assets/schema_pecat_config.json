@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EGCE/genomeassembler/main/assets/schema_pecat_config.json",
+  "title": "EGCE/genomeassembler pipeline - params.pecat_config_file schema",
+  "description": "Schema for the file provided with params.pecat_config_file",
+  "type": "object",
+  "properties": {
+    "corr_iterate_number": {
+      "type": "integer",
+      "errorMessage": "corr_iterate_number doit être un entier"
+    },
+    "corr_block_size": {
+      "type": "integer",
+      "errorMessage": "corr_block_size doit être un entier (taille en octets)"
+    },
+    "corr_filter_options": {
+      "type": "string",
+      "errorMessage": "corr_filter_options doit être une chaîne d'options en ligne de commande"
+    },
+    "corr_correct_options": {
+      "type": "string",
+      "errorMessage": "corr_correct_options doit être une chaîne d'options en ligne de commande"
+    },
+    "corr_rd2rd_options": {
+      "type": "string",
+      "errorMessage": "corr_rd2rd_options doit être une chaîne d'options en ligne de commande"
+    },
+    "corr_output_coverage": {
+      "type": "integer",
+      "errorMessage": "corr_output_coverage doit être un entier"
+    },
+    "align_block_size": {
+      "type": "integer",
+      "errorMessage": "align_block_size doit être un entier (taille en octets)"
+    },
+    "align_rd2rd_options": {
+      "type": "string",
+      "errorMessage": "align_rd2rd_options doit être une chaîne d'options en ligne de commande"
+    },
+    "align_filter_options": {
+      "type": "string",
+      "errorMessage": "align_filter_options doit être une chaîne d'options en ligne de commande"
+    },
+    "asm1_assemble_options": {
+      "type": "string",
+      "errorMessage": "asm1_assemble_options doit être une chaîne d'options (ou vide)"
+    },
+    "phase_method": {
+      "type": "integer",
+      "errorMessage": "phase_method doit être un entier (ex: 0, 1, 2)"
+    },
+    "phase_rd2ctg_options": {
+      "type": "string",
+      "errorMessage": "phase_rd2ctg_options doit être une chaîne d'options en ligne de commande"
+    },
+    "phase_phase_options": {
+      "type": "string",
+      "errorMessage": "phase_phase_options doit être une chaîne d'options en ligne de commande"
+    },
+    "phase_use_reads": {
+      "type": "integer",
+      "errorMessage": "phase_use_reads doit être 0 ou 1"
+    },
+    "phase_filter_options": {
+      "type": "string",
+      "errorMessage": "phase_filter_options doit être une chaîne d'options en ligne de commande"
+    },
+    "phase_clair3_command": {
+      "type": "string",
+      "errorMessage": "phase_clair3_command doit être une commande Singularity valide"
+    },
+    "phase_clair3_options": {
+      "type": "string",
+      "errorMessage": "phase_clair3_options doit être une chaîne d'options clair3"
+    },
+    "phase_clair3_rd2ctg_options": {
+      "type": "string",
+      "errorMessage": "phase_clair3_rd2ctg_options doit être une chaîne d'options clair3"
+    },
+    "phase_clair3_phase_options": {
+      "type": "string",
+      "errorMessage": "phase_clair3_phase_options doit être une chaîne d'options clair3"
+    },
+    "phase_clair3_use_reads": {
+      "type": "integer",
+      "errorMessage": "phase_clair3_use_reads doit être 0 ou 1"
+    },
+    "phase_clair3_filter_options": {
+      "type": "string",
+      "errorMessage": "phase_clair3_filter_options doit être une chaîne d'options clair3"
+    },
+    "asm2_assemble_options": {
+      "type": "string",
+      "errorMessage": "asm2_assemble_options doit être une chaîne d'options (ou vide)"
+    },
+    "polish_map_options": {
+      "type": "string",
+      "errorMessage": "polish_map_options doit être une chaîne d'options minimap2"
+    },
+    "polish_use_reads": {
+      "type": "integer",
+      "errorMessage": "polish_use_reads doit être 0 ou 1"
+    },
+    "polish_cns_options": {
+      "type": "string",
+      "errorMessage": "polish_cns_options doit être une chaîne d'options (ou vide)"
+    },
+    "polish_medaka": {
+      "type": "integer",
+      "errorMessage": "polish_medaka doit être 0 ou 1"
+    },
+    "polish_medaka_command": {
+      "type": "string",
+      "errorMessage": "polish_medaka_command doit être une commande Singularity valide"
+    },
+    "polish_medaka_map_options": {
+      "type": "string",
+      "errorMessage": "polish_medaka_map_options doit être une chaîne d'options minimap2"
+    },
+    "polish_medaka_cns_options": {
+      "type": "string",
+      "errorMessage": "polish_medaka_cns_options doit être une chaîne d'options Medaka"
+    }
+  },
+  "required": [
+    "corr_iterate_number",
+    "corr_block_size",
+    "corr_filter_options",
+    "corr_correct_options",
+    "corr_rd2rd_options",
+    "corr_output_coverage",
+    "align_block_size",
+    "align_rd2rd_options",
+    "align_filter_options",
+    "phase_method",
+    "phase_use_reads",
+    "polish_use_reads"
+  ]
+}
