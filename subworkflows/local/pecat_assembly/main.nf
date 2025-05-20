@@ -1,0 +1,20 @@
+include { PECAT_UNZIP      } from '../../../modules/local/pecat/unzip/main'
+
+workflow PECAT_ASSEMBLY {
+
+    take:
+    ch_reads
+
+    main:
+
+    ch_versions = Channel.empty()
+
+    PECAT_UNZIP ( ch_reads )
+    ch_assembly_fasta = PECAT_UNZIP.out.haplotype_1_assembly
+
+    emit:
+    assembly_fasta = ch_assembly_fasta
+
+    versions = ch_versions                     // channel: [ versions.yml ]
+}
+

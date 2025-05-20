@@ -43,6 +43,109 @@
                 }
             }
         },
+        "steps": {
+            "title": "Steps",
+            "type": "object",
+            "description": "Skips specific steps",
+            "default": "",
+            "properties": {
+                "skip_filtering": {
+                    "type": "boolean",
+                    "description": "Skip the filtering step",
+                    "fa_icon": "fas fa-filter"
+                },
+                "skip_trimming": {
+                    "type": "boolean",
+                    "description": "Skip the trimming step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_assembly": {
+                    "type": "boolean",
+                    "description": "Skip the assembly step",
+                    "fa_icon": "fas fa-align-left"
+                },
+                "skip_polishing": {
+                    "type": "boolean",
+                    "description": "Skip the polishing step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step",
+                    "fa_icon": "fas fa-hand-scissors"
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "read_preparation_options": {
+            "title": "Read preparation options",
+            "type": "object",
+            "description": "Options controlling read trimming and filtering.",
+            "default": "",
+            "properties": {
+                "porechop_abi_args": {
+                    "type": "string",
+                    "description": "Additional args for Porechop ABI"
+                },
+                "seqkit_seq_args": {
+                    "type": "string",
+                    "description": "Additional args for Seqkit Seq"
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "assembly_options": {
+            "title": "Assembly options",
+            "type": "object",
+            "description": "Options controlling assembly",
+            "default": "",
+            "properties": {
+                "assembler": {
+                    "type": "string",
+                    "description": "Assembler to use",
+                    "enum": ["flye", "pecat"],
+                    "default": "flye"
+                },
+                "genome_size": {
+                    "type": "integer",
+                    "description": "expected genome size, optional",
+                    "minimum": 1
+                },
+                "flye_mode": {
+                    "type": "string",
+                    "description": "flye mode",
+                    "default": "--nano-raw",
+                    "enum": ["--pacbio-raw", "--pacbio-corr", "--pacbio-hifi", "--nano-raw", "--nano-corr", "--nano-hq"]
+                },
+                "flye_args": {
+                    "type": "string",
+                    "description": "additional args for flye"
+                },
+                "assembly_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                    "description": "Path Assembly fasta file (compressed).",
+                    "help_text": "You can provide an assembly and skip the assembly step.",
+                    "fa_icon": "fas fa-file-csv"
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "heplotig_cleaning_options": {
+            "title": "heplotig_cleaning_options",
+            "type": "object",
+            "description": "Options for cleaning of haplotig duplications",
+            "default": "",
+            "properties": {
+                "meryl_k_value": {
+                    "type": "number",
+                    "description": "K-mer value for meryl counting",
+                    "default": 15
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -180,120 +283,11 @@
                     "hidden": true
                 }
             }
-        },
-        "steps": {
-            "title": "Steps",
-            "type": "object",
-            "description": "Skips specific steps",
-            "default": "",
-            "properties": {
-                "skip_filtering": {
-                    "type": "boolean",
-                    "description": "Skip the filtering step",
-                    "fa_icon": "fas fa-filter"
-                },
-                "skip_trimming": {
-                    "type": "boolean",
-                    "description": "Skip the trimming step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_assembly": {
-                    "type": "boolean",
-                    "description": "Skip the assembly step",
-                    "fa_icon": "fas fa-align-left"
-                },
-                "skip_polishing": {
-                    "type": "boolean",
-                    "description": "Skip the polishing step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_purging": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig purging step",
-                    "fa_icon": "fas fa-hand-scissors"
-                }
-            },
-            "fa_icon": "fas fa-forward"
-        },
-        "read_preparation_options": {
-            "title": "Read preparation options",
-            "type": "object",
-            "description": "Options controlling read trimming and filtering.",
-            "default": "",
-            "properties": {
-                "porechop_abi_args": {
-                    "type": "string",
-                    "description": "Additional args for Porechop ABI"
-                },
-                "seqkit_seq_args": {
-                    "type": "string",
-                    "description": "Additional args for Seqkit Seq"
-                }
-            },
-            "fa_icon": "fas fa-forward"
-        },
-        "assembly_options": {
-            "title": "Assembly options",
-            "type": "object",
-            "description": "Options controlling assembly",
-            "default": "",
-            "properties": {
-                "assembler": {
-                    "type": "string",
-                    "description": "Assembler to use",
-                    "enum": ["flye", "pecat"],
-                    "default": "flye"
-                },
-                "genome_size": {
-                    "type": "integer",
-                    "description": "expected genome size, optional",
-                    "minimum": 1
-                },
-                "flye_mode": {
-                    "type": "string",
-                    "description": "flye mode",
-                    "default": "--nano-raw",
-                    "enum": ["--pacbio-raw", "--pacbio-corr", "--pacbio-hifi", "--nano-raw", "--nano-corr", "--nano-hq"]
-                },
-                "flye_args": {
-                    "type": "string",
-                    "description": "additional args for flye"
-                },
-                "assembly_fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "pattern": "^\\S+\\.f(ast)?a\\.gz$",
-                    "description": "Path Assembly fasta file (compressed).",
-                    "help_text": "You can provide an assembly and skip the assembly step.",
-                    "fa_icon": "fas fa-file-csv"
-                }
-            },
-            "fa_icon": "fas fa-forward"
-        },
-        "heplotig_cleaning_options": {
-            "title": "heplotig_cleaning_options",
-            "type": "object",
-            "description": "Options for cleaning of haplotig duplications",
-            "default": "",
-            "properties": {
-                "meryl_k_value": {
-                    "type": "number",
-                    "description": "K-mer value for meryl counting",
-                    "default": 15
-                }
-            }
         }
     },
     "allOf": [
         {
             "$ref": "#/$defs/input_output_options"
-        },
-        {
-            "$ref": "#/$defs/institutional_config_options"
-        },
-        {
-            "$ref": "#/$defs/generic_options"
         },
         {
             "$ref": "#/$defs/steps"
@@ -306,6 +300,12 @@
         },
         {
             "$ref": "#/$defs/heplotig_cleaning_options"
+        },
+        {
+            "$ref": "#/$defs/institutional_config_options"
+        },
+        {
+            "$ref": "#/$defs/generic_options"
         }
     ]
 }
