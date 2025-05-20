@@ -1,0 +1,57 @@
+nextflow_process {
+
+    name "Test Process PECAT_UNZIP"
+    script "modules/local/pecat/unzip/main.nf"
+    process "PECAT_UNZIP"
+    tag "pecat"
+
+    test("Should run without failures") {
+
+        when {
+
+            process {
+                """
+                meta = [ id: "test", genome_size: 1500000 ]
+                reads_file = file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                parameters = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
+                input[0] = [ meta, reads_file ]
+                input[1] = parameters
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+
+    }
+
+    test("Very small fasta") {
+        tag "pecat_very_small"
+
+        when {
+
+            process {
+                """
+                meta = [ id: "test", genome_size: 50000 ]
+                reads_file = file( '$projectDir/tests/test_data/pecat/unzip/reads.small.fasta.gz', checkIfExists: true)
+                parameters = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
+                input[0] = [ meta, reads_file ]
+                input[1] = parameters
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+
+    }
+
+}

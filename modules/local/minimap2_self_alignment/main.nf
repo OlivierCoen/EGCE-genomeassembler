@@ -28,7 +28,7 @@ process MINIMAP2_SELF_ALIGNMENT {
         -xasm5 \
         -DP ${assembly_fasta.baseName} ${assembly_fasta.baseName}.copy \
         | gzip -c - \
-        > ${prefix}.split.self.paf.gz
+        > ${prefix}.self_aligned.paf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -40,7 +40,7 @@ process MINIMAP2_SELF_ALIGNMENT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.bam
+    touch ${prefix}.paf.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
