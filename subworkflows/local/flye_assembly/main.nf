@@ -11,20 +11,6 @@ workflow FLYE_ASSEMBLY {
 
     ch_versions = Channel.empty()
 
-   if ( params.skip_assembly ) {
-        if ( !params.assembly_fasta ) {
-            error( "When setting --skip_assembly, you must also provide an assembly with --assembly_fasta" )
-        } else {
-            Channel.fromPath(params.assembly_fasta, checkIfExists: true)
-                    .map {
-                        fasta_file ->
-                            def meta = [ id: fasta_file.getBaseName() ]
-                            [ meta, fasta_file ]
-                    }
-                    .set { ch_assembly_fasta }
-        }
-    }
-
     if ( !params.skip_assembly ) {
         FLYE(
             ch_reads,
