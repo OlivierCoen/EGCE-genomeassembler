@@ -12,6 +12,20 @@
                             "modules"
                         ]
                     },
+                    "bwamem2/index": {
+                        "branch": "master",
+                        "git_sha": "a29f18660f5e3748d44d6f716241e70c942c065d",
+                        "installed_by": [
+                            "modules"
+                        ]
+                    },
+                    "bwamem2/mem": {
+                        "branch": "master",
+                        "git_sha": "a29f18660f5e3748d44d6f716241e70c942c065d",
+                        "installed_by": [
+                            "modules"
+                        ]
+                    },
                     "flye": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
@@ -92,6 +106,20 @@
                     "quast": {
                         "branch": "master",
                         "git_sha": "57ddeee519c2410c9c80c72f3f78e69633f0c549",
+                        "installed_by": [
+                            "modules"
+                        ]
+                    },
+                    "samtools/faidx": {
+                        "branch": "master",
+                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "installed_by": [
+                            "modules"
+                        ]
+                    },
+                    "samtools/index": {
+                        "branch": "master",
+                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
                         "installed_by": [
                             "modules"
                         ]

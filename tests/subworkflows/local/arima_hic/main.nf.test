@@ -1,0 +1,67 @@
+nextflow_workflow {
+
+    name "Test Workflow ARIMA_HIC"
+    script "subworkflows/local/arima_hic/main.nf"
+    workflow "ARIMA_HIC"
+
+    test("Small reads") {
+        tag "arima_small"
+
+        when {
+
+            params {
+                pipelines_testdata_base_path = 'https://github.com/nf-core/test-datasets/raw/hic/'
+            }
+
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "SRR4292758_00" ],
+                        [
+                            file( params.pipelines_testdata_base_path + 'data/SRR4292758_00_R1.fastq.gz', checkIfExists: true ),
+                            file( params.pipelines_testdata_base_path + 'data/SRR4292758_00_R2.fastq.gz', checkIfExists: true )
+                        ]
+                    ]
+                )
+                input[1] = Channel.of (
+                        [
+                            [ id: "W303_SGD_2015_JRIU00000000" ],
+                             file( params.pipelines_testdata_base_path + 'reference/W303_SGD_2015_JRIU00000000.fsa', checkIfExists: true )
+                        ]
+                    )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+    test("Very small reads") {
+        tag "arima_very_small"
+
+        when {
+            workflow {
+                """
+                meta_reads = [ id: "small" ]
+                meta_genome = [ id: "ncbi" ]
+                ch_reads = Channel.fromPath( '$projectDir/tests/test_data/arima_hic/very_small_R*.fastq.gz', checkIfExists: true)
+                ch_reference_fasta = file( '$projectDir/tests/test_data/arima_hic/GCA_009176605.1_CNRS_Arma_nasa_1.0_genomic.fna', checkIfExists: true)
+                input[0] = [ meta_reads, ch_reads ]
+                input[1] = [ meta_genome, ch_reference_fasta ]
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
