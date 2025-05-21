@@ -1,0 +1,33 @@
+nextflow_workflow {
+
+    name "Test Workflow PECAT_ASSEMBLY"
+    script "subworkflows/local/pecat_assembly/main.nf"
+    workflow "PECAT_ASSEMBLY"
+    tag "pecat_assembly"
+
+    test("Small data") {
+
+        when {
+
+            params {
+                pecat_config_file = "${projectDir}/tests/test_data/pecat/unzip/pecat_optional_config.txt"
+            }
+
+            workflow {
+                """
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

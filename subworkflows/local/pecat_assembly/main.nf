@@ -9,7 +9,11 @@ workflow PECAT_ASSEMBLY {
 
     ch_versions = Channel.empty()
 
-    PECAT_UNZIP ( ch_reads )
+    ch_pecat_config_file = Channel.fromPath ( params.pecat_config_file, checkIfExists: true )
+    PECAT_UNZIP (
+        ch_reads,
+        ch_pecat_config_file
+    )
     ch_assembly_fasta = PECAT_UNZIP.out.haplotype_1_assembly
 
     emit:
