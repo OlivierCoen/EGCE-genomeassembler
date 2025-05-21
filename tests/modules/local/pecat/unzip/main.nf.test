@@ -11,11 +11,11 @@ nextflow_process {
 
             process {
                 """
-                meta = [ id: "test", genome_size: 1500000 ]
-                reads_file = file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
-                parameters = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
-                input[0] = [ meta, reads_file ]
-                input[1] = parameters
+                    input[0] = [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                    ]
+                    input[1] = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
                 """
             }
         }
@@ -36,11 +36,11 @@ nextflow_process {
 
             process {
                 """
-                meta = [ id: "test", genome_size: 50000 ]
-                reads_file = file( '$projectDir/tests/test_data/pecat/unzip/reads.small.fasta.gz', checkIfExists: true)
-                parameters = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
-                input[0] = [ meta, reads_file ]
-                input[1] = parameters
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/tests/test_data/pecat/unzip/reads.small.fasta.gz', checkIfExists: true)
+                ]
+                input[1] = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
                 """
             }
         }

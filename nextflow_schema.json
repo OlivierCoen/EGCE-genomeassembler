@@ -103,13 +103,22 @@
                 "assembler": {
                     "type": "string",
                     "description": "Assembler to use",
-                    "enum": ["flye", "pecat"],
-                    "default": "flye"
+                    "enum": ["pecat", "flye"],
+                    "default": "pecat"
                 },
                 "genome_size": {
                     "type": "integer",
                     "description": "expected genome size, optional",
                     "minimum": 1
+                },
+                "pecat_config_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                    "description": "Pecat config file.",
+                    "help_text": "An example file is available at tests/test_data/pecat/unzip/pecat_optional_config.txt",
+                    "fa_icon": "fas fa-file-csv"
                 },
                 "flye_mode": {
                     "type": "string",
