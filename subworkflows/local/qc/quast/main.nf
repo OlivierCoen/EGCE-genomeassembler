@@ -6,27 +6,20 @@ workflow QC_QUAST {
     aln_to_assembly
 
     main:
+
     Channel.empty().set { versions }
-    /* prepare for quast:
-     * This makes use of the input channel to obtain the reference and reference annotations
-     * See quast module for details
-     */
     Channel.empty().set { quast_results }
     Channel.empty().set { quast_tsv }
+    assembly.view()
+    aln_to_assembly.view()
+    assembly
+        .join( aln_to_assembly )
+        .set { quast_input }
 
-    if (params.quast) {
-
-        assembly
-            .join(aln_to_assembly)
-            .set { quast_in }
-        /*
-        * Run QUAST
-        */
-        QUAST(quast_in, params.use_ref, false)
-        QUAST.out.results.set { quast_results }
-        QUAST.out.tsv.set { quast_tsv }
-        QUAST.out.versions.set { versions }
-    }
+    QUAST( quast_input )
+    QUAST.out.results.set { quast_results }
+    QUAST.out.tsv.set { quast_tsv }
+    QUAST.out.versions.set { versions }
 
     emit:
     quast_results

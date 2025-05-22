@@ -1,8 +1,5 @@
 include { PECAT_UNZIP      } from '../../../modules/local/pecat/unzip/main'
 
-include { QC_BUSCO         } from '../qc/busco/main'
-include { QC_BUSCO         } from '../qc/busco/main'
-
 workflow PECAT_ASSEMBLY {
 
     take:

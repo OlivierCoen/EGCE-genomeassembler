@@ -73,6 +73,16 @@
                     "type": "boolean",
                     "description": "Skip the haplotig purging step",
                     "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_busco": {
+                    "type": "boolean",
+                    "description": "Skip the Busco analyses",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_quast": {
+                    "type": "boolean",
+                    "description": "Skip the Quast analyses",
+                    "fa_icon": "fas fa-check-circle"
                 }
             },
             "fa_icon": "fas fa-forward"
@@ -115,7 +125,7 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
-                    "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                    "pattern": "^\\S+\\.txt$",
                     "description": "Pecat config file.",
                     "help_text": "An example file is available at tests/test_data/pecat/unzip/pecat_optional_config.txt",
                     "fa_icon": "fas fa-file-csv"
@@ -142,25 +152,8 @@
             },
             "fa_icon": "fas fa-forward"
         },
-        "short_read_options": {
-            "title": "Short read options",
-            "type": "object",
-            "description": "Options for short reads",
-            "default": "",
-            "properties": {
-                "short_reads": {
-                    "type": "boolean",
-                    "description": "Short reads available?"
-                },
-                "trim_short_reads": {
-                    "type": "boolean",
-                    "description": "trim short reads with trimgalore",
-                    "default": true
-                }
-            }
-        },
         "heplotig_cleaning_options": {
-            "title": "heplotig_cleaning_options",
+            "title": "Haplotig cleaning options",
             "type": "object",
             "description": "Options for cleaning of haplotig duplications",
             "default": "",
@@ -169,6 +162,23 @@
                     "type": "number",
                     "description": "K-mer value for meryl counting",
                     "default": 15
+                }
+            }
+        },
+        "qc_options": {
+            "title": "QC options",
+            "type": "object",
+            "description": "Options for QC tools",
+            "default": "",
+            "properties": {
+                "busco_db": {
+                    "type": "string",
+                    "description": "Path to busco db (optional)"
+                },
+                "busco_lineage": {
+                    "type": "string",
+                    "description": "Busco lineage to use",
+                    "default": "brassicales_odb10"
                 }
             }
         },
