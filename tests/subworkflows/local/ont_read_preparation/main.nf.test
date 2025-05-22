@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow ONT_READ_PREPARATION"
+    script "subworkflows/local/ont_read_preparation/main.nf"
+    workflow "ONT_READ_PREPARATION"
+    tag "ont_read_prep"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                skip_trimming = false
+                skip_filtering = false
+            }
+            workflow {
+                """
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}
