@@ -6,8 +6,8 @@
 include { MULTIQC                      } from '../modules/nf-core/multiqc/main'
 
 include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_preparation/main'
-include { FLYE_ASSEMBLY                } from '../subworkflows/local/flye_assembly/main'
-include { PECAT_ASSEMBLY                } from '../subworkflows/localpecat_assembly/main'
+include { COMPUTE_KMERS                } from '../subworkflows/local/compute_kmers/main'
+include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
 
 include { paramsSummaryMap             } from 'plugin/nf-schema'
@@ -31,32 +31,18 @@ workflow GENOMEASSEMBLER {
     ONT_READ_PREPARATION ( ch_input )
     ch_reads = ONT_READ_PREPARATION.out.prepared_reads
 
-    if ( params.skip_assembly ) {
-        if ( !params.assembly_fasta ) {
-            error( "When setting --skip_assembly, you must also provide an assembly with --assembly_fasta" )
-        } else {
-            Channel.fromPath(params.assembly_fasta, checkIfExists: true)
-                    .map {
-                        fasta_file ->
-                            def meta = [ id: fasta_file.getBaseName() ]
-                            [ meta, fasta_file ]
-                    }
-                    .set { ch_assembly_fasta }
-        }
-
-    } else {
-        if ( params.assembler == "flye" ) {
-            FLYE_ASSEMBLY ( ch_reads )
-            ch_assembly_fasta = FLYE_ASSEMBLY.out.assembly_fasta
-        } else if ( params.assembler == "pecat" ) {
-            PECAT_ASSEMBLY ( ch_reads )
-            ch_assembly_fasta = PECAT_ASSEMBLY.out.assembly_fasta
-        } // there should not be other possibilities for the assembler
-    }
+    ASSEMBLY (
+        ch_reads,
+        ch_repetitive_kmers
+    )
+    ch_assembly_fasta = ASSEMBLY.out.assembly_fasta
 
     ch_haplotigs = Channel.empty()
     if ( !params.skip_purging ) {
-        HAPLOTIG_CLEANING( ch_assembly_fasta, ch_reads )
+        HAPLOTIG_CLEANING(
+            ch_assembly_fasta,
+            ch_reads
+        )
         ch_haplotigs = HAPLOTIG_CLEANING.out.haplotigs
     }
 
