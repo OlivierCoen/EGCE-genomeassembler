@@ -87,9 +87,9 @@
                     "type": "string",
                     "description": "Additional args for Porechop ABI"
                 },
-                "seqkit_seq_args": {
+                "chopper_args": {
                     "type": "string",
-                    "description": "Additional args for Seqkit Seq"
+                    "description": "Additional args for Chopper"
                 }
             },
             "fa_icon": "fas fa-forward"

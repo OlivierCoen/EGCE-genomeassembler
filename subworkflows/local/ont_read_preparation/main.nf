@@ -1,5 +1,5 @@
 include { PORECHOP_ABI                 } from '../../../modules/nf-core/porechop/abi/main'
-include { SEQKIT_SEQ                   } from '../../../modules/nf-core/seqkit/seq/main'
+include { CHOPPER                   } from '../../../modules/nf-core/chopper/main'
 
 workflow ONT_READ_PREPARATION {
 
@@ -17,8 +17,8 @@ workflow ONT_READ_PREPARATION {
     }
 
     if ( !params.skip_filtering ) {
-        SEQKIT_SEQ( ch_reads )
-        SEQKIT_SEQ.out.fastx.set { ch_reads }
+        CHOPPER( ch_reads )
+        CHOPPER.out.fastq.set { ch_reads }
     }
 
     emit:
