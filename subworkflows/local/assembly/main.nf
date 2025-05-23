@@ -11,6 +11,9 @@ workflow ASSEMBLY {
 
     main:
 
+    assembly_quast_reports = Channel.empty()
+    assembly_busco_reports = Channel.empty()
+
     if ( !params.skip_assembly ) {
 
         PECAT_ASSEMBLY ( ch_reads )
@@ -35,9 +38,8 @@ workflow ASSEMBLY {
     if ( !params.skip_quast ) {
 
         MAP_TO_ASSEMBLY( ch_reads, ch_assembly_fasta )
-        MAP_TO_ASSEMBLY.out.aln_to_assembly_bam.set { ch_assembly_bam }
 
-        QC_QUAST( ch_assembly_fasta, ch_assembly_bam )
+        QC_QUAST( MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref )
         QC_QUAST.out.quast_tsv.set { assembly_quast_reports }
 
     }
@@ -50,9 +52,9 @@ workflow ASSEMBLY {
         QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
     }
 
-
     emit:
     assembly_fasta = ch_assembly_fasta
-
+    assembly_quast_reports
+    assembly_busco_reports
 
 }

@@ -1,0 +1,33 @@
+nextflow_workflow {
+
+    name "Test Workflow QC_BUSCO"
+    script "subworkflows/local/qc/busco/main.nf"
+    workflow "QC_BUSCO"
+    tag "busco_subworkflow"
+
+    test("Should run without failures") {
+
+        when {
+
+            params {
+                busco_lineage = "arthropoda_odb10"
+            }
+
+            workflow {
+                """
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/alternate.fasta', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

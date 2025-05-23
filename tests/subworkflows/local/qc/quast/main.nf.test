@@ -1,0 +1,166 @@
+nextflow_workflow {
+
+    name "Test Workflow QC_QUAST"
+    script "subworkflows/local/qc/quast/main.nf"
+    workflow "QC_QUAST"
+    tag "quast"
+
+    test("One assembly") {
+
+        tag "quast_one_assembly"
+
+        setup {
+
+            run("MAP_TO_ASSEMBLY") {
+                script "subworkflows/local/map_to_assembly/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of([
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                    ])
+                    input[1] = Channel.of(
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/primary.fasta', checkIfExists: true)
+                        ]
+                    )
+                    """
+                }
+            }
+
+        }
+
+        when {
+
+            workflow {
+                """
+                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+    test("Pecat output") {
+
+        tag "quast_pecat_output"
+
+        setup {
+
+            run("MAP_TO_ASSEMBLY") {
+                script "subworkflows/local/map_to_assembly/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of(
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                        ]
+                    )
+                    input[1] = Channel.of(
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/primary.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/alternate.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/haplotype_1.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/haplotype_2.fasta', checkIfExists: true)
+                        ]
+                    )
+                    """
+                }
+            }
+
+        }
+
+        when {
+
+            workflow {
+                """
+                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+    test("Multiple assemblies") {
+
+        tag "quast_multiple_assemblies"
+
+        setup {
+
+            run("MAP_TO_ASSEMBLY") {
+                script "subworkflows/local/map_to_assembly/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of(
+                        [
+                            [ id: "test1", genome_size: 1500000 ],
+                            file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test2", genome_size: 1500000 ],
+                            file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                        ]
+                    )
+                    input[1] = Channel.of(
+                        [
+                            [ id: "test1", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/primary.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test1", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/alternate.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test2", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/primary.fasta', checkIfExists: true)
+                        ],
+                        [
+                            [ id: "test2", genome_size: 1500000 ],
+                            file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/alternate.fasta', checkIfExists: true)
+                        ]
+                    )
+                    """
+                }
+            }
+
+        }
+
+        when {
+
+            workflow {
+                """
+                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+}

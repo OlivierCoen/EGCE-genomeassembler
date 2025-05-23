@@ -3,7 +3,7 @@ include { PURGEDUPS_CALCUTS            } from '../../../modules/nf-core/purgedup
 include { PURGEDUPS_PBCSTAT            } from '../../../modules/nf-core/purgedups/pbcstat/main'
 include { PURGEDUPS_GETSEQS            } from '../../../modules/nf-core/purgedups/getseqs/main'
 include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa/main'
-include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2_self_alignment/main'
+include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align/main'
 include { WINNOWMAP                    } from '../../../modules/local/winnowmap/main'
 include { MERYL_COUNT                  } from '../../../modules/nf-core/meryl/count/main'
 include { MERYL_PRINT                  } from '../../../modules/local/meryl/print/main'

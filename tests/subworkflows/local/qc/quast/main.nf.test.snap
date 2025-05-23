@@ -1,0 +1,107 @@
+{
+    "Pecat output": {
+        "content": [
+            {
+                "0": [
+                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
+                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
+                    "test_report.tsv:md5,abc2c63ad4971b3d6430b7dd7ee8e182",
+                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                ],
+                "1": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ],
+                "quast_tsv": [
+                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
+                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
+                    "test_report.tsv:md5,abc2c63ad4971b3d6430b7dd7ee8e182",
+                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                ],
+                "versions": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-23T13:14:13.57323553"
+    },
+    "Multiple assemblies": {
+        "content": [
+            {
+                "0": [
+                    "test1_report.tsv:md5,17834a32abf232bdea0e363dc301f7fe",
+                    "test1_report.tsv:md5,5a8b19657a571be8fc75aae21ebcdf1f",
+                    "test2_report.tsv:md5,17834a32abf232bdea0e363dc301f7fe",
+                    "test2_report.tsv:md5,5a8b19657a571be8fc75aae21ebcdf1f"
+                ],
+                "1": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ],
+                "quast_tsv": [
+                    "test1_report.tsv:md5,17834a32abf232bdea0e363dc301f7fe",
+                    "test1_report.tsv:md5,5a8b19657a571be8fc75aae21ebcdf1f",
+                    "test2_report.tsv:md5,17834a32abf232bdea0e363dc301f7fe",
+                    "test2_report.tsv:md5,5a8b19657a571be8fc75aae21ebcdf1f"
+                ],
+                "versions": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-23T11:08:46.192943807"
+    },
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
+                    "test_report.tsv:md5,a0b089a2d836aef9ea78c2187bc8cf39",
+                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
+                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                ],
+                "1": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ],
+                "quast_tsv": [
+                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
+                    "test_report.tsv:md5,a0b089a2d836aef9ea78c2187bc8cf39",
+                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
+                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                ],
+                "versions": [
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
+                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-23T10:58:28.093796947"
+    }
+}

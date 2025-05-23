@@ -12,12 +12,10 @@ process QUAST {
 
 
    output:
-    path "${prefix}*/*", emit: results
-    path "${prefix}_report.tsv", emit: tsv
+    path "${meta.id}*/*", emit: results
+    path "*report.tsv", emit: tsv
     path "versions.yml", emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
@@ -29,7 +27,6 @@ process QUAST {
         ${assembly} \\
         --bam ${aln_long_reads_assembly_bam} \\
         --large \\
-        --no-plots --no-html --no-icarus --no-snps --no-sv \\
         ${args}
 
     ln -s ${prefix}/report.tsv ${prefix}_report.tsv

@@ -38,7 +38,10 @@ process PICARD_MARKDUPLICATES {
         $args \\
         --INPUT $reads \\
         --OUTPUT ${prefix}.${suffix} \\
-        --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt
+        --METRICS_FILE ${prefix}.MarkDuplicates.metrics.txt \\
+        --ASSUME_SORTED TRUE \\
+        --VALIDATION_STRINGENCY LENIENT \\
+        --REMOVE_DUPLICATES TRUE
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

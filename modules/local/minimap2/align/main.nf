@@ -1,5 +1,5 @@
 process MINIMAP2_ALIGN {
-    tag "${meta.id}_${reads.baseName}"
+    tag "${meta.id}"
     label 'process_high'
 
     // Note: the versions here need to match the versions used in the mulled container below and minimap2/index
@@ -12,16 +12,17 @@ process MINIMAP2_ALIGN {
     tuple val(meta), path(reads), path(reference)
 
     output:
-    tuple val(meta), path("*.bam")                       , emit: bam
-    path "versions.yml"                                  , emit: versions
+    tuple val(meta), path("*.bam"), path(reference)        , emit: bam
+    tuple val(meta), path("*.bai")                         , emit: index
+    path "versions.yml"                                     , emit: versions
 
     script:
     def args  = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
     def args3 = task.ext.args3 ?: ''
     def args4 = task.ext.args4 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def bam_index = "${prefix}.bam##idx##${prefix}.bam.${bam_index_extension} --write-index"
+    def prefix = task.ext.prefix ?: "${reads.simpleName}_mapped_to_${reference.simpleName}"
+    def bam_index = "${prefix}.bam##idx##${prefix}.bam.bai --write-index"
     def bam_output = "-a | samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2}"
     def bam_input = "${reads.extension}".matches('sam|bam|cram')
     def samtools_reset_fastq = bam_input ? "samtools reset --threads ${task.cpus-1} $args3 $reads | samtools fastq --threads ${task.cpus-1} $args4 |" : ''
@@ -46,7 +47,7 @@ process MINIMAP2_ALIGN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${reads.baseName}.mapped_to.${reference.baseName}"
     def output_file = "${prefix}.bam"
     def make_bam_index_cmd = "touch ${prefix}.bam.${bam_index_extension}"
     def bam_input = "${reads.extension}".matches('sam|bam|cram')
