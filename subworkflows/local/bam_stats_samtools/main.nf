@@ -2,26 +2,35 @@
 // Run SAMtools stats, flagstat and idxstats
 //
 
-include { SAMTOOLS_STATS    } from '../../../modules/nf-core/samtools/stats/main'
+include { SAMTOOLS_STATS    } from '../../../modules/local/samtools/stats/main'
 include { SAMTOOLS_IDXSTATS } from '../../../modules/nf-core/samtools/idxstats/main'
 include { SAMTOOLS_FLAGSTAT } from '../../../modules/nf-core/samtools/flagstat/main'
 
 workflow BAM_STATS_SAMTOOLS {
     take:
-    ch_bam_bai // channel: [ val(meta), path(bam), path(bai) ]
-    ch_fasta   // channel: [ val(meta), path(fasta) ]
+    ch_bam_ref_bai // channel: [ val(meta), path(bam), path(ref), path(bai) ]
 
     main:
     ch_versions = Channel.empty()
 
-    SAMTOOLS_STATS ( ch_bam_bai, ch_fasta )
-    ch_versions = ch_versions.mix(SAMTOOLS_STATS.out.versions)
+    ch_bam_ref_bai
+        .map { meta, bam, ref, bai -> [ meta, bam, bai, ref ]} // inverting order
+        .set { ch_bam_bai_ref }
+
+    SAMTOOLS_STATS ( ch_bam_bai_ref )
+
+    ch_bam_ref_bai
+        .map { meta, bam, ref, bai -> [meta, bam, bai] } // removes ref
+        .set { ch_bam_bai }
 
     SAMTOOLS_FLAGSTAT ( ch_bam_bai )
-    ch_versions = ch_versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
 
     SAMTOOLS_IDXSTATS ( ch_bam_bai )
-    ch_versions = ch_versions.mix(SAMTOOLS_IDXSTATS.out.versions)
+
+    ch_versions = ch_versions
+        .mix(SAMTOOLS_STATS.out.versions)
+        .mix(SAMTOOLS_FLAGSTAT.out.versions)
+        .mix(SAMTOOLS_IDXSTATS.out.versions)
 
     emit:
     stats    = SAMTOOLS_STATS.out.stats       // channel: [ val(meta), path(stats) ]

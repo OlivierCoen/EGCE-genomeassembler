@@ -37,7 +37,12 @@ process PICARD_ADDORREPLACEREADGROUPS {
         AddOrReplaceReadGroups \\
         $args \\
         --INPUT ${reads} \\
-        --OUTPUT ${prefix}.${suffix}
+        --OUTPUT ${prefix}.${suffix} \\
+        -ID ${meta.id} \\
+        -LB ${meta.id} \\
+         -SM EXPERIMENT \\
+         -PL ILLUMINA \\
+         -PU none
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -46,7 +51,7 @@ process PICARD_ADDORREPLACEREADGROUPS {
     """
 
     stub:
-    def prefix = task.ext.prefix    ?: "${meta.id}"
+    def prefix = task.ext.prefix    ?: "${meta.id}.replaced"
     def suffix = task.ext.suffix    ?: "${reads.getExtension()}"
     if ("$reads" == "${prefix}.${suffix}") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """

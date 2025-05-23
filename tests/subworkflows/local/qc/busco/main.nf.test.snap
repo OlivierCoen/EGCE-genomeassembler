@@ -1,0 +1,73 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "test-arthropoda_odb10-busco.batch_summary.txt:md5,607a99c2a2569def751a155be09d4876"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "short_summary.specific.arthropoda_odb10.alternate.fasta.json:md5,49c05c15700f1abacfb5da2db5a1e3a1"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "short_summary.specific.arthropoda_odb10.alternate.fasta.txt:md5,bb3c59bbe5cba1428752b8ce754db581"
+                    ]
+                ],
+                "3": [
+                    "versions.yml:md5,d4bac71d61e8e2f360fba3d461b004c7"
+                ],
+                "batch_summary": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "test-arthropoda_odb10-busco.batch_summary.txt:md5,607a99c2a2569def751a155be09d4876"
+                    ]
+                ],
+                "short_summary_json": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "short_summary.specific.arthropoda_odb10.alternate.fasta.json:md5,49c05c15700f1abacfb5da2db5a1e3a1"
+                    ]
+                ],
+                "short_summary_txt": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "short_summary.specific.arthropoda_odb10.alternate.fasta.txt:md5,bb3c59bbe5cba1428752b8ce754db581"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,d4bac71d61e8e2f360fba3d461b004c7"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-22T17:27:36.912786296"
+    }
+}

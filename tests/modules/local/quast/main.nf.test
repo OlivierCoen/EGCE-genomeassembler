@@ -1,0 +1,31 @@
+nextflow_process {
+
+    name "Test Process QUAST"
+    script "modules/local/quast/main.nf"
+    process "QUAST"
+
+    test("Should run without failures") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/.nf-test/tests/d1e58da82b7582837d1ff22e9f90967d/work/dc/d26d605e9f5a209b168ff0902be97f/results/6-polish/medaka/primary.fasta', checkIfExists: true)
+                    ]
+                )
+                input[1] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            //assert snapshot(process.out).match()
+        }
+
+    }
+
+}

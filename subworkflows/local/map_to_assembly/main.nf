@@ -1,5 +1,5 @@
-include { MINIMAP2_ALIGN as ALIGN } from '../../../modules/nf-core/minimap2/align/main'
-include { BAM_STATS_SAMTOOLS as BAM_STATS } from '../../nf-core/bam_stats_samtools/main'
+include { MINIMAP2_ALIGN as ALIGN_BACK_TO_ASSEMBLY } from '../../../modules/local/minimap2/align/main'
+include { BAM_STATS_SAMTOOLS as BAM_STATS } from '../../local/bam_stats_samtools/main'
 
 workflow MAP_TO_ASSEMBLY {
     take:
@@ -8,27 +8,34 @@ workflow MAP_TO_ASSEMBLY {
 
     main:
     Channel.empty().set { ch_versions }
-    // map reads to assembly
 
-    ALIGN(ch_reads, ch_genome_assembly,  true, 'bai', false, false)
-
-    ALIGN.out.bam.set { aln_to_assembly_bam }
-    ALIGN.out.index.set { aln_to_assembly_bai }
-
+    // ---------------------------------------------------
+    // Alignment to respective assembly
+    // ---------------------------------------------------
     ch_reads
-        .join( ch_genome_assembly )
-        .map { meta, _reads, fasta -> [meta, fasta] }
-        .set { ch_fasta }
+        .combine( ch_genome_assembly, by: 0 )  // cartesian product with meta as matching key
+        .set { align_input }
 
-    aln_to_assembly_bam
+    ALIGN_BACK_TO_ASSEMBLY( align_input )
+
+    ALIGN_BACK_TO_ASSEMBLY.out.bam.set { aln_to_assembly_bam_ref }
+    ALIGN_BACK_TO_ASSEMBLY.out.index.set { aln_to_assembly_bai }
+
+    // ---------------------------------------------------
+    // BAM stats
+    // ---------------------------------------------------
+
+    aln_to_assembly_bam_ref
         .join( aln_to_assembly_bai )
-        .set { aln_to_assembly_bam_bai }
+        .set { aln_to_assembly_bam_ref_bai }
 
-    BAM_STATS(aln_to_assembly_bam_bai, ch_fasta )
+    BAM_STATS( aln_to_assembly_bam_ref_bai )
 
-    versions = ch_versions.mix(ALIGN.out.versions).mix(BAM_STATS.out.versions)
+    versions = ch_versions
+                .mix(ALIGN_BACK_TO_ASSEMBLY.out.versions)
+                .mix(BAM_STATS.out.versions)
 
     emit:
-    aln_to_assembly_bam
+    aln_to_assembly_bam_ref
     versions
 }
