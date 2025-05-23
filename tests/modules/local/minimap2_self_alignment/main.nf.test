@@ -1,7 +1,7 @@
 nextflow_process {
 
     name "Test Process MINIMAP2_SELF_ALIGNMENT"
-    script "modules/local/minimap2_self_alignment/main.nf"
+    script "modules/local/minimap2/self_align/main.nf"
     process "MINIMAP2_SELF_ALIGNMENT"
 
     test("Should run without failures") {
