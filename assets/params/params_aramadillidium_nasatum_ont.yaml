@@ -1,0 +1,14 @@
+
+# Data
+input:
+
+# Assembly
+assembler: pecat
+pecat_config_file: assets/pecat_configs/pecat_config_armadillidium_nasatum_nanopore.txt
+
+# Trimming / Filtering
+porechop_abi_args:
+chopper_args:
+
+# QC
+busco_lineage: arthropoda_odb10
