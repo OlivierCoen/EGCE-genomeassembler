@@ -1,0 +1,58 @@
+nextflow_process {
+
+    name "Test Process PECAT_PHASE"
+    script "modules/local/pecat/phase/main.nf"
+    process "PECAT_PHASE"
+    tag "pecat_phase"
+
+    test("Normal fasta") {
+
+        tag "pecat_phase_normal"
+
+        when {
+
+            process {
+                """
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/tests/test_data/pecat/input/reads.fasta.gz', checkIfExists: true),
+                    file( '$projectDir/tests/test_data/pecat/output/normal/first_assembly/results.tar.gz', checkIfExists: true)
+                ]
+                input[1] = file( '$projectDir/tests/test_data/pecat/input/pecat_optional_config.txt', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+    test("Small fasta") {
+
+        tag "pecat_phase_small"
+
+        when {
+
+            process {
+                """
+                input[0] = [
+                    [ id: "test", genome_size: 1500000 ],
+                    file( '$projectDir/tests/test_data/pecat/input/reads.fasta.gz', checkIfExists: true),
+                    file( '$projectDir/tests/test_data/pecat/output/small/first_assembly/results.tar.gz', checkIfExists: true)
+                ]
+                input[1] = file( '$projectDir/tests/test_data/pecat/input/pecat_optional_config.txt', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

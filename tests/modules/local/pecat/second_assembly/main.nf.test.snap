@@ -1,0 +1,72 @@
+{
+    "Small fasta": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,7d9f7677e55ba76733ac82231a6a0fc5"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,988e86b1280bf7e6e61097e8277e9340"
+                ],
+                "results": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,7d9f7677e55ba76733ac82231a6a0fc5"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,988e86b1280bf7e6e61097e8277e9340"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-24T20:37:57.604054067"
+    },
+    "Normal fasta": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,19d3ec91b6256a76bb639a64bf8a5dfa"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,988e86b1280bf7e6e61097e8277e9340"
+                ],
+                "results": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,19d3ec91b6256a76bb639a64bf8a5dfa"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,988e86b1280bf7e6e61097e8277e9340"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-24T20:41:00.037130986"
+    }
+}
