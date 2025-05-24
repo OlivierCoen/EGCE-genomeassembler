@@ -1,11 +1,12 @@
 nextflow_process {
 
-    name "Test Process PECAT_UNZIP"
-    script "modules/local/pecat/unzip/main.nf"
-    process "PECAT_UNZIP"
-    tag "pecat"
+    name "Test Process PECAT_CORRECT"
+    script "modules/local/pecat/correct/main.nf"
+    process "PECAT_CORRECT"
+    tag "pecat_correct"
 
-    test("Should run without failures") {
+    test("Normal fasta") {
+        tag "pecat_correct_normal"
 
         when {
 
@@ -13,9 +14,9 @@ nextflow_process {
                 """
                     input[0] = [
                         [ id: "test", genome_size: 1500000 ],
-                        file( '$projectDir/tests/test_data/pecat/unzip/reads.fasta.gz', checkIfExists: true)
+                        file( '$projectDir/tests/test_data/pecat/input/reads.fasta.gz', checkIfExists: true)
                     ]
-                    input[1] = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
+                    input[1] = file( '$projectDir/tests/test_data/pecat/input/pecat_optional_config.txt', checkIfExists: true)
                 """
             }
         }
@@ -29,8 +30,8 @@ nextflow_process {
 
     }
 
-    test("Very small fasta") {
-        tag "pecat_very_small"
+    test("Small fasta") {
+        tag "pecat_correct_small"
 
         when {
 
@@ -38,9 +39,9 @@ nextflow_process {
                 """
                 input[0] = [
                     [ id: "test", genome_size: 1500000 ],
-                    file( '$projectDir/tests/test_data/pecat/unzip/reads.small.fasta.gz', checkIfExists: true)
+                    file( '$projectDir/tests/test_data/pecat/input/reads.small.fasta.gz', checkIfExists: true)
                 ]
-                input[1] = file( '$projectDir/tests/test_data/pecat/unzip/pecat_optional_config.txt', checkIfExists: true)
+                input[1] = file( '$projectDir/tests/test_data/pecat/input/pecat_optional_config.txt', checkIfExists: true)
                 """
             }
         }
