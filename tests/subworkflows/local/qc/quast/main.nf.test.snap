@@ -3,27 +3,15 @@
         "content": [
             {
                 "0": [
-                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
-                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
-                    "test_report.tsv:md5,abc2c63ad4971b3d6430b7dd7ee8e182",
-                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                    "test_report.tsv:md5,42273fbdd7ee7cf25f286e04d7115056"
                 ],
                 "1": [
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
                     "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
                 ],
                 "quast_tsv": [
-                    "test_report.tsv:md5,615f60a4c98a9372c78b70ad00a74561",
-                    "test_report.tsv:md5,a0b6770c222ae4adcea6a499009d9374",
-                    "test_report.tsv:md5,abc2c63ad4971b3d6430b7dd7ee8e182",
-                    "test_report.tsv:md5,ba852487f1fd081ba9eb2a63fe487dff"
+                    "test_report.tsv:md5,42273fbdd7ee7cf25f286e04d7115056"
                 ],
                 "versions": [
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
-                    "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131",
                     "versions.yml:md5,6668e18804d1fcf9089d8ce396aab131"
                 ]
             }
@@ -32,7 +20,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.2"
         },
-        "timestamp": "2025-05-23T13:14:13.57323553"
+        "timestamp": "2025-05-24T23:55:43.434315289"
     },
     "Multiple assemblies": {
         "content": [

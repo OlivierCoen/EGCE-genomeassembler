@@ -11,10 +11,7 @@ workflow QC_QUAST {
 
     ch_bam_ref
         .groupTuple() // [ meta, [bam1, bam2, bam3], [ref1, ref2, ref3]
-        .map {
-            meta, bam_list, ref_list ->
-                [ meta, "${ref_list.join(',')}", "${bam_list.join(',')}" ]
-        }
+        .map { meta, bam_list, ref_list -> [ meta, ref_list, bam_list ] } // inverting lists
         .set { quast_input }
 
     quast_input.view { v -> "quast : " + v}

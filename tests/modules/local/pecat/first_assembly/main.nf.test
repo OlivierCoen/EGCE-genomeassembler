@@ -40,7 +40,7 @@ nextflow_process {
                 """
                 input[0] = [
                     [ id: "test", genome_size: 1500000 ],
-                    file( '$projectDir/tests/test_data/pecat/input/reads.fasta.gz', checkIfExists: true),
+                    file( '$projectDir/tests/test_data/pecat/input/reads.small.fasta.gz', checkIfExists: true),
                     file( '$projectDir/tests/test_data/pecat/output/small/correct/results.tar.gz', checkIfExists: true)
                 ]
                 input[1] = file( '$projectDir/tests/test_data/pecat/input/pecat_optional_config.txt', checkIfExists: true)

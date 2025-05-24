@@ -45,6 +45,8 @@ workflow PECAT_ASSEMBLY {
     alternate_assembly   = PECAT_POLISH.out.alternate_assembly
     haplotype_1_assembly = PECAT_POLISH.out.haplotype_1_assembly
     haplotype_2_assembly = PECAT_POLISH.out.haplotype_2_assembly
+    rest_first_assembly  = PECAT_POLISH.out.rest_first_assembly
+    rest_second_assembly = PECAT_POLISH.out.rest_second_assembly
 
     versions = ch_versions                     // channel: [ versions.yml ]
 }

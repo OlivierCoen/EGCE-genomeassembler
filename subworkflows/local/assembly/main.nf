@@ -17,7 +17,14 @@ workflow ASSEMBLY {
     if ( !params.skip_assembly ) {
 
         PECAT_ASSEMBLY ( ch_reads )
-        ch_assembly_fasta = PECAT_ASSEMBLY.out.assembly_fasta
+
+        PECAT_ASSEMBLY.out.primary_assembly
+            .concat( PECAT_ASSEMBLY.out.alternate_assembly )
+            .concat( PECAT_ASSEMBLY.out.haplotype_1_assembly )
+            .concat( PECAT_ASSEMBLY.out.haplotype_2_assembly )
+            .concat( PECAT_ASSEMBLY.out.rest_first_assembly )
+            .concat( PECAT_ASSEMBLY.out.rest_second_assembly )
+            .set { ch_assemblies }
 
     } else {
 
@@ -30,14 +37,14 @@ workflow ASSEMBLY {
                             def meta = [ id: fasta_file.getBaseName() ]
                             [ meta, fasta_file ]
                     }
-                    .set { ch_assembly_fasta }
+                    .set { ch_assemblies }
         }
 
     }
 
     if ( !params.skip_quast ) {
 
-        MAP_TO_ASSEMBLY( ch_reads, ch_assembly_fasta )
+        MAP_TO_ASSEMBLY( ch_reads, ch_assemblies )
 
         QC_QUAST( MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref )
         QC_QUAST.out.quast_tsv.set { assembly_quast_reports }
@@ -48,12 +55,12 @@ workflow ASSEMBLY {
     QC on initial assembly
     */
     if ( !params.skip_busco ) {
-        QC_BUSCO( ch_assembly_fasta )
+        QC_BUSCO( ch_assemblies )
         QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
     }
 
     emit:
-    assembly_fasta = ch_assembly_fasta
+    assemblies = ch_assemblies
     assembly_quast_reports
     assembly_busco_reports
 

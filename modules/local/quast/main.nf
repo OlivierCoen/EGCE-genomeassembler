@@ -8,7 +8,7 @@ process QUAST {
         'community.wave.seqera.io/library/quast:5.3.0--755a216045b6dbdd' }"
 
     input:
-    tuple val(meta), path(assembly), path(aln_long_reads_assembly_bam)
+    tuple val(meta), path(assembly_list), path(aln_long_reads_assembly_bam_list)
 
 
    output:
@@ -20,13 +20,17 @@ process QUAST {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+
+    def assembly = assembly_list.join(' ')
+    def bam = aln_long_reads_assembly_bam_list.join(',')
+    println(assembly)
+    println(bam)
     """
     quast.py \\
         --output-dir ${prefix} \\
         --threads ${task.cpus} \\
         ${assembly} \\
-        --bam ${aln_long_reads_assembly_bam} \\
-        --large \\
+        --bam ${bam} \\
         ${args}
 
     ln -s ${prefix}/report.tsv ${prefix}_report.tsv
