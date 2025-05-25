@@ -60,7 +60,7 @@ workflow ASSEMBLY {
     }
 
     emit:
-    assemblies = ch_assemblies
+    primary_assembly = PECAT_ASSEMBLY.out.primary_assembly
     assembly_quast_reports
     assembly_busco_reports
 

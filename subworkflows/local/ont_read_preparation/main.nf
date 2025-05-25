@@ -4,7 +4,7 @@ include { CHOPPER                   } from '../../../modules/nf-core/chopper/mai
 workflow ONT_READ_PREPARATION {
 
     take:
-    ch_input
+    ch_reads
 
     main:
 
@@ -12,7 +12,7 @@ workflow ONT_READ_PREPARATION {
 
     if ( !params.skip_trimming ) {
         ch_customer_reads = Channel.value( [] )
-        PORECHOP_ABI( ch_input, ch_customer_reads )
+        PORECHOP_ABI( ch_reads, ch_customer_reads )
         PORECHOP_ABI.out.reads.set { ch_reads }
     }
 

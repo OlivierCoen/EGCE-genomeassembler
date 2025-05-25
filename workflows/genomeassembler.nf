@@ -9,6 +9,7 @@ include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_pr
 include { COMPUTE_KMERS                } from '../subworkflows/local/compute_kmers/main'
 include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
+include { ARIMA_HIC                    } from '../subworkflows/local/arima_hic/main'
 
 include { paramsSummaryMap             } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc         } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -28,16 +29,26 @@ workflow GENOMEASSEMBLER {
 
     main:
 
-    ONT_READ_PREPARATION ( ch_input )
-    ch_reads = ONT_READ_PREPARATION.out.prepared_reads
+    ch_input
+        .map { meta, reads, hic_fastq_1, hic_fastq_2 -> [ meta, reads ] }
+        .set { ch_reads }
+
+    ch_input
+        .map { meta, reads, hic_fastq_1, hic_fastq_2 -> [ meta, hic_fastq_1, hic_fastq_2 ] }
+        .set { ch_hic_reads }
+
+    if ( !params.skip_trimming || !params.skip_filtering ) {
+        ONT_READ_PREPARATION ( ch_reads )
+        ch_reads = ONT_READ_PREPARATION.out.prepared_reads
+    }
 
     ASSEMBLY ( ch_reads )
-    ch_assembly_fasta = ASSEMBLY.out.assembly_fasta
+    ch_assembly = ASSEMBLY.out.primary_assembly
 
     ch_haplotigs = Channel.empty()
     if ( !params.skip_purging ) {
         HAPLOTIG_CLEANING(
-            ch_assembly_fasta,
+            ch_assembly,
             ch_reads
         )
         ch_haplotigs = HAPLOTIG_CLEANING.out.haplotigs
