@@ -8,19 +8,109 @@
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "haplotype_1.fasta:md5,c122e83f6c3305ccbdeb2282c1b36925"
+                        "primary.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
                     ]
                 ],
                 "1": [
-                    
-                ],
-                "assembly_fasta": [
                     [
                         {
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "haplotype_1.fasta:md5,c122e83f6c3305ccbdeb2282c1b36925"
+                        "alternate.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "haplotype_1.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                    ]
+                ],
+                "3": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "haplotype_2.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "4": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_first_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "5": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "6": [
+                    
+                ],
+                "alternate_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "alternate.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "haplotype_1_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "haplotype_1.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                    ]
+                ],
+                "haplotype_2_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "haplotype_2.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "primary_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "primary.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                    ]
+                ],
+                "rest_first_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_first_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "rest_second_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
                 "versions": [
@@ -32,7 +122,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.2"
         },
-        "timestamp": "2025-05-21T18:03:09.331832759"
+        "timestamp": "2025-05-25T21:30:52.016192162"
     },
     "Normal data": {
         "content": [

@@ -22,7 +22,7 @@ nextflow_workflow {
                     input[1] = Channel.of(
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/primary.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/primary.fasta', checkIfExists: true)
                         ]
                     )
                     """
@@ -60,33 +60,33 @@ nextflow_workflow {
                     input[0] = Channel.of(
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/input/reads.fasta.gz', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/input/reads.small.fasta.gz', checkIfExists: true)
                         ]
                     )
                     input[1] = Channel.of(
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/primary.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/primary.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/alternate.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/alternate.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/haplotype_1.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/haplotype_1.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/haplotype_2.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/haplotype_2.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/rest_first_assembly.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/rest_first_assembly.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/rest_second_assembly.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/rest_second_assembly.fasta', checkIfExists: true)
                         ]
                     )
                     """
@@ -134,19 +134,19 @@ nextflow_workflow {
                     input[1] = Channel.of(
                         [
                             [ id: "test1", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/primary.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/primary.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test1", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/alternate.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/alternate.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test2", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/primary.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/primary.fasta', checkIfExists: true)
                         ],
                         [
                             [ id: "test2", genome_size: 1500000 ],
-                            file( '$projectDir/tests/test_data/pecat/output/normal/polish/alternate.fasta', checkIfExists: true)
+                            file( '$projectDir/tests/test_data/pecat/output/alternate.fasta', checkIfExists: true)
                         ]
                     )
                     """
