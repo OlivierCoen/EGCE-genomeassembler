@@ -1,2 +1,2 @@
 assembly,genomesize,reads
-test_assembly,1500000,tests/test_data/pecat/input/reads.fasta.gz
+test_assembly,1500000,tests/test_data/pecat/input/reads.small.fasta.gz
