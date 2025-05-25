@@ -14,7 +14,6 @@ workflow QC_QUAST {
         .map { meta, bam_list, ref_list -> [ meta, ref_list, bam_list ] } // inverting lists
         .set { quast_input }
 
-    quast_input.view { v -> "quast : " + v}
     QUAST( quast_input )
     QUAST.out.results.set { quast_results }
     QUAST.out.tsv.set { quast_tsv }

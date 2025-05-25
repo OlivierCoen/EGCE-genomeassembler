@@ -49,7 +49,6 @@ workflow ARIMA_HIC {
         .map { meta, file -> [ [ id: meta.sample ], file ] }
         .groupTuple()
         .map { meta, files -> [ meta, *files ] }
-        .view()
         .set { ch_filtered_bam }
 
     def mapq_filter = 10

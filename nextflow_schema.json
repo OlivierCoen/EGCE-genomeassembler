@@ -95,11 +95,13 @@
             "properties": {
                 "porechop_abi_args": {
                     "type": "string",
-                    "description": "Additional args for Porechop ABI"
+                    "description": "Additional args for Porechop ABI",
+                    "default": "--ab_initio"
                 },
                 "chopper_args": {
                     "type": "string",
-                    "description": "Additional args for Chopper"
+                    "description": "Additional args for Chopper",
+                    "default": "--quality 10 --minlength 1000"
                 }
             },
             "fa_icon": "fas fa-forward"
@@ -178,7 +180,7 @@
                 "busco_lineage": {
                     "type": "string",
                     "description": "Busco lineage to use",
-                    "default": "brassicales_odb10"
+                    "default": "eukaryota_odb10"
                 }
             }
         },
