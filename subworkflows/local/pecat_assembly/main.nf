@@ -11,8 +11,6 @@ workflow PECAT_ASSEMBLY {
 
     main:
 
-    ch_versions = Channel.empty()
-
     ch_pecat_config_file = Channel.fromPath ( params.pecat_config_file, checkIfExists: true )
 
     PECAT_CORRECT (
@@ -39,7 +37,7 @@ workflow PECAT_ASSEMBLY {
         ch_reads.join ( PECAT_SECOND_ASSEMBLY.out.results ),
         ch_pecat_config_file
     )
-
+    Channel.topic('versions').view()
     emit:
     primary_assembly     = PECAT_POLISH.out.primary_assembly
     alternate_assembly   = PECAT_POLISH.out.alternate_assembly
@@ -48,6 +46,5 @@ workflow PECAT_ASSEMBLY {
     rest_first_assembly  = PECAT_POLISH.out.rest_first_assembly
     rest_second_assembly = PECAT_POLISH.out.rest_second_assembly
 
-    versions = ch_versions                     // channel: [ versions.yml ]
 }
 

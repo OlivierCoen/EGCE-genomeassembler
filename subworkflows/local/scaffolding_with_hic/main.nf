@@ -25,9 +25,13 @@ workflow SCAFFOLDING_WITH_HIC {
 
     YAHS.out.scaffolds_fasta.view()
 
+    ch_versions = ch_versions
+                    .mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )
+                    .mix ( SAMTOOLS_FAIDX.out.versions )
+                    .mix ( YAHS.out.versions )
+
     emit:
-
-
+    scaffolds_fasta = YAHS.out.scaffolds_fasta
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

@@ -5,7 +5,7 @@ workflow QC_QUAST {
     ch_bam_ref // channel: [ val(meta), path(bam), path(ref), path(bai) ]
 
     main:
-    Channel.empty().set { versions }
+
     Channel.empty().set { quast_results }
     Channel.empty().set { quast_tsv }
 
@@ -17,9 +17,8 @@ workflow QC_QUAST {
     QUAST( quast_input )
     QUAST.out.results.set { quast_results }
     QUAST.out.tsv.set { quast_tsv }
-    QUAST.out.versions.set { versions }
 
     emit:
     quast_tsv
-    versions
+
 }

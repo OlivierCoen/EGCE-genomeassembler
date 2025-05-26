@@ -11,8 +11,9 @@ process ARIMA_FILTER_FIVE_END {
     tuple val(meta), path(bam)
 
     output:
-    tuple val(meta), path("*.filtered.bam"),         emit: bam
-    path "versions.yml",                             emit: versions
+    tuple val(meta), path("*.filtered.bam"),                                                                   emit: bam
+    tuple val("${task.process}"), val('perl'), val('5.32.1'),                                                  topic: versions
+    tuple val("${task.process}"), val('samtools'), eval('samtools --version | head -1 | awk "{print $2}"'),    topic: versions
 
     script:
     """
@@ -20,11 +21,5 @@ process ARIMA_FILTER_FIVE_END {
         | filter_five_end.pl \
         | samtools view -Sb - > ${bam.baseName}.filtered.bam
 
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        perl: 5.32.1
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 }

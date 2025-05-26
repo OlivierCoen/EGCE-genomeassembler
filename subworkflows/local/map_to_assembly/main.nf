@@ -7,8 +7,8 @@ workflow MAP_TO_ASSEMBLY {
     ch_genome_assembly
 
     main:
-    Channel.empty().set { ch_versions }
 
+    ch_versions = Channel.empty()
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
@@ -31,11 +31,10 @@ workflow MAP_TO_ASSEMBLY {
 
     BAM_STATS( aln_to_assembly_bam_ref_bai )
 
-    versions = ch_versions
-                .mix(ALIGN_BACK_TO_ASSEMBLY.out.versions)
-                .mix(BAM_STATS.out.versions)
+    ch_versions = ch_versions
+                    .mix(BAM_STATS.out.versions)
 
     emit:
     aln_to_assembly_bam_ref
-    versions
+    versions = ch_versions
 }

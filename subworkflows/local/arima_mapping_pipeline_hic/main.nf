@@ -44,7 +44,7 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
 
     ARIMA_FILTER_FIVE_END ( BWAMEM2_MEM.out.bam )
 
-    ARIMA_FILTER_FIVE_END.out.bamPICARD_MARKDUPLICATES.out.bam
+    ARIMA_FILTER_FIVE_END.out.bam
         .map { meta, file -> [ [ id: meta.sample ], file ] }
         .groupTuple()
         .map { meta, files -> [ meta, *files ] }
@@ -68,9 +68,16 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
         SAMTOOLS_INDEX.out.bai
     )
 
+    ch_versions = ch_versions
+                    .mix ( BWAMEM2_INDEX.out.versions )
+                    .mix ( BWAMEM2_INDEX.out.versions )
+                    .mix ( PICARD_ADDORREPLACEREADGROUPS.out.versions )
+                    .mix ( PICARD_MARKDUPLICATES.out.versions )
+                    .mix ( SAMTOOLS_INDEX.out.versions )
+
+
     emit:
     alignment = PICARD_MARKDUPLICATES.out.bam
-
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

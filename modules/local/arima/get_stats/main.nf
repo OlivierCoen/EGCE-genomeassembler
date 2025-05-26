@@ -12,8 +12,8 @@ process ARIMA_GET_STATS {
     tuple val(meta), path(index)
 
     output:
-    tuple val(meta), path("*.stats"),                emit: stats
-    path "versions.yml",                             emit: versions
+    tuple val(meta), path("*.stats"),                              emit: stats
+    tuple val("${task.process}"), val('perl'), val('5.32.1'),      topic: versions
 
     script:
 
@@ -21,9 +21,5 @@ process ARIMA_GET_STATS {
     """
     get_stats.pl $bam > ${bam}.stats
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        perl: 5.32.1
-    END_VERSIONS
     """
 }

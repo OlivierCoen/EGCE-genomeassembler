@@ -68,13 +68,17 @@ workflow HAPLOTIG_CLEANING {
 
     PURGEDUPS_GETSEQS ( ch_getseqs_input )
 
-    PURGEDUPS_GETSEQS.out.haplotigs.view()
-
+    ch_versions = ch_versions
+                    .mix ( MERYL_COUNT.out.versions )
+                    .mix ( PURGEDUPS_PBCSTAT.out.versions )
+                    .mix ( PURGEDUPS_CALCUTS.out.versions )
+                    .mix ( PURGEDUPS_SPLITFA.out.versions )
+                    .mix ( PURGEDUPS_PURGEDUPS.out.versions )
+                    .mix ( PURGEDUPS_GETSEQS.out.versions )
 
 
     emit:
     haplotigs = PURGEDUPS_GETSEQS.out.haplotigs
-
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

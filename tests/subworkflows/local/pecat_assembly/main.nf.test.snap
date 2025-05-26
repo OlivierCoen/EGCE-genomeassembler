@@ -8,7 +8,7 @@
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "primary.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                        "primary.fasta:md5,3f246bdaba930d61507b633500fce1d3"
                     ]
                 ],
                 "1": [
@@ -26,7 +26,7 @@
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "haplotype_1.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                        "haplotype_1.fasta:md5,3f246bdaba930d61507b633500fce1d3"
                     ]
                 ],
                 "3": [
@@ -56,9 +56,6 @@
                         "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
-                "6": [
-                    
-                ],
                 "alternate_assembly": [
                     [
                         {
@@ -74,7 +71,7 @@
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "haplotype_1.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                        "haplotype_1.fasta:md5,3f246bdaba930d61507b633500fce1d3"
                     ]
                 ],
                 "haplotype_2_assembly": [
@@ -92,7 +89,7 @@
                             "id": "test",
                             "genome_size": 1500000
                         },
-                        "primary.fasta:md5,1f56e67ed2b2325e7015ac578f81f3e2"
+                        "primary.fasta:md5,3f246bdaba930d61507b633500fce1d3"
                     ]
                 ],
                 "rest_first_assembly": [
@@ -112,9 +109,6 @@
                         },
                         "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
-                ],
-                "versions": [
-                    
                 ]
             }
         ],
@@ -122,7 +116,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.2"
         },
-        "timestamp": "2025-05-25T21:30:52.016192162"
+        "timestamp": "2025-05-26T16:03:14.338312622"
     },
     "Normal data": {
         "content": [

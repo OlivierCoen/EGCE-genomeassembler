@@ -11,8 +11,8 @@ process WINNOWMAP {
     tuple val(meta), path(repetitive_kmers), path(ref_fasta), path(ont_reads)
 
     output:
-    tuple val(meta), path("*.paf.gz"), emit: paf
-    path "versions.yml"              , emit: versions
+    tuple val(meta), path("*.paf.gz"),                                              emit: paf
+    tuple val("${task.process}"), val('winnowmap'), eval('winnowmap --version'),    topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -28,11 +28,6 @@ process WINNOWMAP {
          $ont_reads \
          | gzip -c - \
          > ${prefix}.paf.gz
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        winnowmap: \$(winnowmap --version)
-    END_VERSIONS
     """
 
     stub:
@@ -40,10 +35,5 @@ process WINNOWMAP {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """"
     touch ${prefix}.paf
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        winnowmap: \$(winnowmap --version)
-    END_VERSIONS
     """
 }

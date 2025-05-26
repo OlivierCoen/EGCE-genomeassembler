@@ -19,6 +19,6 @@ workflow COMPUTE_KMERS {
     emit:
     meryl_db = MERYL_COUNT.out.meryl_db
     repetitive_kmers = MERYL_PRINT.out.repetitive_kmers
-
+    versions = MERYL_COUNT.out.versions
 
 }

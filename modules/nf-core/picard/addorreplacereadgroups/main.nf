@@ -9,9 +9,13 @@ process PICARD_ADDORREPLACEREADGROUPS {
 
     input:
     tuple val(meta), path(reads)
+    tuple val(meta2), path(fasta)
+    tuple val(meta3), path(fasta_index)
 
     output:
-    tuple val(meta), path("*.bam") , emit: bam
+    tuple val(meta), path("*.bam") , emit: bam,  optional: true
+    tuple val(meta), path("*.bai") , emit: bai,  optional: true
+    tuple val(meta), path("*.cram"), emit: cram, optional: true
     path "versions.yml"            , emit: versions
 
     when:
@@ -21,12 +25,12 @@ process PICARD_ADDORREPLACEREADGROUPS {
     def args = task.ext.args        ?: ''
     def prefix = task.ext.prefix    ?: "${meta.id}"
     def suffix = task.ext.suffix    ?: "${reads.getExtension()}"
+    def reference = fasta ? "--REFERENCE_SEQUENCE ${fasta}" : ""
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard AddOrReplaceReadGroups] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
         avail_mem = (task.memory.mega*0.8).intValue()
-        println(avail_mem)
     }
 
     if ("$reads" == "${prefix}.${suffix}") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
@@ -36,13 +40,9 @@ process PICARD_ADDORREPLACEREADGROUPS {
         -Xmx${avail_mem}M \\
         AddOrReplaceReadGroups \\
         $args \\
+        $reference \\
         --INPUT ${reads} \\
-        --OUTPUT ${prefix}.${suffix} \\
-        -ID ${meta.id} \\
-        -LB ${meta.id} \\
-         -SM EXPERIMENT \\
-         -PL ILLUMINA \\
-         -PU none
+        --OUTPUT ${prefix}.${suffix}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -51,7 +51,7 @@ process PICARD_ADDORREPLACEREADGROUPS {
     """
 
     stub:
-    def prefix = task.ext.prefix    ?: "${meta.id}.replaced"
+    def prefix = task.ext.prefix    ?: "${meta.id}"
     def suffix = task.ext.suffix    ?: "${reads.getExtension()}"
     if ("$reads" == "${prefix}.${suffix}") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """

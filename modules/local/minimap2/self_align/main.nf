@@ -11,8 +11,8 @@ process MINIMAP2_SELF_ALIGNMENT {
     tuple val(meta), path(assembly_fasta)
 
     output:
-    tuple val(meta), path("*.paf.gz"), emit: paf
-    path "versions.yml"           , emit: versions
+    tuple val(meta), path("*.paf.gz"),                                          emit: paf
+    tuple val("${task.process}"), val('minimap2'), eval('minimap2 --version'),  topic: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -26,11 +26,6 @@ process MINIMAP2_SELF_ALIGNMENT {
         -DP ${assembly_fasta.baseName} ${assembly_fasta.baseName}.copy \
         | gzip -c - \
         > ${prefix}.self_aligned.paf.gz
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        minimap2: \$(minimap2 --version 2>&1)
-    END_VERSIONS
     """
 
     stub:
@@ -38,10 +33,5 @@ process MINIMAP2_SELF_ALIGNMENT {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.paf.gz
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        minimap2: \$(minimap2 --version 2>&1)
-    END_VERSIONS
     """
 }

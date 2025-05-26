@@ -5,7 +5,7 @@ workflow QC_BUSCO {
     assembly
 
     main:
-    Channel.empty().set { versions }
+
     Channel.empty().set { batch_summary }
     Channel.empty().set { short_summary_txt }
     Channel.empty().set { short_summary_json }

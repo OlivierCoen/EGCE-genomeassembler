@@ -17,6 +17,7 @@ workflow FLYE_ASSEMBLY {
             params.flye_mode
             )
         FLYE.out.fasta.set { ch_assembly_fasta }
+        ch_versions = ch_versions.mix ( FLYE.out.versions )
     }
 
     if ( !params.skip_polishing ) {
@@ -55,12 +56,15 @@ workflow FLYE_ASSEMBLY {
 
         MEDAKA ( ch_medaka_input )
         MEDAKA.out.assembly.set { ch_assembly_fasta }
+
+        ch_versions = ch_versions
+                        .mix ( PIGZ_UNCOMPRESS.out.versions )
+                        .mix ( MEDAKA.out.versions )
     }
 
 
     emit:
     assembly_fasta = ch_assembly_fasta
-
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

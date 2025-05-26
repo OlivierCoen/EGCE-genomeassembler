@@ -10,7 +10,7 @@ workflow ASSEMBLY {
     ch_reads
 
     main:
-
+    ch_versions = Channel.empty()
     assembly_quast_reports = Channel.empty()
     assembly_busco_reports = Channel.empty()
 
@@ -45,6 +45,7 @@ workflow ASSEMBLY {
     if ( !params.skip_quast ) {
 
         MAP_TO_ASSEMBLY( ch_reads, ch_assemblies )
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY.out.versions )
 
         QC_QUAST( MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref )
         QC_QUAST.out.quast_tsv.set { assembly_quast_reports }
@@ -57,11 +58,13 @@ workflow ASSEMBLY {
     if ( !params.skip_busco ) {
         QC_BUSCO( ch_assemblies )
         QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
+        ch_versions = ch_versions.mix ( QC_BUSCO.out.versions )
     }
 
     emit:
     primary_assembly = PECAT_ASSEMBLY.out.primary_assembly
     assembly_quast_reports
     assembly_busco_reports
+    versions = ch_versions                     // channel: [ versions.yml ]
 
 }

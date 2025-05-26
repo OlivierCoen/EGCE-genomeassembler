@@ -12,9 +12,10 @@ process QUAST {
 
 
    output:
-    path "${meta.id}*/*", emit: results
-    path "*report.tsv", emit: tsv
-    path "versions.yml", emit: versions
+    path "${meta.id}*/*",                                                                                       emit: results
+    path "*report.tsv",                                                                                         emit: tsv
+    tuple val("${task.process}"), val('quast'), eval('quast --version | grep "QUAST" | sed "s#QUAST ##g"'),     topic: versions
+
 
 
     script:
@@ -34,12 +35,6 @@ process QUAST {
         ${args}
 
     ln -s ${prefix}/report.tsv ${prefix}_report.tsv
-
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        quast: \$(quast.py --version 2>&1 | grep "QUAST" | sed 's/^.*QUAST v//; s/ .*\$//')
-    END_VERSIONS
     """
 
 }

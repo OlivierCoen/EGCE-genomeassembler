@@ -14,7 +14,8 @@ process ARIMA_TWO_BAM_COMBINER {
 
     output:
     tuple val(meta), path("*.combined.bam"),         emit: bam
-    path "versions.yml",                             emit: versions
+    tuple val("${task.process}"), val('perl'), val('5.32.1'),                                                  topic: versions
+    tuple val("${task.process}"), val('samtools'), eval('samtools --version | head -1 | awk "{print $2}"'),    topic: versions
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
@@ -23,10 +24,5 @@ process ARIMA_TWO_BAM_COMBINER {
         | samtools view -bS -t $reference_genome_index - \
         | samtools sort -@ ${task.cpus} -o ${prefix}.combined.bam -
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        perl: 5.32.1
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 }

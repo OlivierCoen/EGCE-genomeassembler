@@ -14,12 +14,14 @@ workflow ONT_READ_PREPARATION {
         ch_customer_reads = Channel.value( [] )
         PORECHOP_ABI( ch_reads, ch_customer_reads )
         PORECHOP_ABI.out.reads.set { ch_reads }
+        ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
     }
 
     if ( !params.skip_filtering ) {
         ch_contaminant_fasta = Channel.value( [] )
         CHOPPER( ch_reads, ch_contaminant_fasta )
         CHOPPER.out.fastq.set { ch_reads }
+        ch_versions = ch_versions.mix ( CHOPPER.out.versions )
     }
 
     emit:
