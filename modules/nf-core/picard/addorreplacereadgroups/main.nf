@@ -22,7 +22,7 @@ process PICARD_ADDORREPLACEREADGROUPS {
     def prefix = task.ext.prefix    ?: "${meta.id}"
     def suffix = task.ext.suffix    ?: "${reads.getExtension()}"
     def avail_mem = 3072
-    if (!task.memory || task.memory.mega == 0) {
+    if (!task.memory) {
         log.info '[Picard AddOrReplaceReadGroups] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
         avail_mem = (task.memory.mega*0.8).intValue()
