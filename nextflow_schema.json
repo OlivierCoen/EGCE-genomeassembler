@@ -130,7 +130,8 @@
                     "pattern": "^\\S+\\.txt$",
                     "description": "Pecat config file.",
                     "help_text": "An example file is available at tests/test_data/pecat/unzip/pecat_optional_config.txt",
-                    "fa_icon": "fas fa-file-csv"
+                    "fa_icon": "fas fa-file-csv",
+                    "default": "assets/pecat_configs/pecat_default_config.txt"
                 },
                 "flye_mode": {
                     "type": "string",

@@ -3,8 +3,8 @@ include { BWAMEM2_MEM                   } from '../../../modules/nf-core/bwamem2
 include { ARIMA_FILTER_FIVE_END         } from '../../../modules/local/arima/filter_five_end/main'
 include { ARIMA_TWO_BAM_COMBINER        } from '../../../modules/local/arima/two_bam_combiner/main'
 include { ARIMA_GET_STATS               } from '../../../modules/local/arima/get_stats/main'
-include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/local/picard/addorreplacereadgroups/main'
-include { PICARD_MARKDUPLICATES         } from '../../../modules/local/picard/markduplicates/main'
+include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/nf-core/picard/addorreplacereadgroups/main'
+include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/markduplicates/main'
 include { SAMTOOLS_FAIDX                } from '../../../modules/nf-core/samtools/faidx/main'
 include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index/main'
 

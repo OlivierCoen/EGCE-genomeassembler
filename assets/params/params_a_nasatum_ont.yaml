@@ -1,6 +1,6 @@
 # Assembly
 assembler: pecat
-pecat_config_file: assets/pecat_configs/pecat_test_config.txt
+pecat_config_file: assets/pecat_configs/pecat_default_config.txt
 
 # Trimming / Filtering
 porechop_abi_args: --ab_initio
