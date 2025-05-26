@@ -1,8 +1,8 @@
 nextflow_workflow {
 
-    name "Test Workflow ARIMA_HIC"
-    script "subworkflows/local/arima_hic/main.nf"
-    workflow "ARIMA_HIC"
+    name "Test Workflow ARIMA_MAPPING_PIPELINE_HIC"
+    script "subworkflows/local/arima_mapping_pipeline_hic/main.nf"
+    workflow "ARIMA_MAPPING_PIPELINE_HIC"
 
     test("Small reads") {
         tag "arima_small"

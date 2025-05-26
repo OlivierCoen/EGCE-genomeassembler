@@ -9,7 +9,7 @@ include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_pr
 include { COMPUTE_KMERS                } from '../subworkflows/local/compute_kmers/main'
 include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
-include { ARIMA_HIC                    } from '../subworkflows/local/arima_hic/main'
+include { ARIMA_MAPPING_PIPELINE_HIC   } from '../subworkflows/local/arima_mapping_pipeline_hic/main'
 
 include { paramsSummaryMap             } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc         } from '../subworkflows/nf-core/utils_nfcore_pipeline'

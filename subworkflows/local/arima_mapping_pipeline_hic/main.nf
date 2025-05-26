@@ -5,11 +5,10 @@ include { ARIMA_TWO_BAM_COMBINER        } from '../../../modules/local/arima/two
 include { ARIMA_GET_STATS               } from '../../../modules/local/arima/get_stats/main'
 include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/nf-core/picard/addorreplacereadgroups/main'
 include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/markduplicates/main'
-include { SAMTOOLS_FAIDX                } from '../../../modules/nf-core/samtools/faidx/main'
 include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index/main'
 
 
-workflow ARIMA_HIC {
+workflow ARIMA_MAPPING_PIPELINE_HIC {
 
     take:
     ch_hic_read_pairs
@@ -45,7 +44,7 @@ workflow ARIMA_HIC {
 
     ARIMA_FILTER_FIVE_END ( BWAMEM2_MEM.out.bam )
 
-    ARIMA_FILTER_FIVE_END.out.bam
+    ARIMA_FILTER_FIVE_END.out.bamPICARD_MARKDUPLICATES.out.bam
         .map { meta, file -> [ [ id: meta.sample ], file ] }
         .groupTuple()
         .map { meta, files -> [ meta, *files ] }
@@ -69,14 +68,8 @@ workflow ARIMA_HIC {
         SAMTOOLS_INDEX.out.bai
     )
 
-    ARIMA_GET_STATS.out.stats.view()
-
-
-
-
-
     emit:
-
+    alignment = PICARD_MARKDUPLICATES.out.bam
 
     versions = ch_versions                     // channel: [ versions.yml ]
 }
