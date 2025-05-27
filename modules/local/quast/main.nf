@@ -24,8 +24,7 @@ process QUAST {
 
     def assembly = assembly_list.join(' ')
     def bam = aln_long_reads_assembly_bam_list.join(',')
-    println(assembly)
-    println(bam)
+
     """
     quast.py \\
         --output-dir ${prefix} \\

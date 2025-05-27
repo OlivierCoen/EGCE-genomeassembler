@@ -20,7 +20,7 @@ workflow ONT_READ_PREPARATION {
     ch_reads
         .filter {
             meta, reads ->
-                reads.endsWith('.fastq') || reads.endsWith('.fastq.gz') || reads.endsWith('.fq') || reads.endsWith('.fq.gz')
+                reads.name.endsWith('.fastq') || reads.name.endsWith('.fastq.gz') || reads.name.endsWith('.fq') || reads.name.endsWith('.fq.gz')
         }
         .set { ch_fastq_reads }
 
