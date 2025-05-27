@@ -9,26 +9,13 @@ process PECAT_FIRST_ASSEMBLY {
         'ocoen/pecat:0.0.3' :
         'ocoen/pecat:0.0.3' }"
 
-    def local_script = "${workflow.projectDir}/bin/modified_pecat.pl"
-    def container_script = "/opt/conda/share/pecat-0.0.3-0/bin/modified_pecat.pl"
-
-    containerOptions = {
-        if (workflow.containerEngine in ['singularity', 'apptainer', 'charliecloud']) {
-            return "--bind ${local_script}:${container_script}"
-        } else { // docker, podman, shifter
-            return "--volume ${local_script}:${container_script}"
-        }
-    }
-
-
-
     input:
     tuple val(meta), path(reads), path(previous_results, name: "results.tar.gz")
     path pecat_config_file
 
     output:
-    tuple val(meta), path("results.tar.gz"),    emit: results
-    path "versions.yml",                        emit: versions
+    tuple val(meta), path("results.tar.gz"),                                                                                    emit: results
+    tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
 
 
     script:
@@ -77,13 +64,6 @@ process PECAT_FIRST_ASSEMBLY {
     sed -i "s#\$PWD#WORKDIR_TO_REPLACE#g" results/2-align/overlaps.txt
     tar zcf results.tar.gz results/
 
-    # ------------------------------------------------------
-    # PRINTING VERSIONS
-    # ------------------------------------------------------
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        pecat: \$(cat \$(which pecat.pl) | sed -n 's#.*/pecat-\\([0-9.]*\\)-.*#\\1#p')
-    END_VERSIONS
     """
 
 }

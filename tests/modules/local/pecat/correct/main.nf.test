@@ -1,0 +1,32 @@
+nextflow_process {
+
+    name "Test Process PECAT_CORRECT"
+    script "modules/local/pecat/correct/main.nf"
+    process "PECAT_CORRECT"
+    tag "pecat_correct"
+
+    test("Should run without failures") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/pecat/input/reads.small.fasta.gz', checkIfExists: true)
+                    ]
+                )
+                input[1] = Channel.fromPath( "${projectDir}/tests/test_data/pecat/input/pecat_optional_config.txt", checkIfExists: true )
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

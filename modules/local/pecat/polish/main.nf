@@ -9,31 +9,20 @@ process PECAT_POLISH {
         'ocoen/pecat_medaka:0.0.3-v1.7.2' :
         'ocoen/pecat_medaka:0.0.3-v1.7.2' }"
 
-    def local_script = "${workflow.projectDir}/bin/modified_pecat.pl"
-    def container_script = "/opt/conda/share/pecat-0.0.3-0/bin/modified_pecat.pl"
-
-    containerOptions = {
-        if (workflow.containerEngine in ['singularity', 'apptainer', 'charliecloud']) {
-            return "--bind ${local_script}:${container_script}"
-        } else { // docker, podman, shifter
-            return "--volume ${local_script}:${container_script}"
-        }
-    }
-
-
-
     input:
     tuple val(meta), path(reads), path(previous_results, name: "results.tar.gz")
     path pecat_config_file
 
     output:
-    tuple val(meta), path("results/6-polish/medaka/primary.fasta"),             emit: primary_assembly
-    tuple val(meta), path("results/6-polish/medaka/alternate.fasta"),           emit: alternate_assembly
-    tuple val(meta), path("results/6-polish/medaka/haplotype_1.fasta"),         emit: haplotype_1_assembly
-    tuple val(meta), path("results/6-polish/medaka/haplotype_2.fasta"),         emit: haplotype_2_assembly
-    tuple val(meta), path("results/3-assemble/rest_first_assembly.fasta"),      emit: rest_first_assembly
-    tuple val(meta), path("results/5-assemble/rest_second_assembly.fasta"),     emit: rest_second_assembly
-    path "versions.yml",                                                        emit: versions
+    tuple val(meta), path("results/6-polish/medaka/primary.fasta"),                                                             emit: primary_assembly
+    tuple val(meta), path("results/6-polish/medaka/alternate.fasta"),                                                           emit: alternate_assembly
+    tuple val(meta), path("results/6-polish/medaka/haplotype_1.fasta"),                                                         emit: haplotype_1_assembly
+    tuple val(meta), path("results/6-polish/medaka/haplotype_2.fasta"),                                                         emit: haplotype_2_assembly
+    tuple val(meta), path("results/3-assemble/rest_first_assembly.fasta"),                                                      emit: rest_first_assembly
+    tuple val(meta), path("results/5-assemble/rest_second_assembly.fasta"),                                                     emit: rest_second_assembly
+    tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
+    tuple val("${task.process}"), val('pecat'), eval('medaka --version | sed "s/medaka //g"'),                                  topic: versions
+
 
 
     script:
@@ -84,14 +73,6 @@ process PECAT_POLISH {
     mv results/3-assemble/rest.fasta results/3-assemble/rest_first_assembly.fasta
     mv results/5-assemble/rest.fasta results/5-assemble/rest_second_assembly.fasta
 
-    # ------------------------------------------------------
-    # PRINTING VERSIONS
-    # ------------------------------------------------------
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        pecat: \$(cat \$(which pecat.pl) | sed -n 's#.*/pecat-\\([0-9.]*\\)-.*#\\1#p')
-        medaka: \$(medaka --version | sed 's/medaka //g')
-    END_VERSIONS
     """
 
 }

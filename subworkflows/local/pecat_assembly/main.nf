@@ -37,7 +37,7 @@ workflow PECAT_ASSEMBLY {
         ch_reads.join ( PECAT_SECOND_ASSEMBLY.out.results ),
         ch_pecat_config_file
     )
-    Channel.topic('versions').view()
+
     emit:
     primary_assembly     = PECAT_POLISH.out.primary_assembly
     alternate_assembly   = PECAT_POLISH.out.alternate_assembly

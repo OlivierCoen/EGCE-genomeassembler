@@ -1,0 +1,38 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,b5f413d02b5487b53721fc8a568e83de"
+                    ]
+                ],
+                "1": [
+                    [
+                        "PECAT_CORRECT",
+                        "pecat",
+                        "0.0.3"
+                    ]
+                ],
+                "results": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "results.tar.gz:md5,b5f413d02b5487b53721fc8a568e83de"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-27T16:22:09.429644534"
+    }
+}
