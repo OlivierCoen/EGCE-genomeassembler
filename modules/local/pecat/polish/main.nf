@@ -4,13 +4,18 @@ process PECAT_POLISH {
 
     label "process_high_long"
 
-    conda "${projectDir}/deployment/pecat/spec-file.txt"
+    conda "${projectDir}/deployment/pecat_medaka/spec-file.txt"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ocoen/pecat_medaka:0.0.3-v1.7.2' :
         'ocoen/pecat_medaka:0.0.3-v1.7.2' }"
 
+    // copy the previous results
+    // so that we do not modify the previous step's output and its hash
+    // this allow resuming the pipeline
+    stageInMode 'copy'
+
     input:
-    tuple val(meta), path(reads), path(previous_results, name: "results.tar.gz")
+    tuple val(meta), path(reads), path(previous_results, name: "second_assembly_results.tar.gz")
     path pecat_config_file
 
     output:
@@ -49,18 +54,9 @@ process PECAT_POLISH {
     cat ${pecat_config_file} >> cfgfile
 
     # ------------------------------------------------------
-    # IN CASE WE DO NOT USE CONTAINERS, COPYING THE ALTERNATIVE SCRIPT TO THE LOCATION OF THE NATIVE pecat.pl script
-    # ------------------------------------------------------
-    echo "Container engine: ${workflow.containerEngine ?: 'none'}"
-    if [ "${workflow.containerEngine}" = "null" ]; then
-        bash ${workflow.projectDir}/bin/copy_modified_pecat_script.sh
-    fi
-
-    # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
     # ------------------------------------------------------
-    tar zxf results.tar.gz
-    rm results.tar.gz
+    tar zxf second_assembly_results.tar.gz
 
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE

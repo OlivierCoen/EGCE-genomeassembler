@@ -14,9 +14,8 @@ process PECAT_CORRECT {
     path pecat_config_file
 
     output:
-    tuple val(meta), path("results.tar.gz"),                                                                                    emit: results
+    tuple val(meta), path("correct_results.tar.gz"),                                                                                    emit: results
     tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
-
 
     script:
     """
@@ -39,14 +38,6 @@ process PECAT_CORRECT {
     cat ${pecat_config_file} >> cfgfile
 
     # ------------------------------------------------------
-    # IN CASE WE DO NOT USE CONTAINERS, COPYING THE ALTERNATIVE SCRIPT TO THE LOCATION OF THE NATIVE pecat.pl script
-    # ------------------------------------------------------
-    echo "Container engine: ${workflow.containerEngine ?: 'none'}"
-    if [ "${workflow.containerEngine}" = "null" ]; then
-        bash ${workflow.projectDir}/bin/copy_modified_pecat_script.sh
-    fi
-
-    # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
     # ------------------------------------------------------
     launch_modified_pecat_script.sh correct cfgfile
@@ -55,7 +46,7 @@ process PECAT_CORRECT {
     # ARCHIVING RESULT FOLDER
     # ------------------------------------------------------
     rm -rf results/scripts/
-    tar zcvf results.tar.gz results/
+    tar zcvf correct_results.tar.gz results/
     """
 
 }

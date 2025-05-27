@@ -9,12 +9,18 @@ process PECAT_FIRST_ASSEMBLY {
         'ocoen/pecat:0.0.3' :
         'ocoen/pecat:0.0.3' }"
 
+
+    // copy the previous results
+    // so that we do not modify the previous step's output and its hash
+    // this allow resuming the pipeline
+    stageInMode 'copy'
+
     input:
-    tuple val(meta), path(reads), path(previous_results, name: "results.tar.gz")
+    tuple val(meta), path(reads), path(previous_results, name: "correct_results.tar.gz")
     path pecat_config_file
 
     output:
-    tuple val(meta), path("results.tar.gz"),                                                                                    emit: results
+    tuple val(meta), path("first_assembly_results.tar.gz"),                                                                                    emit: results
     tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
 
 
@@ -39,18 +45,9 @@ process PECAT_FIRST_ASSEMBLY {
     cat ${pecat_config_file} >> cfgfile
 
     # ------------------------------------------------------
-    # IN CASE WE DO NOT USE CONTAINERS, COPYING THE ALTERNATIVE SCRIPT TO THE LOCATION OF THE NATIVE pecat.pl script
-    # ------------------------------------------------------
-    echo "Container engine: ${workflow.containerEngine ?: 'none'}"
-    if [ "${workflow.containerEngine}" = "null" ]; then
-        bash ${workflow.projectDir}/bin/copy_modified_pecat_script.sh
-    fi
-
-    # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
     # ------------------------------------------------------
-    tar zxf results.tar.gz
-    rm results.tar.gz
+    tar zxf correct_results.tar.gz
 
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
@@ -62,7 +59,7 @@ process PECAT_FIRST_ASSEMBLY {
     # ------------------------------------------------------
     rm -rf results/scripts/
     sed -i "s#\$PWD#WORKDIR_TO_REPLACE#g" results/2-align/overlaps.txt
-    tar zcf results.tar.gz results/
+    tar zcf first_assembly_results.tar.gz results/
 
     """
 
