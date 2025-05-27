@@ -49,6 +49,16 @@
             "description": "Skips specific steps",
             "default": "",
             "properties": {
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "description": "Skip FastQC step",
+                    "fa_icon": "fas fa-filter"
+                },
+                "skip_nanoq": {
+                    "type": "boolean",
+                    "description": "Skip NanoQ step",
+                    "fa_icon": "fas fa-filter"
+                },
                 "skip_filtering": {
                     "type": "boolean",
                     "description": "Skip the filtering step",
@@ -98,15 +108,11 @@
             "description": "Options controlling read trimming and filtering.",
             "default": "",
             "properties": {
-                "porechop_abi_args": {
+                "filtering_tool": {
                     "type": "string",
-                    "description": "Additional args for Porechop ABI",
-                    "default": "--ab_initio"
-                },
-                "chopper_args": {
-                    "type": "string",
-                    "description": "Additional args for Chopper",
-                    "default": "--quality 10 --minlength 1000"
+                    "description": "Quality control tool to use",
+                    "enum": ["chopper", "nanoq"],
+                    "default": "chopper"
                 }
             },
             "fa_icon": "fas fa-forward"

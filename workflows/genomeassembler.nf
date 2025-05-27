@@ -40,11 +40,9 @@ workflow GENOMEASSEMBLER {
         .map { meta, reads, hic_fastq_1, hic_fastq_2 -> [ meta, hic_fastq_1, hic_fastq_2 ] }
         .set { ch_hic_reads }
 
-    if ( !params.skip_trimming || !params.skip_filtering ) {
-        ONT_READ_PREPARATION ( ch_reads )
-        ch_reads = ONT_READ_PREPARATION.out.prepared_reads
-        ch_versions = ch_versions.mix ( ONT_READ_PREPARATION.out.versions )
-    }
+    ONT_READ_PREPARATION ( ch_reads )
+    ch_reads = ONT_READ_PREPARATION.out.prepared_reads
+    ch_versions = ch_versions.mix ( ONT_READ_PREPARATION.out.versions )
 
     ASSEMBLY ( ch_reads )
     ch_assembly = ASSEMBLY.out.primary_assembly
@@ -59,12 +57,13 @@ workflow GENOMEASSEMBLER {
         ch_haplotigs = HAPLOTIG_CLEANING.out.haplotigs
         ch_versions = ch_versions.mix ( HAPLOTIG_CLEANING.out.versions )
     }
-
+    /*
     if ( !params.skip_scaffolding_with_hic ) {
         SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assembly )
         ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
         ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
     }
+    */
 
     // ------------------------------------------------------------------------------------
     // VERSIONS
@@ -114,6 +113,12 @@ workflow GENOMEASSEMBLER {
                             .mix( ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml') )
                             .mix( ch_collated_versions )
                             .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )
+                            .mix( ONT_READ_PREPARATION.out.fastqc_raw_zip )
+                            .mix( ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip )
+                            .mix( ONT_READ_PREPARATION.out.porechop_logs )
+                            .mix( ONT_READ_PREPARATION.out.nanoq_stats )
+                            .mix( ASSEMBLY.out.assembly_quast_reports )
+                            .mix( ASSEMBLY.out.assembly_busco_reports )
 
     MULTIQC (
         ch_multiqc_files.collect(),
