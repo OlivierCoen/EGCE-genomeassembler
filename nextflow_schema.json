@@ -74,6 +74,11 @@
                     "description": "Skip the haplotig purging step",
                     "fa_icon": "fas fa-hand-scissors"
                 },
+                "skip_scaffolding_with_hic": {
+                    "type": "boolean",
+                    "description": "Skip the scaffolding with Hi-C step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
                 "skip_busco": {
                     "type": "boolean",
                     "description": "Skip the Busco analyses",

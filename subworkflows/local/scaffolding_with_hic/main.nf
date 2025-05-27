@@ -15,7 +15,11 @@ workflow SCAFFOLDING_WITH_HIC {
 
     ARIMA_MAPPING_PIPELINE_HIC ( ch_hic_read_pairs, ch_reference_genome_fasta )
 
-    SAMTOOLS_FAIDX ( ch_reference_genome_fasta )
+    def get_sizes = false
+    SAMTOOLS_FAIDX (
+        ch_reference_genome_fasta,
+        get_sizes
+    )
 
     YAHS (
         ARIMA_MAPPING_PIPELINE_HIC.out.alignment,

@@ -9,7 +9,7 @@ include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_pr
 include { COMPUTE_KMERS                } from '../subworkflows/local/compute_kmers/main'
 include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
-include { ARIMA_MAPPING_PIPELINE_HIC   } from '../subworkflows/local/arima_mapping_pipeline_hic/main'
+include { SCAFFOLDING_WITH_HIC         } from '../subworkflows/local/scaffolding_with_hic/main'
 
 include { paramsSummaryMap             } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc         } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -60,6 +60,12 @@ workflow GENOMEASSEMBLER {
         ch_versions = ch_versions.mix ( HAPLOTIG_CLEANING.out.versions )
     }
 
+    if ( !params.skip_scaffolding_with_hic ) {
+        SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assembly )
+        ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
+        ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
+    }
+
     // ------------------------------------------------------------------------------------
     // VERSIONS
     // ------------------------------------------------------------------------------------
@@ -84,11 +90,45 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
     // MULTIQC
     // ------------------------------------------------------------------------------------
+
+    ch_multiqc_config = Channel.fromPath( "$projectDir/assets/multiqc_config.yml", checkIfExists: true )
+
+    summary_params = paramsSummaryMap( workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary = Channel.value( paramsSummaryMultiqc(summary_params) )
+
+    ch_multiqc_custom_config = params.multiqc_config ?
+                                    Channel.fromPath(params.multiqc_config, checkIfExists: true) :
+                                    Channel.empty()
+
+    ch_multiqc_logo = params.multiqc_logo ?
+                        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+                        Channel.empty()
+
+    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
+                                                file(params.multiqc_methods_description, checkIfExists: true) :
+                                                file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+
+    ch_methods_description = Channel.value( methodsDescriptionText(ch_multiqc_custom_methods_description) )
+
     ch_multiqc_files = Channel.empty()
+                            .mix( ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml') )
+                            .mix( ch_collated_versions )
+                            .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )
 
-
+    MULTIQC (
+        ch_multiqc_files.collect(),
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList(),
+        [],
+        []
+    )
 
     emit:
+        multiqc_report = MULTIQC.out.report.toList()
+
+    emit:
+    assembly = ch_assembly
     multiqc_report = ch_multiqc_files
 
 
