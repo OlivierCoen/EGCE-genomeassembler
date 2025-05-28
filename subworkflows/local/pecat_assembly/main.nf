@@ -1,3 +1,4 @@
+include { PECAT_SPLIT_CONFIGS        } from '../../../modules/local/pecat/split_configs/main'
 include { PECAT_CORRECT              } from '../../../modules/local/pecat/correct/main'
 include { PECAT_FIRST_ASSEMBLY       } from '../../../modules/local/pecat/first_assembly/main'
 include { PECAT_PHASE                } from '../../../modules/local/pecat/phase/main'
@@ -12,30 +13,31 @@ workflow PECAT_ASSEMBLY {
     main:
 
     ch_pecat_config_file = Channel.fromPath ( params.pecat_config_file, checkIfExists: true )
+    PECAT_SPLIT_CONFIGS ( ch_pecat_config_file )
 
     PECAT_CORRECT (
         ch_reads,
-        ch_pecat_config_file
+        PECAT_SPLIT_CONFIGS.out.correct.first()
     )
 
     PECAT_FIRST_ASSEMBLY (
         ch_reads.join ( PECAT_CORRECT.out.results ),
-        ch_pecat_config_file
+        PECAT_SPLIT_CONFIGS.out.first_assembly.first()
     )
 
     PECAT_PHASE (
         ch_reads.join ( PECAT_FIRST_ASSEMBLY.out.results ),
-        ch_pecat_config_file
+        PECAT_SPLIT_CONFIGS.out.phase.first()
     )
 
     PECAT_SECOND_ASSEMBLY (
         ch_reads.join ( PECAT_PHASE.out.results ),
-        ch_pecat_config_file
+        PECAT_SPLIT_CONFIGS.out.second_assembly.first()
     )
 
     PECAT_POLISH (
         ch_reads.join ( PECAT_SECOND_ASSEMBLY.out.results ),
-        ch_pecat_config_file
+        PECAT_SPLIT_CONFIGS.out.polish.first()
     )
 
     emit:
