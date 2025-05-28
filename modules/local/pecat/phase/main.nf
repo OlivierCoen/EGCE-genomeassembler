@@ -28,25 +28,15 @@ process PECAT_PHASE {
     script:
     """
     # ------------------------------------------------------
-    # WRITING THE BASE CONFIGURATION IN THE CONFIG FILE
+    # BUILDING PECAT CONFIG
     # ------------------------------------------------------
-    cat <<EOF > cfgfile
-    project=results
-    reads=${reads}
-    genome_size=${meta.genome_size}
-    threads=${task.cpus}
-    cleanup=1
-    grid=local
-
-    phase_clair3_options=--platform=ont --model_path=\$(dirname \$(which run_clair3.sh))/models/ont_guppy5/  --include_all_ctgs
-    phase_clair3_command = run_clair3.sh
-
-    EOF
-
-    # ------------------------------------------------------
-    # WRITING THE USER-DEFINED PARAMETERS IN THE CONFIG FILE
-    # ------------------------------------------------------
-    cat ${pecat_config_file} >> cfgfile
+    build_pecat_config.py \
+        --step phase \
+        --config ${pecat_config_file} \
+        --reads ${reads} \
+        --cpus ${task.cpus} \
+        --genome-size ${meta.genome_size} \
+        --model-path \$(dirname \$(which run_clair3.sh))/models/ont_guppy5/
 
     # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
@@ -57,7 +47,7 @@ process PECAT_PHASE {
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
     # ------------------------------------------------------
-    launch_modified_pecat_script.sh phase cfgfile
+    launch_modified_pecat.sh phase cfgfile
 
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER

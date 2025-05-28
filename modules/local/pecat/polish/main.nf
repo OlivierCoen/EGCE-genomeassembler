@@ -21,8 +21,8 @@ process PECAT_POLISH {
     output:
     tuple val(meta), path("results/6-polish/medaka/primary.fasta"),                                                             emit: primary_assembly
     tuple val(meta), path("results/6-polish/medaka/alternate.fasta"),                                                           emit: alternate_assembly
-    tuple val(meta), path("results/6-polish/medaka/haplotype_1.fasta"),                                                         emit: haplotype_1_assembly
-    tuple val(meta), path("results/6-polish/medaka/haplotype_2.fasta"),                                                         emit: haplotype_2_assembly
+    tuple val(meta), path("results/6-polish/medaka/haplotype_1.fasta"), optional: true,                                         emit: haplotype_1_assembly
+    tuple val(meta), path("results/6-polish/medaka/haplotype_2.fasta"), optional: true,                                         emit: haplotype_2_assembly
     tuple val(meta), path("results/3-assemble/rest_first_assembly.fasta"),                                                      emit: rest_first_assembly
     tuple val(meta), path("results/5-assemble/rest_second_assembly.fasta"),                                                     emit: rest_second_assembly
     tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
@@ -33,25 +33,14 @@ process PECAT_POLISH {
     script:
     """
     # ------------------------------------------------------
-    # WRITING THE BASE CONFIGURATION IN THE CONFIG FILE
+    # BUILDING PECAT CONFIG
     # ------------------------------------------------------
-    cat <<EOF > cfgfile
-    project=results
-    reads=${reads}
-    genome_size=${meta.genome_size}
-    threads=${task.cpus}
-    cleanup=1
-    grid=local
-
-    polish_medaka = 1
-    polish_medaka_command = medaka
-
-    EOF
-
-    # ------------------------------------------------------
-    # WRITING THE USER-DEFINED PARAMETERS IN THE CONFIG FILE
-    # ------------------------------------------------------
-    cat ${pecat_config_file} >> cfgfile
+    build_pecat_config.py \
+        --step polish \
+        --config ${pecat_config_file} \
+        --reads ${reads} \
+        --cpus ${task.cpus} \
+        --genome-size ${meta.genome_size}
 
     # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
@@ -61,7 +50,7 @@ process PECAT_POLISH {
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
     # ------------------------------------------------------
-    launch_modified_pecat_script.sh polish cfgfile
+    launch_modified_pecat.sh polish cfgfile
 
     # ------------------------------------------------------
     # RENAMING SOME FILES

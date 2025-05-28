@@ -14,33 +14,25 @@ process PECAT_CORRECT {
     path pecat_config_file
 
     output:
-    tuple val(meta), path("correct_results.tar.gz"),                                                                                    emit: results
+    tuple val(meta), path("correct_results.tar.gz"),                                                                            emit: results
     tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
 
     script:
     """
     # ------------------------------------------------------
-    # WRITING THE BASE CONFIGURATION IN THE CONFIG FILE
+    # BUILDING PECAT CONFIG
     # ------------------------------------------------------
-    cat <<EOF > cfgfile
-    project=results
-    reads=${reads}
-    genome_size=${meta.genome_size}
-    threads=${task.cpus}
-    cleanup=1
-    grid=local
-
-    EOF
-
-    # ------------------------------------------------------
-    # WRITING THE USER-DEFINED PARAMETERS IN THE CONFIG FILE
-    # ------------------------------------------------------
-    cat ${pecat_config_file} >> cfgfile
+    build_pecat_config.py \
+        --step correct \
+        --config ${pecat_config_file} \
+        --reads ${reads} \
+        --cpus ${task.cpus} \
+        --genome-size ${meta.genome_size}
 
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
     # ------------------------------------------------------
-    launch_modified_pecat_script.sh correct cfgfile
+    launch_modified_pecat.sh correct cfgfile
 
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER

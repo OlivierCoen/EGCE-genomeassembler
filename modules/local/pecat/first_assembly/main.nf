@@ -27,22 +27,14 @@ process PECAT_FIRST_ASSEMBLY {
     script:
     """
     # ------------------------------------------------------
-    # WRITING THE BASE CONFIGURATION IN THE CONFIG FILE
+    # BUILDING PECAT CONFIG
     # ------------------------------------------------------
-    cat <<EOF > cfgfile
-    project=results
-    reads=${reads}
-    genome_size=${meta.genome_size}
-    threads=${task.cpus}
-    cleanup=1
-    grid=local
-
-    EOF
-
-    # ------------------------------------------------------
-    # WRITING THE USER-DEFINED PARAMETERS IN THE CONFIG FILE
-    # ------------------------------------------------------
-    cat ${pecat_config_file} >> cfgfile
+    build_pecat_config.py \
+        --step first_assembly \
+        --config ${pecat_config_file} \
+        --reads ${reads} \
+        --cpus ${task.cpus} \
+        --genome-size ${meta.genome_size}
 
     # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
@@ -52,7 +44,7 @@ process PECAT_FIRST_ASSEMBLY {
     # ------------------------------------------------------
     # RUNNING PECAT PIPELINE
     # ------------------------------------------------------
-    launch_modified_pecat_script.sh first_assembly cfgfile
+    launch_modified_pecat.sh first_assembly cfgfile
 
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER
