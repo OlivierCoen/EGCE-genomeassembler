@@ -98,6 +98,11 @@
                     "type": "boolean",
                     "description": "Skip the Quast analyses",
                     "fa_icon": "fas fa-check-circle"
+                },
+                "skip_merqury": {
+                    "type": "boolean",
+                    "description": "Skip the Merqury analyses",
+                    "fa_icon": "fas fa-check-circle"
                 }
             },
             "fa_icon": "fas fa-forward"

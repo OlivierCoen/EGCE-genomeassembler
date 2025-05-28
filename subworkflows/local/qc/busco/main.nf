@@ -2,7 +2,7 @@ include { BUSCO_BUSCO as BUSCO } from '../../../../modules/nf-core/busco/busco/m
 
 workflow QC_BUSCO {
     take:
-    assembly
+    ch_assemblies
 
     main:
 
@@ -13,7 +13,7 @@ workflow QC_BUSCO {
     def busco_config_file = []
     def clean_intermediates = false
     BUSCO(
-        assembly,
+        ch_assemblies,
         'genome',
         params.busco_lineage,
         params.busco_db ? file(params.busco_db, checkIfExists: true) : [],

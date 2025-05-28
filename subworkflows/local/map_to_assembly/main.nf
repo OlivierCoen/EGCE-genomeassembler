@@ -1,5 +1,5 @@
-include { MINIMAP2_ALIGN as ALIGN_BACK_TO_ASSEMBLY } from '../../../modules/local/minimap2/align/main'
-include { BAM_STATS_SAMTOOLS as BAM_STATS } from '../../local/bam_stats_samtools/main'
+include { MINIMAP2_ALIGN as ALIGN_BACK_TO_ASSEMBLY   } from '../../../modules/local/minimap2/align/main'
+include { BAM_STATS_SAMTOOLS as BAM_STATS            } from '../../local/bam_stats_samtools/main'
 
 workflow MAP_TO_ASSEMBLY {
     take:
