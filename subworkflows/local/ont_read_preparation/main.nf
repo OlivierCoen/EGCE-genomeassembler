@@ -2,7 +2,7 @@ include { PORECHOP_ABI                       } from '../../../modules/nf-core/po
 include { CHOPPER                            } from '../../../modules/nf-core/chopper/main'
 include { FASTQC as FASTQC_RAW               } from '../../../modules/local/fastqc/main'
 include { FASTQC as FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc/main'
-include { NANOQ                              } from '../../../modules/nf-core/nanoq/main'
+include { NANOQ                              } from '../../../modules/local/nanoq/main'
 
 workflow ONT_READ_PREPARATION {
 
@@ -24,6 +24,9 @@ workflow ONT_READ_PREPARATION {
         }
         .set { ch_fastq_reads }
 
+    // ---------------------------------------------------------------------
+    // Quality control on raw reads
+    // ---------------------------------------------------------------------
 
     if ( !params.skip_fastqc ) {
         FASTQC_RAW ( ch_fastq_reads )
@@ -31,12 +34,13 @@ workflow ONT_READ_PREPARATION {
     }
 
     if ( !params.skip_nanoq ) {
-        NANOQ( ch_fastq_reads, 'fastq' )
+        NANOQ( ch_fastq_reads )
         NANOQ.out.stats.set { ch_nanoq_stats }
-        ch_fastqc_raw_zip  = FASTQC_RAW.out.zip
-        ch_versions = ch_versions.mix ( NANOQ.out.versions )
     }
 
+    // ---------------------------------------------------------------------
+    // Trimming / filtering
+    // ---------------------------------------------------------------------
 
     if ( !params.skip_trimming ) {
         PORECHOP_ABI( ch_reads, [] )
@@ -50,6 +54,10 @@ workflow ONT_READ_PREPARATION {
         CHOPPER.out.fastq.set { ch_reads }
         ch_versions = ch_versions.mix ( CHOPPER.out.versions )
     }
+
+    // ---------------------------------------------------------------------
+    // Quality control on trimmed / filtered reads
+    // ---------------------------------------------------------------------
 
     if ( !params.skip_fastqc && ( !params.skip_trimming || !params.skip_filtering ) ) {
         FASTQC_PREPARED_READS ( ch_reads )

@@ -27,10 +27,12 @@ workflow ASSEMBLY {
             Channel.fromPath(params.assembly_fasta, checkIfExists: true)
                     .map {
                         fasta_file ->
-                            def meta = [ id: fasta_file.getBaseName() ]
+                            def meta = [
+                                id: fasta_file.getBaseName(),
+                                genome_size: params.genome_size
+                            ]
                             [ meta, fasta_file ]
                     }
-                    .set { primary_assembly }
                     .set { ch_assemblies }
         }
 
@@ -39,17 +41,15 @@ workflow ASSEMBLY {
         if ( params.assembler == "flye" ) {
 
             FLYE( ch_reads, params.flye_mode )
-            FLYE.out.fasta
-                .tap { primary_assembly }
-                .set { ch_assemblies }
+            FLYE.out.fasta.set { ch_assemblies }
             ch_versions = ch_versions.mix ( FLYE.out.versions )
 
         } else { //pecat
 
             PECAT_ASSEMBLY ( ch_reads )
 
-            PECAT_ASSEMBLY.out.primary_assembly
-                .tap { primary_assembly }
+            Channel.emtpy()
+                .concat( PECAT_ASSEMBLY.out.primary_assembly )
                 .concat( PECAT_ASSEMBLY.out.alternate_assembly )
                 .concat( PECAT_ASSEMBLY.out.haplotype_1_assembly )
                 .concat( PECAT_ASSEMBLY.out.haplotype_2_assembly )
@@ -82,10 +82,14 @@ workflow ASSEMBLY {
     ch_versions = ch_versions.mix ( QC_ASSEMBLIES.out.versions )
 
     emit:
-    primary_assembly
+    assemblies = ch_assemblies
     assembly_quast_reports = QC_ASSEMBLIES.out.assembly_quast_reports
     assembly_busco_reports = QC_ASSEMBLIES.out.assembly_busco_reports
     assembly_merqury_reports = QC_ASSEMBLIES.out.assembly_merqury_reports
     versions = ch_versions                     // channel: [ versions.yml ]
 
+}
+
+def addPecatAssemblyType( ch_assembly ) {
+    return ch_assembly.map { meta, assembly -> [ meta + [ type: assembly.simpleName ], assembly ] }
 }

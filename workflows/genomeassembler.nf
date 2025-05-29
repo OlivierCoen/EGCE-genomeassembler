@@ -40,13 +40,25 @@ workflow GENOMEASSEMBLER {
         .map { meta, reads, hic_fastq_1, hic_fastq_2 -> [ meta, hic_fastq_1, hic_fastq_2 ] }
         .set { ch_hic_reads }
 
+    // ------------------------------------------------------------------------------------
+    // READ PREPARATION
+    // ------------------------------------------------------------------------------------
+
     ONT_READ_PREPARATION ( ch_reads )
     ch_reads = ONT_READ_PREPARATION.out.prepared_reads
     ch_versions = ch_versions.mix ( ONT_READ_PREPARATION.out.versions )
 
+    // ------------------------------------------------------------------------------------
+    // ASSEMBLY
+    // ------------------------------------------------------------------------------------
+
     ASSEMBLY ( ch_reads )
-    ch_assembly = ASSEMBLY.out.primary_assembly
+    ASSEMBLY.out.assemblies.set { ch_assembly }
     ch_versions = ch_versions.mix ( ASSEMBLY.out.versions )
+
+    // ------------------------------------------------------------------------------------
+    // HAPLOTIG CLEANING
+    // ------------------------------------------------------------------------------------
 
     ch_haplotigs = Channel.empty()
     if ( !params.skip_purging ) {
@@ -55,8 +67,14 @@ workflow GENOMEASSEMBLER {
             ch_reads
         )
         ch_haplotigs = HAPLOTIG_CLEANING.out.haplotigs
+
         ch_versions = ch_versions.mix ( HAPLOTIG_CLEANING.out.versions )
     }
+
+    // ------------------------------------------------------------------------------------
+    // SCAFFOLDING WITH HIC
+    // ------------------------------------------------------------------------------------
+
     /*
     if ( !params.skip_scaffolding_with_hic ) {
         SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assembly )

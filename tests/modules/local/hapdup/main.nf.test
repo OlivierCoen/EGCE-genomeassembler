@@ -1,0 +1,31 @@
+nextflow_process {
+
+    name "Test Process HAPDUP"
+    script "modules/local/hapdup/main.nf"
+    process "HAPDUP"
+    tag "hapdup"
+
+    test("Should run without failures") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/pecat/output/primary.fasta', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

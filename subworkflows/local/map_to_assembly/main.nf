@@ -1,4 +1,4 @@
-include { MINIMAP2_ALIGN as ALIGN_BACK_TO_ASSEMBLY   } from '../../../modules/local/minimap2/align/main'
+include { MINIMAP2_ALIGN as ALIGN                    } from '../../../modules/local/minimap2/align/main'
 include { BAM_STATS_SAMTOOLS as BAM_STATS            } from '../../local/bam_stats_samtools/main'
 
 workflow MAP_TO_ASSEMBLY {
@@ -16,10 +16,11 @@ workflow MAP_TO_ASSEMBLY {
         .combine( ch_genome_assembly, by: 0 )  // cartesian product with meta as matching key
         .set { align_input }
 
-    ALIGN_BACK_TO_ASSEMBLY( align_input )
+    def bam_format = true
+    ALIGN( align_input, bam_format )
 
-    ALIGN_BACK_TO_ASSEMBLY.out.bam.set { aln_to_assembly_bam_ref }
-    ALIGN_BACK_TO_ASSEMBLY.out.index.set { aln_to_assembly_bai }
+    ALIGN.out.bam.set { aln_to_assembly_bam_ref }
+    ALIGN.out.index.set { aln_to_assembly_bai }
 
     // ---------------------------------------------------
     // BAM stats
