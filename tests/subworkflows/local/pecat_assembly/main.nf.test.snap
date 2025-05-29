@@ -94,6 +94,101 @@
         },
         "timestamp": "2025-05-28T14:20:02.642015914"
     },
+    "Very small data": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "primary.fasta:md5,aaa829e766ed39a323d2ac0e144f9215"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "alternate.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    
+                ],
+                "3": [
+                    
+                ],
+                "4": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_first_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "5": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "alternate_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "alternate.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "haplotype_1_assembly": [
+                    
+                ],
+                "haplotype_2_assembly": [
+                    
+                ],
+                "primary_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "primary.fasta:md5,aaa829e766ed39a323d2ac0e144f9215"
+                    ]
+                ],
+                "rest_first_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_first_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "rest_second_assembly": [
+                    [
+                        {
+                            "id": "test",
+                            "genome_size": 1500000
+                        },
+                        "rest_second_assembly.fasta:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-05-29T02:11:39.578292961"
+    },
     "Normal data": {
         "content": [
             {

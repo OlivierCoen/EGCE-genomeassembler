@@ -13,7 +13,7 @@ process QUAST {
 
    output:
     path "${meta.id}*/*",                                                                                       emit: results
-    path "*report.tsv",                                                                                         emit: tsv
+    path "*_quast_report.tsv",                                                                                  emit: tsv
     tuple val("${task.process}"), val('quast'), eval('quast --version | grep "QUAST" | sed "s#QUAST ##g"'),     topic: versions
 
 
@@ -33,7 +33,7 @@ process QUAST {
         --bam ${bam} \\
         ${args}
 
-    ln -s ${prefix}/report.tsv ${prefix}_report.tsv
+    ln -s ${prefix}/report.tsv ${prefix}_quast_report.tsv
     """
 
 }

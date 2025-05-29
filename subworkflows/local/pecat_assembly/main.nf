@@ -15,28 +15,59 @@ workflow PECAT_ASSEMBLY {
     ch_pecat_config_file = Channel.fromPath ( params.pecat_config_file, checkIfExists: true )
     PECAT_SPLIT_CONFIGS ( ch_pecat_config_file )
 
+    // --------------------------------------------------------
+    // CORRECT
+    // --------------------------------------------------------
     PECAT_CORRECT (
         ch_reads,
         PECAT_SPLIT_CONFIGS.out.correct.first()
     )
 
+    // --------------------------------------------------------
+    // FIRST ASSEMBLY
+    // --------------------------------------------------------
+    ch_reads
+        .join ( PECAT_CORRECT.out.results )
+        .set { pecat_first_assembly_input }
+
     PECAT_FIRST_ASSEMBLY (
-        ch_reads.join ( PECAT_CORRECT.out.results ),
+        pecat_first_assembly_input,
         PECAT_SPLIT_CONFIGS.out.first_assembly.first()
     )
 
+    // --------------------------------------------------------
+    // PHASE
+    // --------------------------------------------------------
+    pecat_first_assembly_input
+        .join ( PECAT_FIRST_ASSEMBLY.out.results )
+        .set { pecat_phase_input }
+
     PECAT_PHASE (
-        ch_reads.join ( PECAT_FIRST_ASSEMBLY.out.results ),
+        pecat_phase_input,
         PECAT_SPLIT_CONFIGS.out.phase.first()
     )
 
+    // --------------------------------------------------------
+    // SECOND ASSEMBLY
+    // --------------------------------------------------------
+    pecat_phase_input
+        .join ( PECAT_PHASE.out.results )
+        .set { pecat_second_assembly_input }
+
     PECAT_SECOND_ASSEMBLY (
-        ch_reads.join ( PECAT_PHASE.out.results ),
+        pecat_second_assembly_input,
         PECAT_SPLIT_CONFIGS.out.second_assembly.first()
     )
 
+    // --------------------------------------------------------
+    // POLISH
+    // --------------------------------------------------------
+    pecat_second_assembly_input
+        .join ( PECAT_SECOND_ASSEMBLY.out.results )
+        .set { pecat_polish_input }
+
     PECAT_POLISH (
-        ch_reads.join ( PECAT_SECOND_ASSEMBLY.out.results ),
+        pecat_polish_input,
         PECAT_SPLIT_CONFIGS.out.polish.first()
     )
 

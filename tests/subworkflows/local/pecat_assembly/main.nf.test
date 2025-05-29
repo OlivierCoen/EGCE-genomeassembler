@@ -6,6 +6,35 @@ nextflow_workflow {
     tag "pecat_assembly"
 
     test("Small data") {
+        tag "pecat_assembly_small"
+
+        when {
+
+            params {
+                pecat_config_file = "${projectDir}/tests/test_data/pecat/input/pecat_optional_config.txt"
+            }
+
+            workflow {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/pecat/input/reads.small.fasta.gz', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert snapshot(workflow.out).match()
+        }
+
+    }
+
+    test("Very small data") {
+        tag "pecat_assembly_very_small"
 
         when {
 

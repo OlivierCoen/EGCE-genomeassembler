@@ -15,7 +15,7 @@ process PECAT_PHASE {
     stageInMode 'copy'
 
     input:
-    tuple val(meta), path(reads), path(previous_results, name: "first_assembly_results.tar.gz")
+    tuple val(meta), path(reads), path("correct_results.tar.gz"), path("first_assembly_results.tar.gz")
     path pecat_config_file
 
     output:
@@ -42,6 +42,7 @@ process PECAT_PHASE {
     # DECOMPRESSING PREVIOUS RESULT FOLDER
     # ------------------------------------------------------
     tar zxf first_assembly_results.tar.gz
+    tar zxf correct_results.tar.gz
     sed -i "s#WORKDIR_TO_REPLACE#\$PWD#g" results/2-align/overlaps.txt
 
     # ------------------------------------------------------
@@ -52,8 +53,9 @@ process PECAT_PHASE {
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER
     # ------------------------------------------------------
-    rm -rf results/scripts/
+    rm -rf results/scripts/ results/0-prepare results/1-correct results/2-align
     tar zcf phase_results.tar.gz results/
+    rm -rf results/
     """
 
 }

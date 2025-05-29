@@ -15,7 +15,7 @@ process PECAT_SECOND_ASSEMBLY {
     stageInMode 'copy'
 
     input:
-    tuple val(meta), path(reads), path(previous_results, name: "phase_results.tar.gz")
+    tuple val(meta), path(reads), path("correct_results.tar.gz"), path("first_assembly_results.tar.gz"), path("phase_results.tar.gz")
     path pecat_config_file
 
     output:
@@ -38,6 +38,8 @@ process PECAT_SECOND_ASSEMBLY {
     # ------------------------------------------------------
     # DECOMPRESSING PREVIOUS RESULT FOLDER
     # ------------------------------------------------------
+    tar zxf first_assembly_results.tar.gz
+    tar zxf correct_results.tar.gz
     tar zxf phase_results.tar.gz
 
     # ------------------------------------------------------
@@ -48,9 +50,9 @@ process PECAT_SECOND_ASSEMBLY {
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER
     # ------------------------------------------------------
-    rm -rf results/scripts/
+    rm -rf results/scripts/ results/0-prepare results/1-correct results/2-align results/3-assemble results/4-phase
     tar zcf second_assembly_results.tar.gz results/
-
+    rm -rf results/
     """
 
 }

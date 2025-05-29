@@ -39,6 +39,7 @@ process PECAT_CORRECT {
     # ------------------------------------------------------
     rm -rf results/scripts/
     tar zcvf correct_results.tar.gz results/
+    rm -rf results/
     """
 
 }

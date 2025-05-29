@@ -109,16 +109,19 @@ workflow GENOMEASSEMBLER {
 
     ch_methods_description = Channel.value( methodsDescriptionText(ch_multiqc_custom_methods_description) )
 
+    // Adding metadata to MultiQC
     ch_multiqc_files = Channel.empty()
                             .mix( ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml') )
                             .mix( ch_collated_versions )
                             .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )
-                            .mix( ONT_READ_PREPARATION.out.fastqc_raw_zip )
-                            .mix( ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip )
-                            .mix( ONT_READ_PREPARATION.out.porechop_logs )
-                            .mix( ONT_READ_PREPARATION.out.nanoq_stats )
-                            .mix( ASSEMBLY.out.assembly_quast_reports )
-                            .mix( ASSEMBLY.out.assembly_busco_reports )
+    // Adding data to MultiQC
+    ch_multiqc_files = ch_multiqc_files
+                        .mix( ONT_READ_PREPARATION.out.fastqc_raw_zip.map { meta, zip -> [ zip ] } )
+                        .mix( ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip.map { meta, zip -> [ zip ] } )
+                        .mix( ONT_READ_PREPARATION.out.porechop_logs.map { meta, logs -> [ logs ] } )
+                        .mix( ONT_READ_PREPARATION.out.nanoq_stats.map { meta, stats -> [ stats ] } )
+                        .mix( ASSEMBLY.out.assembly_quast_reports )
+                        .mix( ASSEMBLY.out.assembly_busco_reports.map { meta, report -> [ report ] } )
 
     MULTIQC (
         ch_multiqc_files.collect(),

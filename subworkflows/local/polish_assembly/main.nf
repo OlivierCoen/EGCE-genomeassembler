@@ -1,4 +1,5 @@
-include { MEDAKA                       } from '../../../modules/local/medaka/main'
+include { MEDAKA              } from '../../../modules/local/medaka/main'
+include { RACON               } from '../../../modules/nf-core/racon/main'
 
 workflow POLISH_ASSEMBLY {
 

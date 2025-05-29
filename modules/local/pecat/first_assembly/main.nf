@@ -16,15 +16,16 @@ process PECAT_FIRST_ASSEMBLY {
     stageInMode 'copy'
 
     input:
-    tuple val(meta), path(reads), path(previous_results, name: "correct_results.tar.gz")
+    tuple val(meta), path(reads), path(previous_results, stageAs: "*")
     path pecat_config_file
 
     output:
-    tuple val(meta), path("first_assembly_results.tar.gz"),                                                                                    emit: results
+    tuple val(meta), path("first_assembly_results.tar.gz"),                                                                      emit: results
     tuple val("${task.process}"), val('pecat'), eval('cat \$(which pecat.pl) | sed -n "s#.*/pecat-\\([0-9.]*\\)-.*#\\1#p"'),    topic: versions
 
 
     script:
+    println previous_results
     """
     # ------------------------------------------------------
     # BUILDING PECAT CONFIG
@@ -49,10 +50,10 @@ process PECAT_FIRST_ASSEMBLY {
     # ------------------------------------------------------
     # ARCHIVING RESULT FOLDER
     # ------------------------------------------------------
-    rm -rf results/scripts/
+    rm -rf results/scripts/ results/0-prepare results/1-correct
     sed -i "s#\$PWD#WORKDIR_TO_REPLACE#g" results/2-align/overlaps.txt
     tar zcf first_assembly_results.tar.gz results/
-
+    rm -rf results/
     """
 
 }
