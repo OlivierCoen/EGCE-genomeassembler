@@ -69,7 +69,6 @@ workflow ASSEMBLY {
          if ( !params.skip_polishing ) {
             POLISH_ASSEMBLY ( ch_reads, ch_assemblies )
             POLISH_ASSEMBLY.out.assemblies.set { ch_assemblies }
-            ch_versions = ch_versions.mix ( POLISH_ASSEMBLY.out.versions )
          }
 
     }
