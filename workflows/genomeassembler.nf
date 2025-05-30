@@ -8,6 +8,7 @@ include { MULTIQC                      } from '../modules/nf-core/multiqc/main'
 include { ONT_READ_PREPARATION         } from '../subworkflows/local/ont_read_preparation/main'
 include { COMPUTE_KMERS                } from '../subworkflows/local/compute_kmers/main'
 include { ASSEMBLY                     } from '../subworkflows/local/assembly/main'
+include { HAPLOTYPE_PHASING            } from '../subworkflows/local/haplotype_phasing/main'
 include { HAPLOTIG_CLEANING            } from '../subworkflows/local/haplotig_cleaning/main'
 include { SCAFFOLDING_WITH_HIC         } from '../subworkflows/local/scaffolding_with_hic/main'
 
@@ -55,6 +56,12 @@ workflow GENOMEASSEMBLER {
     ASSEMBLY ( ch_reads )
     ASSEMBLY.out.assemblies.set { ch_assembly }
     ch_versions = ch_versions.mix ( ASSEMBLY.out.versions )
+
+    // ------------------------------------------------------------------------------------
+    // HAPLOTYPE PHASING
+    // ------------------------------------------------------------------------------------
+
+    HAPLOTYPE_PHASING ( ch_reads, ch_assembly )
 
     // ------------------------------------------------------------------------------------
     // HAPLOTIG CLEANING
@@ -136,9 +143,7 @@ workflow GENOMEASSEMBLER {
     ch_multiqc_files = ch_multiqc_files
                         .mix( ONT_READ_PREPARATION.out.fastqc_raw_zip.map { meta, zip -> [ zip ] } )
                         .mix( ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip.map { meta, zip -> [ zip ] } )
-                        .mix( ONT_READ_PREPARATION.out.porechop_logs.map { meta, logs -> [ logs ] } )
                         .mix( ONT_READ_PREPARATION.out.nanoq_stats.map { meta, stats -> [ stats ] } )
-                        .mix( ASSEMBLY.out.assembly_quast_reports )
                         .mix( ASSEMBLY.out.assembly_busco_reports.map { meta, report -> [ report ] } )
 
     MULTIQC (

@@ -10,10 +10,14 @@ workflow QC_BUSCO {
     Channel.empty().set { short_summary_txt }
     Channel.empty().set { short_summary_json }
 
+    ch_assemblies
+        .groupTuple() // one run of BUSCO per meta
+        .set { busco_input }
+
     def busco_config_file = []
     def clean_intermediates = false
     BUSCO(
-        ch_assemblies,
+        busco_input,
         'genome',
         params.busco_lineage,
         params.busco_db ? file(params.busco_db, checkIfExists: true) : [],

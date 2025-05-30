@@ -67,8 +67,9 @@ workflow ASSEMBLY {
     if ( params.assembler == "flye" ) {
 
          if ( !params.skip_polishing ) {
-            POLISH_ASSEMBLY ( ch_reads, ch_assemblies )
-            POLISH_ASSEMBLY.out.assemblies.set { ch_assemblies }
+             POLISH_ASSEMBLY ( ch_reads, ch_assemblies )
+             POLISH_ASSEMBLY.out.assemblies.set { ch_assemblies }
+             POLISH_ASSEMBLY.out.polished_assembly_versions.set { ch_polished_assembly_versions }
          }
 
     }
@@ -77,7 +78,7 @@ workflow ASSEMBLY {
     // Quality Control
     // --------------------------------------------------------
 
-    QC_ASSEMBLIES ( ch_reads, ch_assemblies )
+    QC_ASSEMBLIES ( ch_reads, ch_polished_assembly_versions )
     ch_versions = ch_versions.mix ( QC_ASSEMBLIES.out.versions )
 
     emit:

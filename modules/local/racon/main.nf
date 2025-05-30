@@ -21,7 +21,7 @@ process RACON {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}_round_${round}"
-    println task.ext.prefix
+
     """
     racon -t "$task.cpus" \\
         "${reads}" \\

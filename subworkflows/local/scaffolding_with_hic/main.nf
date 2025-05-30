@@ -1,5 +1,5 @@
-include { ARIMA_MAPPING_PIPELINE_HIC    }  from '../arima_mapping_pipeline_hic/main'
-include { SAMTOOLS_FAIDX                } from '../../../modules/nf-core/samtools/faidx/main'
+include { ARIMA_MAPPING_PIPELINE_HIC    } from '../arima_mapping_pipeline_hic/main'
+include { SAMTOOLS_FAIDX                } from '../../../modules/local/samtools/faidx/main'
 include { YAHS                          } from '../../../modules/nf-core/yahs/main'
 
 
@@ -15,11 +15,7 @@ workflow SCAFFOLDING_WITH_HIC {
 
     ARIMA_MAPPING_PIPELINE_HIC ( ch_hic_read_pairs, ch_reference_genome_fasta )
 
-    def get_sizes = false
-    SAMTOOLS_FAIDX (
-        ch_reference_genome_fasta,
-        get_sizes
-    )
+    SAMTOOLS_FAIDX ( ch_reference_genome_fasta )
 
     YAHS (
         ARIMA_MAPPING_PIPELINE_HIC.out.alignment,

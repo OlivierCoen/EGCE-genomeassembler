@@ -16,7 +16,7 @@ process MEDAKA {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}_medaka"
     """
     zcat $reads > reads.fastq
     zcat $assembly > assembly.fasta

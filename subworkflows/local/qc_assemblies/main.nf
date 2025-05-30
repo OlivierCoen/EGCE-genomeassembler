@@ -34,7 +34,7 @@ workflow QC_ASSEMBLIES {
     */
     if ( !params.skip_busco ) {
         QC_BUSCO( ch_assemblies )
-        QC_BUSCO.out.short_summary_txt.set { assembly_busco_reports }
+        QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
         ch_versions = ch_versions.mix ( QC_BUSCO.out.versions )
     }
 
