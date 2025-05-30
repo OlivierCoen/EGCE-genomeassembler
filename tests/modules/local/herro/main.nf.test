@@ -1,0 +1,31 @@
+nextflow_process {
+
+    name "Test Process HERRO_INFERENCE"
+    script "modules/local/herro/inference/main.nf"
+    process "HERRO_INFERENCE"
+    tag "herro"
+
+    test("Should run without failures") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/A_nas_rebasecalled.head.fastq.gz', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

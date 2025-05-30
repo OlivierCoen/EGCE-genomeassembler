@@ -3,7 +3,7 @@ process PECAT_SPLIT_CONFIGS {
     tag "${pecat_config_file.name}"
     label "process_low"
 
-    conda "${projectDir}/deployment/pecat/spec-file.txt"
+    conda "${projectDir}/deployment/pecat/pecat/spec-file.txt"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ocoen/pecat:0.0.3' :
         'ocoen/pecat:0.0.3' }"

@@ -4,7 +4,7 @@ process PECAT_CORRECT {
 
     label "process_high_long"
 
-    conda "${projectDir}/deployment/pecat/spec-file.txt"
+    conda "${projectDir}/deployment/pecat/pecat/spec-file.txt"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'ocoen/pecat:0.0.3' :
         'ocoen/pecat:0.0.3' }"
