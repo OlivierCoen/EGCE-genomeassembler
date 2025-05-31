@@ -1,0 +1,2 @@
+assembly,genomesize,reads,hic_fastq_1,hic_fastq_2
+test_fastq,1500000,tests/test_data/A_nas_rebasecalled.head_50000.fastq.gz,tests/test_data/hic_anasatum/R1.fastq.gz,tests/test_data/hic_anasatum/R2.fastq.gz

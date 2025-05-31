@@ -4,9 +4,9 @@ include { PURGEDUPS_PBCSTAT            } from '../../../modules/nf-core/purgedup
 include { PURGEDUPS_GETSEQS            } from '../../../modules/nf-core/purgedups/getseqs/main'
 include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa/main'
 include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align/main'
-include { WINNOWMAP                    } from '../../../modules/local/winnowmap/main'
-include { MERYL_COUNT                  } from '../../../modules/nf-core/meryl/count/main'
-include { MERYL_PRINT                  } from '../../../modules/local/meryl/print/main'
+
+include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
+include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
 
 workflow HAPLOTIG_CLEANING {
 
@@ -18,26 +18,22 @@ workflow HAPLOTIG_CLEANING {
 
     ch_versions = Channel.empty()
 
-    MERYL_COUNT(
-        ch_assembly_fasta,
-        params.meryl_k_value
-    )
-    MERYL_PRINT( MERYL_COUNT.out.meryl_db )
+    def bam_format = true
+    if ( params.mapper == 'winnowmap' ) {
+        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+    } else {
+        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_MINIMAP2.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+    }
 
-    // Grouping by meta and giving to Winnowmap
-    MERYL_PRINT.out.repetitive_kmers
-        .concat( ch_assembly_fasta )
-        .concat( ch_ont_reads )
-        .groupTuple()
-        .map {
-            meta, list ->
-                [ meta, *list ]
-        }
-        .set { ch_winnowmap_input }
+    ch_paf_ref
+        .map { meta, paf, ref -> [ meta, paf ] }
+        .set { ch_paf }
 
-    WINNOWMAP ( ch_winnowmap_input )
-
-    PURGEDUPS_PBCSTAT( WINNOWMAP.out.paf )
+    PURGEDUPS_PBCSTAT( ch_paf )
     PURGEDUPS_CALCUTS( PURGEDUPS_PBCSTAT.out.stat )
 
     PURGEDUPS_SPLITFA ( ch_assembly_fasta )
@@ -69,7 +65,6 @@ workflow HAPLOTIG_CLEANING {
     PURGEDUPS_GETSEQS ( ch_getseqs_input )
 
     ch_versions = ch_versions
-                    .mix ( MERYL_COUNT.out.versions )
                     .mix ( PURGEDUPS_PBCSTAT.out.versions )
                     .mix ( PURGEDUPS_CALCUTS.out.versions )
                     .mix ( PURGEDUPS_SPLITFA.out.versions )

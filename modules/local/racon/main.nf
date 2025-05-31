@@ -1,5 +1,5 @@
 process RACON {
-    tag "$meta.id"
+    tag "${meta.id}::${assembly.baseName}"
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"

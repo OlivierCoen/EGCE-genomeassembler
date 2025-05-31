@@ -1,5 +1,5 @@
 include { MERQURY_MERQURY as MERQURY } from '../../../../modules/nf-core/merqury/merqury/main'
-include { MERYL_COUNT                } from '../../../../modules/nf-core/meryl/count/main'
+include { MERYL_COUNT                } from '../../../../modules/local/meryl/count/main'
 
 workflow QC_MERQURY {
     take:
@@ -22,7 +22,6 @@ workflow QC_MERQURY {
     MERQURY( merqury_in )
 
     ch_versions = ch_versions
-                    .mix( MERYL_COUNT.out.versions )
                     .mix( MERQURY.out.versions )
 
     emit:

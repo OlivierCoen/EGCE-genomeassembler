@@ -19,11 +19,13 @@ process WHATSAPP_SPLIT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}_happlotagged"
     """
+    zcat $haplotag_list > haplo_list.txt
+
     whatshap split \\
         --output-h1 ${prefix}_h1.fastq.gz \\
         --output-h2 ${prefix}_h2.fastq.gz \\
         ${reads} \\
-        ${haplotag_list}
+        haplo_list.txt
 
     """
 

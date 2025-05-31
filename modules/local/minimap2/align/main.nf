@@ -1,5 +1,5 @@
 process MINIMAP2_ALIGN {
-    tag "${meta.id}"
+    tag "${reads.simpleName} on ${reference.simpleName}"
     label 'process_high'
 
     // Note: the versions here need to match the versions used in the mulled container below and minimap2/index
@@ -13,8 +13,8 @@ process MINIMAP2_ALIGN {
     val bam_format
 
     output:
-    tuple val(meta), path("*.bam"), path(reference),                                      optional: true,   emit: bam
-    tuple val(meta), path("*.paf.gz"), path(reference),                                   optional: true,   emit: paf
+    tuple val(meta), path("*.bam"), path(reference),                                      optional: true,   emit: bam_ref
+    tuple val(meta), path("*.paf.gz"), path(reference),                                   optional: true,   emit: paf_ref
     tuple val(meta), path("*.bai"),                                                       optional: true,   emit: index
     tuple val("${task.process}"), val('minimap2'), eval('minimap2 --version'),                              topic: versions
     tuple val("${task.process}"), val('samtools'), eval('samtools --version | head -1 | awk "{print $2}"'), topic: versions

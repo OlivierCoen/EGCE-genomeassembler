@@ -1,4 +1,4 @@
-include { MERYL_COUNT                  } from '../../../modules/nf-core/meryl/count/main'
+include { MERYL_COUNT                  } from '../../../modules/local/meryl/count/main'
 include { MERYL_PRINT                  } from '../../../modules/local/meryl/print/main'
 
 workflow COMPUTE_KMERS {

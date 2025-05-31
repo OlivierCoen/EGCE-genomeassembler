@@ -1,5 +1,5 @@
 process MERYL_PRINT {
-    tag "$meta.id"
+    tag "${meryl_db.baseName}"
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -18,9 +18,9 @@ process MERYL_PRINT {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    meryl print \
-        $args \
-        $meryl_db \
+    meryl print \\
+        $args \\
+        $meryl_db \\
         > ${prefix}.repetitive_kmers.txt
     """
 

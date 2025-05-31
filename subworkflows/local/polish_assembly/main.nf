@@ -14,10 +14,14 @@ workflow POLISH_ASSEMBLY {
 
     main:
 
+    ch_versions = Channel.empty()
+
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
+
     ch_polished_assembly_versions = Channel.empty()
+    ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
     if ( params.nb_racon_rounds > 0 ) {
         RACON_POLISH_ROUND_1 ( ch_reads, ch_assemblies, 1 )
@@ -61,6 +65,7 @@ workflow POLISH_ASSEMBLY {
     emit:
     assemblies = ch_assemblies
     polished_assembly_versions = ch_polished_assembly_versions
+    versions = ch_versions                     // channel: [ versions.yml ]
 
 }
 

@@ -28,7 +28,8 @@ process CLAIR3 {
       --threads ${task.cpus} \\
       --platform ont \\
       --output clair3_output/ \\
-      --model_path \$(dirname \$(which run_clair3.sh))/models/${model}/
+      --model_path \$(dirname \$(which run_clair3.sh))/models/${model}/ \\
+      --include_all_ctgs
 
     """
 

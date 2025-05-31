@@ -79,6 +79,11 @@
                     "description": "Skip the polishing step",
                     "fa_icon": "fas fa-hand-scissors"
                 },
+                "skip_phasing": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig phasing step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
                 "skip_purging": {
                     "type": "boolean",
                     "description": "Skip the haplotig purging step",
@@ -107,6 +112,24 @@
             },
             "fa_icon": "fas fa-forward"
         },
+        "general_options": {
+            "title": "General options",
+            "type": "object",
+            "default": "",
+            "properties": {
+                "meryl_k_value": {
+                    "type": "number",
+                    "description": "K-mer value for meryl counting",
+                    "default": 15
+                },
+                "mapper": {
+                    "type": "string",
+                    "description": "Mapper used",
+                    "enum": ["winnowmap", "minimap2"],
+                    "default": "winnowmap"
+                }
+            }
+        },
         "read_preparation_options": {
             "title": "Read preparation options",
             "type": "object",
@@ -116,7 +139,7 @@
                 "filtering_tool": {
                     "type": "string",
                     "description": "Quality control tool to use",
-                    "enum": ["chopper", "nanoq"],
+                    "enum": ["chopper", "seqkit_seq"],
                     "default": "chopper"
                 }
             },
@@ -132,7 +155,7 @@
                     "type": "string",
                     "description": "Assembler to use",
                     "enum": ["pecat", "flye"],
-                    "default": "pecat"
+                    "default": "flye"
                 },
                 "genome_size": {
                     "type": "integer",
@@ -157,7 +180,7 @@
                 },
                 "flye_args": {
                     "type": "string",
-                    "description": "additional args for flye"
+                    "description": "Additional args for flye"
                 },
                 "nb_racon_rounds": {
                     "type": "number",
@@ -177,19 +200,6 @@
                 }
             },
             "fa_icon": "fas fa-forward"
-        },
-        "heplotig_cleaning_options": {
-            "title": "Haplotig cleaning options",
-            "type": "object",
-            "description": "Options for cleaning of haplotig duplications",
-            "default": "",
-            "properties": {
-                "meryl_k_value": {
-                    "type": "number",
-                    "description": "K-mer value for meryl counting",
-                    "default": 15
-                }
-            }
         },
         "qc_options": {
             "title": "QC options",
@@ -355,13 +365,16 @@
             "$ref": "#/$defs/steps"
         },
         {
+            "$ref": "#/$defs/general_options"
+        },
+        {
             "$ref": "#/$defs/read_preparation_options"
         },
         {
             "$ref": "#/$defs/assembly_options"
         },
         {
-            "$ref": "#/$defs/heplotig_cleaning_options"
+            "$ref": "#/$defs/qc_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"

@@ -82,11 +82,11 @@ workflow ASSEMBLY {
     ch_versions = ch_versions.mix ( QC_ASSEMBLIES.out.versions )
 
     emit:
-    assemblies = ch_assemblies
-    assembly_quast_reports = QC_ASSEMBLIES.out.assembly_quast_reports
-    assembly_busco_reports = QC_ASSEMBLIES.out.assembly_busco_reports
+    assemblies               = ch_assemblies
+    assembly_quast_reports   = QC_ASSEMBLIES.out.assembly_quast_reports
+    assembly_busco_reports   = QC_ASSEMBLIES.out.assembly_busco_reports
     assembly_merqury_reports = QC_ASSEMBLIES.out.assembly_merqury_reports
-    versions = ch_versions                     // channel: [ versions.yml ]
+    versions                 = ch_versions                     // channel: [ versions.yml ]
 
 }
 

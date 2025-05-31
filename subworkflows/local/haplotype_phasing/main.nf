@@ -1,4 +1,6 @@
-include { MINIMAP2_ALIGN as ALIGN      } from '../../../modules/local/minimap2/align/main'
+include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
+include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
+
 include { CLAIR3                       } from '../../../modules/local/clair3/main'
 include { WHATSAPP_HAPLOTAG            } from '../../../modules/local/whatshap/haplotag/main'
 include { WHATSAPP_SPLIT               } from '../../../modules/local/whatshap/split/main'
@@ -19,16 +21,18 @@ workflow HAPLOTYPE_PHASING {
     // --------------------------------------------------------
     // ALIGNING READS TO REFERENCE
     // --------------------------------------------------------
+     def bam_format = true
+     if ( params.mapper == 'winnowmap' ) {
+        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+    } else {
+        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_MINIMAP2.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+    }
 
-    ch_reads
-        .join( ch_assemblies )
-        .set { align_input }
-
-    def bam_format = true
-    ALIGN ( align_input, bam_format )
-
-    // [ meta, bam, reference ]
-    ALIGN.out.bam
+    ch_bam_ref
         .map { meta, bam, fasta -> [ meta, bam ] }
         .set { ch_alignment }
 
@@ -44,8 +48,10 @@ workflow HAPLOTYPE_PHASING {
     // CALLING VARIANTS
     // --------------------------------------------------------
 
+    SAMTOOLS_INDEX.out.bai.set { ch_alignement_index }
+
     ch_alignment
-        .join( SAMTOOLS_INDEX.out.bai )
+        .join( ch_alignement_index )
         .join( ch_assemblies )
         .join( SAMTOOLS_FAIDX.out.fai )
         .set { clair_input }
@@ -57,14 +63,15 @@ workflow HAPLOTYPE_PHASING {
     // PHASING
     // --------------------------------------------------------
 
+    WHATSAPP_STATS ( ch_variants )
+
     ch_alignment
+        .join( ch_alignement_index )
         .join( ch_variants )
         .join( ch_variants_index )
         .join( ch_assemblies )
         .join( SAMTOOLS_FAIDX.out.fai )
         .set { whatshap_haplotag_input }
-
-    WHATSAPP_STATS ( ch_variants )
 
     WHATSAPP_HAPLOTAG ( whatshap_haplotag_input )
 

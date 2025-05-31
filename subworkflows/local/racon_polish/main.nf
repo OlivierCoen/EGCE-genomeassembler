@@ -1,5 +1,6 @@
-include { MINIMAP2_ALIGN as ALIGN      } from '../../../modules/local/minimap2/align/main'
-include { RACON                        } from '../../../modules/local/racon/main'
+include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
+include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
+include { RACON                         } from '../../../modules/local/racon/main'
 
 workflow RACON_POLISH {
 
@@ -10,19 +11,29 @@ workflow RACON_POLISH {
 
     main:
 
+    ch_versions = Channel.empty()
+
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
 
-    ch_reads
-        .combine( ch_assemblies, by: 0 )  // cartesian product with meta as matching key
-        .set { align_input }
-
     def bam_format = false
-    ALIGN ( align_input, bam_format )
+    if ( params.mapper == 'winnowmap' ) {
+        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+    } else {
+        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_MINIMAP2.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+    }
+
+    // ---------------------------------------------------
+    // Polishing
+    // ---------------------------------------------------
 
     ch_reads
-        .join( ALIGN.out.paf )
+        .join( ch_paf_ref )
         .map { meta, reads, paf, assembly -> [ meta, reads, assembly, paf ] } // reorder
         .set { racon_input }
 
@@ -31,5 +42,6 @@ workflow RACON_POLISH {
 
     emit:
     assemblies = RACON.out.improved_assembly
+    versions = ch_versions                     // channel: [ versions.yml ]
 }
 

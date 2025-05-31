@@ -60,8 +60,9 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
     // HAPLOTYPE PHASING
     // ------------------------------------------------------------------------------------
-
-    HAPLOTYPE_PHASING ( ch_reads, ch_assembly )
+    if ( !params.skip_phasing ) {
+        HAPLOTYPE_PHASING ( ch_reads, ch_assembly )
+    }
 
     // ------------------------------------------------------------------------------------
     // HAPLOTIG CLEANING

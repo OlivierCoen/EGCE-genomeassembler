@@ -1,8 +1,10 @@
 include { PORECHOP_ABI                       } from '../../../modules/nf-core/porechop/abi/main'
 include { CHOPPER                            } from '../../../modules/nf-core/chopper/main'
+include { SEQKIT_SEQ                         } from '../../../modules/nf-core/seqkit/seq/main'
 include { FASTQC as FASTQC_RAW               } from '../../../modules/local/fastqc/main'
 include { FASTQC as FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc/main'
 include { NANOQ                              } from '../../../modules/local/nanoq/main'
+
 
 workflow ONT_READ_PREPARATION {
 
@@ -50,9 +52,16 @@ workflow ONT_READ_PREPARATION {
     }
 
     if ( !params.skip_filtering ) {
-        CHOPPER( ch_reads, [] )
-        CHOPPER.out.fastq.set { ch_reads }
-        ch_versions = ch_versions.mix ( CHOPPER.out.versions )
+
+        if ( params.filtering_tool == "chopper" ) {
+            CHOPPER( ch_reads, [] )
+            CHOPPER.out.fastq.set { ch_reads }
+            ch_versions = ch_versions.mix ( CHOPPER.out.versions )
+        } else { // seqkit seq
+            SEQKIT_SEQ( ch_reads )
+            SEQKIT_SEQ.out.fastx.set { ch_reads }
+            ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
+        }
     }
 
     // ---------------------------------------------------------------------
