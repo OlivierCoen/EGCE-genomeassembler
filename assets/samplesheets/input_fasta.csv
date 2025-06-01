@@ -1,2 +1,2 @@
-assembly,genomesize,reads,hic_fastq_1,hic_fastq_2
+name,genome_size,reads,hic_fastq_1,hic_fastq_2
 test_fasta,1500000,tests/test_data/pecat/input/reads.small.fasta.gz,tests/test_data/hic_anasatum/R1.fastq.gz,tests/test_data/hic_anasatum/R2.fastq.gz

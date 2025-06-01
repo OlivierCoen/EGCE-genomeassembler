@@ -13,9 +13,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { GENOMEASSEMBLER  } from './workflows/genomeassembler'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_genomeassembler_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_genomeassembler_pipeline'
+include { GENOMEASSEMBLER                } from './workflows/genomeassembler'
+include { PIPELINE_INITIALISATION        } from './subworkflows/local/utils_nfcore_genomeassembler_pipeline'
+include { PIPELINE_COMPLETION            } from './subworkflows/local/utils_nfcore_genomeassembler_pipeline'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOWS FOR PIPELINE

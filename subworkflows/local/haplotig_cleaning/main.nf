@@ -11,8 +11,8 @@ include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/mai
 workflow HAPLOTIG_CLEANING {
 
     take:
-    ch_assembly_fasta
-    ch_ont_reads
+    ch_haplotigs
+    ch_reads
 
     main:
 
@@ -20,11 +20,11 @@ workflow HAPLOTIG_CLEANING {
 
     def bam_format = true
     if ( params.mapper == 'winnowmap' ) {
-        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_haplotigs, bam_format )
         MAP_TO_ASSEMBLY_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
         ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
     } else {
-        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_haplotigs, bam_format )
         MAP_TO_ASSEMBLY_MINIMAP2.out.paf_ref.set { ch_paf_ref }
         ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
     }
@@ -36,7 +36,7 @@ workflow HAPLOTIG_CLEANING {
     PURGEDUPS_PBCSTAT( ch_paf )
     PURGEDUPS_CALCUTS( PURGEDUPS_PBCSTAT.out.stat )
 
-    PURGEDUPS_SPLITFA ( ch_assembly_fasta )
+    PURGEDUPS_SPLITFA ( ch_haplotigs )
     MINIMAP2_SELF_ALIGNMENT ( PURGEDUPS_SPLITFA.out.split_fasta )
 
     // Purge dups
@@ -53,7 +53,7 @@ workflow HAPLOTIG_CLEANING {
     PURGEDUPS_PURGEDUPS ( ch_purgedups_input )
 
     // Get seqs
-    ch_assembly_fasta
+    ch_haplotigs
         .concat( PURGEDUPS_PURGEDUPS.out.bed )
         .groupTuple()
         .map {
@@ -73,7 +73,7 @@ workflow HAPLOTIG_CLEANING {
 
 
     emit:
-    haplotigs = PURGEDUPS_GETSEQS.out.haplotigs
+    cleaned_haplotigs = PURGEDUPS_GETSEQS.out.haplotigs
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

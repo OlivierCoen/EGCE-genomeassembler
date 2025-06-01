@@ -19,6 +19,7 @@ workflow ONT_READ_PREPARATION {
     ch_porechop_logs = Channel.empty()
     ch_nanoq_stats = Channel.empty()
 
+    // the pipeline accepts reads in fasta format
     ch_reads
         .filter {
             meta, reads ->
@@ -30,56 +31,75 @@ workflow ONT_READ_PREPARATION {
     // Quality control on raw reads
     // ---------------------------------------------------------------------
 
-    if ( !params.skip_fastqc ) {
-        FASTQC_RAW ( ch_fastq_reads )
-        ch_fastqc_raw_zip  = FASTQC_RAW.out.zip
-    }
+    FASTQC_RAW ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_raw } )
 
-    if ( !params.skip_nanoq ) {
-        NANOQ( ch_fastq_reads )
-        NANOQ.out.stats.set { ch_nanoq_stats }
-    }
+    NANOQ( ch_fastq_reads.filter { meta, assembly -> meta.run_nanoq } )
 
     // ---------------------------------------------------------------------
-    // Trimming / filtering
+    // Trimming
     // ---------------------------------------------------------------------
 
-    if ( !params.skip_trimming ) {
-        PORECHOP_ABI( ch_reads, [] )
-        PORECHOP_ABI.out.reads.set { ch_reads }
-        ch_porechop_logs = PORECHOP_ABI.out.log
-        ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
-    }
-
-    if ( !params.skip_filtering ) {
-
-        if ( params.filtering_tool == "chopper" ) {
-            CHOPPER( ch_reads, [] )
-            CHOPPER.out.fastq.set { ch_reads }
-            ch_versions = ch_versions.mix ( CHOPPER.out.versions )
-        } else { // seqkit seq
-            SEQKIT_SEQ( ch_reads )
-            SEQKIT_SEQ.out.fastx.set { ch_reads }
-            ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
+    ch_fastq_reads
+        .branch { meta, reads ->
+            trim_me: meta.trim_reads
+            leave_me_alone: !meta.trim_reads
         }
+        .set { ch_fastq_reads }
+
+    PORECHOP_ABI( ch_fastq_reads.trim_me, [] )
+
+    ch_fastq_reads.leave_me_alone
+        .mix ( PORECHOP_ABI.out.reads )
+        .set { ch_fastq_reads }
+
+    ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
+
+    // ---------------------------------------------------------------------
+    // Filtering
+    // ---------------------------------------------------------------------
+
+    ch_fastq_reads
+        .branch { meta, reads ->
+            filter_me: meta.filter_reads
+            leave_me_alone: !meta.trim_reads
+        }
+        .set { ch_fastq_reads }
+
+    if ( params.filtering_tool == "chopper" ) {
+
+        CHOPPER( ch_fastq_reads.filter_me, [] )
+
+        ch_fastq_reads.leave_me_alone
+            .mix ( CHOPPER.out.fastq )
+            .set { ch_fastq_reads }
+
+        ch_versions = ch_versions.mix ( CHOPPER.out.versions )
+
+
+    } else { // seqkit seq
+        SEQKIT_SEQ( ch_fastq_reads.filter_me )
+
+        ch_fastq_reads.leave_me_alone
+            .mix ( SEQKIT_SEQ.out.fastx )
+            .set { ch_fastq_reads }
+
+        ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
+
     }
 
     // ---------------------------------------------------------------------
     // Quality control on trimmed / filtered reads
     // ---------------------------------------------------------------------
 
-    if ( !params.skip_fastqc && ( !params.skip_trimming || !params.skip_filtering ) ) {
-        FASTQC_PREPARED_READS ( ch_reads )
-        ch_fastqc_prepared_reads_zip  = FASTQC_PREPARED_READS.out.zip
-    }
+    FASTQC_PREPARED_READS ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
 
 
     emit:
-    prepared_reads = ch_reads
-    fastqc_raw_zip = ch_fastqc_raw_zip
-    fastqc_prepared_reads_zip = ch_fastqc_prepared_reads_zip
-    porechop_logs = ch_porechop_logs
-    nanoq_stats = ch_nanoq_stats
+    prepared_reads = ch_fastq_reads
+    fastqc_raw_zip = FASTQC_RAW.out.zip
+    fastqc_prepared_reads_zip = FASTQC_PREPARED_READS.out.zip
+    porechop_logs = PORECHOP_ABI.out.log
+    nanoq_stats = NANOQ.out.report
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

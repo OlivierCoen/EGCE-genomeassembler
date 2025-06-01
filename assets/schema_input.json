@@ -7,13 +7,13 @@
     "items": {
         "type": "object",
         "properties": {
-            "assembly": {
+            "name": {
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Assembly name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
-            "genomesize": {
+            "genome_size": {
                 "type": "number",
                 "errorMessage": "Genome size must be provided and must contain digits only",
                 "meta": ["genome_size"]
@@ -23,30 +23,125 @@
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?[qa]\\.gz$",
-                "errorMessage": "FastQ file for sample reads must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "description": "Path to raw long reads (compressed) for draft assembly. File must be a compressed Fastq (preferred) / Fasta file.",
+                "errorMessage": "File must be a compressed Fastq (preferred) / Fasta file. File name cannot contain spaces."
+            },
+            "run_fastqc_raw": {
+                "type": "boolean",
+                "default": true,
+                "description": "Run FastQC before read preparation",
+                "meta": ["run_fastqc_raw"]
+            },
+            "run_nanoq": {
+                "type": "boolean",
+                "default": true,
+                "description": "Run Nanoq before read preparation",
+                "meta": ["run_nanoq"]
+            },
+            "trim_reads": {
+                "type": "boolean",
+                "default": true,
+                "description": "Trim reads with Porechop ABI",
+                "meta": ["trim_reads"]
+            },
+            "filter_reads": {
+                "type": "boolean",
+                "default": true,
+                "description": "Filter reads",
+                "meta": ["filter_reads"]
+            },
+            "run_fastqc_prepared": {
+                "type": "boolean",
+                "default": true,
+                "description": "Run FastQC after read preparation",
+                "meta": ["run_fastqc_prepared"]
+            },
+            "draft_assembly": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                "description": "Path to assembly fasta file (compressed).",
+                "help_text": "You can provide an assembly and skip the assembly step.",
+                "fa_icon": "fas fa-file-csv"
+            },
+            "polish_draft_assembly": {
+                "type": "boolean",
+                "default": true,
+                "errorMessage": "Whether to polish the draft assembly",
+                "meta": ["polish_draft_assembly"]
+            },
+            "haplotype_1_reads": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?[qa]\\.gz$",
+                "description": "Path to long reads (compressed) for assembly of haplotig 1. File must be a compressed Fastq (preferred) / Fasta file.",
+                "errorMessage": "File must be a compressed Fastq (preferred) / Fasta file. File name cannot contain spaces."
+            },
+            "haplotype_2_reads": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?[qa]\\.gz$",
+                "description": "Path to long reads (compressed) for assembly of haplotig 2. File must be a compressed Fastq (preferred) / Fasta file.",
+                "errorMessage": "File must be a compressed Fastq (preferred) / Fasta file. File name cannot contain spaces."
+            },
+            "haplotig_1": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                "description": "Path to draft assembly fasta file (compressed) corresponding to haplotig 1.",
+                "help_text": "You can provide an assembly and skip the assembly step.",
+                "fa_icon": "fas fa-file-csv"
+            },
+            "haplotig_2": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                "description": "Path to draft assembly fasta file (compressed) corresponding to haplotig 1.",
+                "help_text": "You can provide an assembly and skip the assembly step.",
+                "fa_icon": "fas fa-file-csv"
+            },
+            "polish_haplotigs": {
+                "type": "boolean",
+                "default": true,
+                "errorMessage": "Whether to polish the haplotig draft assemblies",
+                "meta": ["polish_haplotigs"]
+            },
+            "purge_dups_haplotigs": {
+                "type": "boolean",
+                "default": true,
+                "errorMessage": "Whether to clean (purge duplicates) the haplotig assemblies",
+                "meta": ["purge_dups_haplotigs"]
             },
             "hic_fastq_1": {
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+                "description": "Path to Fastq file (compressed) for Hi-C reads (R1).",
+                "errorMessage": "FastQ file for Hi-C reads cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             },
             "hic_fastq_2": {
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'",
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "anyOf": [
-                    {
-                        "pattern": "^\\S+\\.f(ast)?q\\.gz$"
-                    },
-                    {
-                        "maxLength": 0
-                    }
-                ]
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "description": "Path to Fastq file (compressed) for Hi-C reads (R2).",
+                "errorMessage": "FastQ file for Hi-C reads cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             }
         },
-        "required": ["assembly", "genomesize", "reads"]
+        "dependentRequired": {
+            "haplotype_2_reads": ["haplotype_1_reads"],
+            "haplotype_1_reads": ["haplotype_2_reads"],
+            "haplotig_2": ["haplotig_1"],
+            "haplotig_1": ["haplotig_2"],
+            "hic_fastq_2": ["hic_fastq_1"],
+            "hic_fastq_1": ["hic_fastq_2"]
+        },
+        "required": ["name"]
     }
 }

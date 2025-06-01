@@ -4,6 +4,10 @@ report_comment: >
 report_section_order:
   busco_summary:
     order: 2000
+  flye_report:
+    order: 1999
+  nanoq:
+    order: 1100
   fastqc_trimmed:
     order: 1001
   fastqc_raw:
@@ -17,9 +21,16 @@ report_section_order:
 
 run_modules:
   - fastqc
+  - nanoq
   - custom_content
 
 module_order:
+  - nanoq:
+      anchor: "nanoq"
+      name: "NanoQ"
+      info: "This section of the report shows NanoQ results."
+      path_filters:
+        - "*_nanoq_summary.json"
   - fastqc:
       anchor: "fastqc_raw"
       name: "FastQC (raw)"
@@ -39,6 +50,7 @@ export_plots: true
 disable_version_detection: true
 
 custom_data:
+
   busco_summary:
     section_name: "BUSCO"
     file_format: "tsv"
@@ -48,10 +60,20 @@ custom_data:
       BUSCO summary
     plot_type: "table"
 
+  flye_report:
+    section_name: "Flye assembly"
+    file_format: "tsv"
+    #no_violin: true
+    sort_rows: false
+    description: |
+      Flye assembly report
+    plot_type: "table"
 
 sp:
   busco_summary:
     fn: "*-busco.batch_summary.txt"
+  flye_report:
+    fn: "*.assembly_info.txt"
 
 
 

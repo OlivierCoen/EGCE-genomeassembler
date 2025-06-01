@@ -18,9 +18,9 @@
                     "exists": true,
                     "schema": "assets/schema_input.json",
                     "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.csv$",
-                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                    "pattern": "^\\S+\\.(csv|tsv|yaml|json)$",
+                    "description": "Path to file containing information about the samples in the experiment.",
+                    "help_text": "Input Sample Sheet in YAML / JSON format (can be also CSV / TSV).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -49,41 +49,6 @@
             "description": "Skips specific steps",
             "default": "",
             "properties": {
-                "skip_fastqc": {
-                    "type": "boolean",
-                    "description": "Skip FastQC step",
-                    "fa_icon": "fas fa-filter"
-                },
-                "skip_nanoq": {
-                    "type": "boolean",
-                    "description": "Skip NanoQ step",
-                    "fa_icon": "fas fa-filter"
-                },
-                "skip_filtering": {
-                    "type": "boolean",
-                    "description": "Skip the filtering step",
-                    "fa_icon": "fas fa-filter"
-                },
-                "skip_trimming": {
-                    "type": "boolean",
-                    "description": "Skip the trimming step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_assembly": {
-                    "type": "boolean",
-                    "description": "Skip the assembly step",
-                    "fa_icon": "fas fa-align-left"
-                },
-                "skip_polishing": {
-                    "type": "boolean",
-                    "description": "Skip the polishing step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_phasing": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig phasing step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
                 "skip_purging": {
                     "type": "boolean",
                     "description": "Skip the haplotig purging step",
@@ -157,11 +122,6 @@
                     "enum": ["pecat", "flye"],
                     "default": "flye"
                 },
-                "genome_size": {
-                    "type": "integer",
-                    "description": "expected genome size, optional",
-                    "minimum": 1
-                },
                 "pecat_config_file": {
                     "type": "string",
                     "format": "file-path",
@@ -184,19 +144,10 @@
                 },
                 "nb_racon_rounds": {
                     "type": "number",
-                    "description": "Number of rounds for Racon polishing. Maximum is 5.",
-                    "default": 4,
-                    "minimum": 1,
+                    "default": 1,
+                    "description": "Number of Racon polishing rounds before polishing with Medaka",
+                    "minimum": 0,
                     "maximum": 5
-                },
-                "assembly_fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "pattern": "^\\S+\\.f(ast)?a\\.gz$",
-                    "description": "Path Assembly fasta file (compressed).",
-                    "help_text": "You can provide an assembly and skip the assembly step.",
-                    "fa_icon": "fas fa-file-csv"
                 }
             },
             "fa_icon": "fas fa-forward"

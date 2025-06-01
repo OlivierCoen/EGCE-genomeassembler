@@ -21,15 +21,20 @@ workflow HAPLOTYPE_PHASING {
     // --------------------------------------------------------
     // ALIGNING READS TO REFERENCE
     // --------------------------------------------------------
+
      def bam_format = true
      if ( params.mapper == 'winnowmap' ) {
+
         MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
         MAP_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
         ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+
     } else {
+
         MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
         MAP_TO_ASSEMBLY_MINIMAP2.out.bam_ref.set { ch_bam_ref }
         ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+
     }
 
     ch_bam_ref
@@ -85,10 +90,16 @@ workflow HAPLOTYPE_PHASING {
 
     WHATSAPP_SPLIT ( whatshap_split_input )
 
+    WHATSAPP_SPLIT.out.reads_h1
+        .mix ( WHATSAPP_SPLIT.out.reads_h2 )
+        .set { haplotype_reads }
+
+    WHATSAPP_SPLIT.out.reads_h1.map { meta, reads -> [ meta + [ haplotig: 1 ], reads ] }
+        .mix ( WHATSAPP_SPLIT.out.reads_h2.map { meta, reads -> [ meta + [ haplotig: 2 ], reads ] } )
+        .set { ch_haplotype_reads }
 
     emit:
-    reads_h1 = WHATSAPP_SPLIT.out.reads_h1
-    reads_h2 = WHATSAPP_SPLIT.out.reads_h2
+    haplotype_reads
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 
