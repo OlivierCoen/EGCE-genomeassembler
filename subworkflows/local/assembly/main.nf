@@ -47,6 +47,7 @@ workflow ASSEMBLY {
         FLYE.out.fasta.set { ch_assemblies }
         FLYE.out.txt.set { ch_flye_report }
 
+
     } else { //pecat
 
         PECAT_ASSEMBLY ( ch_reads )

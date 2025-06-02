@@ -119,8 +119,8 @@
                 "assembler": {
                     "type": "string",
                     "description": "Assembler to use",
-                    "enum": ["pecat", "flye"],
-                    "default": "flye"
+                    "enum": ["flye", "hifiasm","pecat"],
+                    "default": "hifiasm"
                 },
                 "pecat_config_file": {
                     "type": "string",
