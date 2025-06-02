@@ -2,7 +2,7 @@ process PECAT_POLISH {
 
     tag "${meta.id}"
 
-    label "process_high_long"
+    label "process_high"
 
     conda "${projectDir}/deployment/pecat/pecat_medaka/spec-file.txt"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

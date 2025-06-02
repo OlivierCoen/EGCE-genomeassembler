@@ -30,7 +30,7 @@ module_order:
       name: "NanoQ"
       info: "This section of the report shows NanoQ results."
       path_filters:
-        - "*_nanoq_summary.json"
+        - "*_nanoq_summary.tsv"
   - fastqc:
       anchor: "fastqc_raw"
       name: "FastQC (raw)"

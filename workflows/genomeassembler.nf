@@ -18,6 +18,27 @@ include { customSoftwareVersionsToYAML                            } from '../sub
 include { methodsDescriptionText                                  } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
 include { softwareVersionsToYAML                                  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CRITERIA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+def inputMultiMapCriteria = multiMapCriteria {
+    meta, reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2, hic_fastq_1, hic_fastq_2 ->
+
+        def first_step = getFirstStep ( reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2 )
+        def run_step_map = createStepMap( first_step )
+        def new_meta = meta + [ run_step: run_step_map ]
+
+        reads: reads ? [ new_meta, reads ] : null
+        draft_assemblies: draft_assembly ? [ new_meta, draft_assembly ] : null
+        haplotype_reads: haplotype_1_reads && haplotype_2_reads ? [ new_meta, haplotype_1_reads, haplotype_2_reads ] : null
+        haplotigs: haplotig_1 && haplotig_2 ? [ new_meta, haplotig_1, haplotig_2 ] : null
+        hic_reads: hic_fastq_1 && hic_fastq_2 ? [ new_meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
+}
+
+def isNotNull = { v -> v != null }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,33 +56,32 @@ workflow GENOMEASSEMBLER {
 
     ch_versions = Channel.empty()
 
+    // ------------------------------------------------------------------------------------
+    // INPUT DATA POST-PARSING
+    // ------------------------------------------------------------------------------------
+
+    // multiMap the input to separate input files in different channels
     ch_input
-        .multiMap {
-            meta, long_reads, assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2, hic_fastq_1, hic_fastq_2 ->
-
-                def first_step = getFirstStep ( long_reads, assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2 )
-                def run_step_map = createStepMap( first_step )
-                def new_meta = meta + [ run_step: run_step_map ]
-
-                long_reads:
-                    [ new_meta, long_reads ]
-                draft_assembly:
-                    [ new_meta, assembly ]
-                haplotype_reads:
-                    [ new_meta, haplotype_1_reads, haplotype_2_reads ]
-                haplotigs:
-                    [ new_meta, haplotig_1, haplotig_2 ]
-                hic_reads:
-                    [ new_meta, [ hic_fastq_1, hic_fastq_2 ] ]
-        }
+        .multiMap ( inputMultiMapCriteria )
         .set { ch_input }
+
+    // filtering out all null data
+    ch_input.reads.filter( isNotNull ).set { ch_input_reads }
+    ch_input.draft_assemblies.filter( isNotNull ).set { ch_input_draft_assemblies }
+    ch_input.haplotype_reads.filter( isNotNull ).set { ch_input_haplotype_reads }
+    ch_input.haplotigs.filter( isNotNull ).set { ch_input_haplotigs }
+    ch_input.hic_reads.filter( isNotNull ).set { ch_input_hic_reads }
 
     // separating haplotig-specific files in separate channels
     // we don't do it directly in the multiMap because it gives more flexibility this way
     // in the future, one can add support for polyploid assemblies
-    ch_input_haplotype_reads = putHaplotigFilesInSeparateChannels( ch_input.haplotype_reads )
+    ch_input_haplotype_reads = putHaplotigFilesInSeparateChannels( ch_input_haplotype_reads )
 
-    ch_input_haplotigs = putHaplotigFilesInSeparateChannels( ch_input.haplotigs )
+    ch_input_haplotigs = putHaplotigFilesInSeparateChannels( ch_input_haplotigs )
+
+    ch_input_reads.view { v -> "reads :: " + v}
+    ch_input_draft_assemblies.view { v -> "assembly :: " + v}
+
 
     // ------------------------------------------------------------------------------------
     // READ PREPARATION
@@ -69,7 +89,7 @@ workflow GENOMEASSEMBLER {
 
     // by default, we prepare all reads, even for samples for which we do not want an assembly
     // because reads are used at multiple different crucial steps
-    ONT_READ_PREPARATION ( ch_input.long_reads )
+    ONT_READ_PREPARATION ( ch_input_reads )
 
     ch_reads = ONT_READ_PREPARATION.out.prepared_reads
 
@@ -77,13 +97,18 @@ workflow GENOMEASSEMBLER {
     // ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    ch_reads.filter { meta, assembly -> meta.run_step.assembly }.set { ch_reads_to_assemble }
-    ch_reads.filter { meta, assembly -> !meta.run_step.assembly }.set { ch_reads_assembled }
+    ch_reads
+        .filter { meta, assembly -> meta.run_step.assembly }
+        .set { ch_reads_to_assemble }
+
+    ch_reads
+        .filter { meta, assembly -> !meta.run_step.assembly }
+        .set { ch_reads_assembled }
 
     ASSEMBLY_POLISH_QC (
         ch_reads_to_assemble,
         ch_reads_assembled,
-        ch_input.draft_assembly
+        ch_input_draft_assemblies
    )
 
     // ------------------------------------------------------------------------------------
@@ -91,7 +116,7 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
 
     ASSEMBLY_POLISH_QC.out.assemblies
-        .mix ( ch_input.draft_assembly )
+        .mix ( ch_input_draft_assemblies )
         .filter { meta, assembly -> meta.run_step.haplotype_phasing }
         .set { ch_draft_assemblies_to_phase }
 
@@ -105,15 +130,20 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
 
     HAPLOTYPE_PHASING.out.haplotype_reads
-        .mix ( ch_input_haplotype_reads.hap_1 )
-        .mix ( ch_input_haplotype_reads.hap_2 )
+        .mix ( ch_input_haplotype_reads.hap1 )
+        .mix ( ch_input_haplotype_reads.hap2 )
         .set { ch_haplotig_reads }
 
-    ch_haplotig_reads.filter { meta, assembly -> meta.run_step.haplotig_assembly }.set { ch_haplotig_reads_to_assemble }
-    ch_haplotig_reads.filter { meta, assembly -> !meta.run_step.haplotig_assembly }.set { ch_haplotig_reads_assembled }
+    ch_haplotig_reads
+        .filter { meta, assembly -> meta.run_step.haplotig_assembly }
+        .set { ch_haplotig_reads_to_assemble }
 
-    ch_input_haplotigs.hap_1
-        .mix ( ch_input_haplotigs.hap_2 )
+    ch_haplotig_reads
+        .filter { meta, assembly -> !meta.run_step.haplotig_assembly }
+        .set { ch_haplotig_reads_assembled }
+
+    ch_input_haplotigs.hap1
+        .mix ( ch_input_haplotigs.hap2 )
         .set { ch_haplotigs_already_assembled }
 
     HAPLOTIG_ASSEMBLY_POLISH_QC (
@@ -299,9 +329,9 @@ def putHaplotigFilesInSeparateChannels ( ch_files ) {
     return ch_files
         .multiMap {
             meta, file_1, file_2 ->
-                hap_1:
+                hap1:
                     [ meta + [ haplotig: 1 ], file_1 ]
-                hap_2:
+                hap2:
                     [ meta + [ haplotig: 2 ], file_2 ]
                 }
 }

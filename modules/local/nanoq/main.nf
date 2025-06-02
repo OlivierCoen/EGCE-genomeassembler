@@ -11,7 +11,7 @@ process NANOQ {
     tuple val(meta), path(ontreads)
 
     output:
-    tuple val(meta), path("*_nanoq_summary.json"),                                                emit: report
+    tuple val(meta), path("*_nanoq_summary.tsv"),                                                 emit: report
     tuple val("${task.process}"), val('nanoq'), eval('nanoq --version | sed -e "s/nanoq //g"'),   topic: versions
 
 
@@ -21,8 +21,8 @@ process NANOQ {
     """
     nanoq -i $ontreads \\
         ${args} \\
-        --json ${prefix}_nanoq_summary.json \\
-        --output ${prefix}.fastq
+        --stats \\
+        > ${prefix}_nanoq_summary.tsv
     """
 
     stub:
