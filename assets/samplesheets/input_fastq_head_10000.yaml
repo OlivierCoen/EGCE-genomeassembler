@@ -1,0 +1,9 @@
+- name: test1
+  technology: nanopore
+  genome_size: 1500000
+  reads: tests/test_data/A_nas_rebasecalled.head_10000.fastq.gz
+  draft_assembly:
+  polish_draft_assembly: true
+  hic_fastq_1: tests/test_data/hic_anasatum/R1.fastq.gz
+  hic_fastq_2: tests/test_data/hic_anasatum/R2.fastq.gz
+

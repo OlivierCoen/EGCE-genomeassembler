@@ -12,7 +12,7 @@ process NANOQ {
 
     output:
     tuple val(meta), path("*_nanoq_summary.tsv"),                                                               emit: report
-    tuple val(meta), eval('$(cat "${prefix}_nanoq_summary.tsv" | awk "{print $8}" | tail -n 1)'),               topic: mean_quality
+    tuple val(meta), eval("cat *_nanoq_summary.tsv | tail -n 1 | tr -s ' ' | cut -d' ' -f8"),                  topic: mean_qualities
     tuple val("${task.process}"), val('nanoq'), eval('nanoq --version | sed -e "s/nanoq //g"'),                 topic: versions
 
 

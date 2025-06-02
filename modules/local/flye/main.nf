@@ -1,4 +1,7 @@
-def getQScoreCategory ( mean_quality ) {
+def getQScoreCategory ( qual ) {
+
+    def mean_quality = qual.toFloat()
+
     if ( mean_quality < 7 ) {
         warning "Very low quality reads: $mean_quality"
         return "raw"
@@ -35,16 +38,20 @@ process FLYE {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+
     // flye mode
     if ( !meta.technology ) { error "Cannot run Flye without technology" }
+    def technology = meta.technology == "nanopore" ? "nano": meta.technology
     if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
     def qscore_category = getQScoreCategory( mean_quality )
-    def mode = "--${meta.technology}-${qscore_category}"
+    def mode = "--${technology}-${qscore_category}"
+
     // genome size
     def genome_size_arg = meta.genome_size ? "--genome-size ${meta.genome_size}" : ""
+
     """
     flye \\
-        --${mode} \\
+        ${mode} \\
         $reads \\
         --out-dir . \\
         --threads \\

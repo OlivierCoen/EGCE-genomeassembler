@@ -6,6 +6,7 @@
 include { MULTIQC                                                 } from '../modules/nf-core/multiqc/main'
 
 include { ONT_READ_PREPARATION                                    } from '../subworkflows/local/ont_read_preparation/main'
+include { ONT_READ_PREPARATION as HAPLOTYPE_ONT_READ_PREPARATION  } from '../subworkflows/local/ont_read_preparation/main'
 include { ASSEMBLY                                                } from '../subworkflows/local/assembly/main'
 include { ASSEMBLY as HAPLOTIG_ASSEMBLY                           } from '../subworkflows/local/assembly/main'
 include { HAPLOTYPE_PHASING                                       } from '../subworkflows/local/haplotype_phasing/main'
@@ -210,14 +211,24 @@ workflow GENOMEASSEMBLER {
         ch_draft_assemblies_to_phase
     )
 
-    // ------------------------------------------------------------------------------------
-    // HAPLOTIG ASSEMBLIES
-    // ------------------------------------------------------------------------------------
-
     HAPLOTYPE_PHASING.out.haplotype_reads
         .mix ( ch_input_haplotype_reads.hap1 )
         .mix ( ch_input_haplotype_reads.hap2 )
         .set { ch_haplotig_reads }
+
+    // ------------------------------------------------------------------------------------
+    // HAPLOTYPE READ PREPARATION
+    // ------------------------------------------------------------------------------------
+
+    HAPLOTYPE_ONT_READ_PREPARATION ( ch_haplotig_reads )
+
+    ch_haplotig_reads = HAPLOTYPE_ONT_READ_PREPARATION.out.prepared_reads
+
+    // ------------------------------------------------------------------------------------
+    // HAPLOTIG ASSEMBLIES
+    // ------------------------------------------------------------------------------------
+
+
 
     HAPLOTIG_ASSEMBLY (
         ch_haplotig_reads.filter ( runHaplotigAssembly )
@@ -337,6 +348,9 @@ workflow GENOMEASSEMBLER {
                         .mix( ONT_READ_PREPARATION.out.nanoq_stats.map               { meta, stats -> [ stats ] } )
                         .mix( ASSEMBLY.out.flye_report.map                           { meta, report -> [ report ] } )
                         .mix( ASSEMBLY_QC.out.assembly_busco_reports.map                        { meta, report -> [ report ] } )
+                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.fastqc_raw_zip.map            { meta, zip -> [ zip ] } )
+                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip.map { meta, zip -> [ zip ] } )
+                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.nanoq_stats.map               { meta, stats -> [ stats ] } )
                         .mix( HAPLOTIG_ASSEMBLY_QC.out.assembly_busco_reports.map       { meta, report -> [ report ] } )
                         .mix( HAPLOTIG_ASSEMBLY.out.flye_report.map                  { meta, report -> [ report ] } )
 
