@@ -1,9 +1,24 @@
-include { PORECHOP_ABI                       } from '../../../modules/nf-core/porechop/abi/main'
-include { CHOPPER                            } from '../../../modules/nf-core/chopper/main'
-include { SEQKIT_SEQ                         } from '../../../modules/nf-core/seqkit/seq/main'
-include { FASTQC as FASTQC_RAW               } from '../../../modules/local/fastqc/main'
-include { FASTQC as FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc/main'
-include { NANOQ                              } from '../../../modules/local/nanoq/main'
+include { PORECHOP_ABI                       } from '../../../modules/nf-core/porechop/abi'
+include { CHOPPER                            } from '../../../modules/nf-core/chopper'
+include { SEQKIT_SEQ                         } from '../../../modules/nf-core/seqkit/seq'
+include { FASTQC as FASTQC_RAW               } from '../../../modules/local/fastqc'
+include { FASTQC as FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc'
+include { NANOQ                              } from '../../../modules/local/nanoq'
+
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    SUBWORKFLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
 
 
 workflow ONT_READ_PREPARATION {
@@ -33,7 +48,7 @@ workflow ONT_READ_PREPARATION {
 
     FASTQC_RAW ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_raw } )
 
-    NANOQ( ch_fastq_reads.filter { meta, assembly -> meta.run_nanoq } )
+    NANOQ( ch_fastq_reads )
 
     // ---------------------------------------------------------------------
     // Trimming

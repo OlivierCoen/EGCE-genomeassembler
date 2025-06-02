@@ -1,6 +1,6 @@
-include { WINNOWMAP                                  } from '../../../../modules/local/winnowmap/main'
-include { MERYL_COUNT                                } from '../../../../modules/local/meryl/count/main'
-include { MERYL_PRINT                                } from '../../../../modules/local/meryl/print/main'
+include { WINNOWMAP                                  } from '../../../../modules/local/winnowmap'
+include { MERYL_COUNT                                } from '../../../../modules/local/meryl/count'
+include { MERYL_PRINT                                } from '../../../../modules/local/meryl/print'
 
 
 workflow MAP_TO_ASSEMBLY_WINNOWMAP {

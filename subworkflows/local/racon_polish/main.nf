@@ -1,6 +1,6 @@
-include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
-include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
-include { RACON                         } from '../../../modules/local/racon/main'
+include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2'
+include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap'
+include { RACON                         } from '../../../modules/local/racon'
 
 workflow RACON_POLISH {
 

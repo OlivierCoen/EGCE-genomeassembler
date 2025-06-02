@@ -11,8 +11,9 @@ process NANOQ {
     tuple val(meta), path(ontreads)
 
     output:
-    tuple val(meta), path("*_nanoq_summary.tsv"),                                                 emit: report
-    tuple val("${task.process}"), val('nanoq'), eval('nanoq --version | sed -e "s/nanoq //g"'),   topic: versions
+    tuple val(meta), path("*_nanoq_summary.tsv"),                                                               emit: report
+    tuple val(meta), eval('$(cat "${prefix}_nanoq_summary.tsv" | awk "{print $8}" | tail -n 1)'),               topic: mean_quality
+    tuple val("${task.process}"), val('nanoq'), eval('nanoq --version | sed -e "s/nanoq //g"'),                 topic: versions
 
 
     script:
@@ -22,6 +23,7 @@ process NANOQ {
     nanoq -i $ontreads \\
         ${args} \\
         --stats \\
+        --header \\
         > ${prefix}_nanoq_summary.tsv
     """
 

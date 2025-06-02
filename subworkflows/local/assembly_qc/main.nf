@@ -5,7 +5,7 @@ include { QC_BUSCO                      } from '../qc/busco/main'
 include { QC_MERQURY                    } from '../qc/merqury/main'
 
 
-workflow QC_ASSEMBLIES {
+workflow ASSEMBLY_QC {
 
     take:
     ch_reads

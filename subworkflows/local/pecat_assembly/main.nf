@@ -1,9 +1,9 @@
-include { PECAT_SPLIT_CONFIGS        } from '../../../modules/local/pecat/split_configs/main'
-include { PECAT_CORRECT              } from '../../../modules/local/pecat/correct/main'
-include { PECAT_FIRST_ASSEMBLY       } from '../../../modules/local/pecat/first_assembly/main'
-include { PECAT_PHASE                } from '../../../modules/local/pecat/phase/main'
-include { PECAT_SECOND_ASSEMBLY      } from '../../../modules/local/pecat/second_assembly/main'
-include { PECAT_POLISH               } from '../../../modules/local/pecat/polish/main'
+include { PECAT_SPLIT_CONFIGS        } from '../../../modules/local/pecat/split_configs'
+include { PECAT_CORRECT              } from '../../../modules/local/pecat/correct'
+include { PECAT_FIRST_ASSEMBLY       } from '../../../modules/local/pecat/first_assembly'
+include { PECAT_PHASE                } from '../../../modules/local/pecat/phase'
+include { PECAT_SECOND_ASSEMBLY      } from '../../../modules/local/pecat/second_assembly'
+include { PECAT_POLISH               } from '../../../modules/local/pecat/polish'
 
 workflow PECAT_ASSEMBLY {
 

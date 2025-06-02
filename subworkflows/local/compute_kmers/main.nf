@@ -1,5 +1,5 @@
-include { MERYL_COUNT                  } from '../../../modules/local/meryl/count/main'
-include { MERYL_PRINT                  } from '../../../modules/local/meryl/print/main'
+include { MERYL_COUNT                  } from '../../../modules/local/meryl/count'
+include { MERYL_PRINT                  } from '../../../modules/local/meryl/print'
 
 workflow COMPUTE_KMERS {
 

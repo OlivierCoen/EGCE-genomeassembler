@@ -1,4 +1,4 @@
-include { QUAST } from '../../../../modules/local/quast/main'
+include { QUAST } from '../../../../modules/local/quast'
 
 workflow QC_QUAST {
     take:

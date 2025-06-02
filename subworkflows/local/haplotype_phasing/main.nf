@@ -1,12 +1,12 @@
 include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
 include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
 
-include { CLAIR3                       } from '../../../modules/local/clair3/main'
-include { WHATSAPP_HAPLOTAG            } from '../../../modules/local/whatshap/haplotag/main'
-include { WHATSAPP_SPLIT               } from '../../../modules/local/whatshap/split/main'
-include { WHATSAPP_STATS               } from '../../../modules/local/whatshap/stats/main'
-include { SAMTOOLS_FAIDX               } from '../../../modules/local/samtools/faidx/main'
-include { SAMTOOLS_INDEX               } from '../../../modules/nf-core/samtools/index/main'
+include { CLAIR3                       } from '../../../modules/local/clair3'
+include { WHATSAPP_HAPLOTAG            } from '../../../modules/local/whatshap/haplotag'
+include { WHATSAPP_SPLIT               } from '../../../modules/local/whatshap/split'
+include { WHATSAPP_STATS               } from '../../../modules/local/whatshap/stats'
+include { SAMTOOLS_FAIDX               } from '../../../modules/local/samtools/faidx'
+include { SAMTOOLS_INDEX               } from '../../../modules/nf-core/samtools/index'
 
 
 workflow HAPLOTYPE_PHASING {
@@ -90,13 +90,9 @@ workflow HAPLOTYPE_PHASING {
 
     WHATSAPP_SPLIT ( whatshap_split_input )
 
-    WHATSAPP_SPLIT.out.reads_h1
-        .mix ( WHATSAPP_SPLIT.out.reads_h2 )
-        .set { haplotype_reads }
-
     WHATSAPP_SPLIT.out.reads_h1.map { meta, reads -> [ meta + [ haplotig: 1 ], reads ] }
         .mix ( WHATSAPP_SPLIT.out.reads_h2.map { meta, reads -> [ meta + [ haplotig: 2 ], reads ] } )
-        .set { ch_haplotype_reads }
+        .set { haplotype_reads }
 
     emit:
     haplotype_reads

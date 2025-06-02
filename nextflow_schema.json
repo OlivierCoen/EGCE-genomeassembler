@@ -132,12 +132,6 @@
                     "fa_icon": "fas fa-file-csv",
                     "default": "assets/pecat_configs/pecat_default_config.txt"
                 },
-                "flye_mode": {
-                    "type": "string",
-                    "description": "flye mode",
-                    "default": "--nano-hq",
-                    "enum": ["--pacbio-raw", "--pacbio-corr", "--pacbio-hifi", "--nano-raw", "--nano-corr", "--nano-hq"]
-                },
                 "flye_args": {
                     "type": "string",
                     "description": "Additional args for flye"

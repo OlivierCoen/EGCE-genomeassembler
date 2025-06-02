@@ -1,4 +1,4 @@
-include { BUSCO_BUSCO as BUSCO } from '../../../../modules/nf-core/busco/busco/main'
+include { BUSCO_BUSCO as BUSCO } from '../../../../modules/nf-core/busco/busco'
 
 workflow QC_BUSCO {
     take:

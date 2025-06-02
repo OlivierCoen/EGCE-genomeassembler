@@ -1,6 +1,6 @@
-include { ARIMA_MAPPING_PIPELINE_HIC    } from '../arima_mapping_pipeline_hic/main'
-include { SAMTOOLS_FAIDX                } from '../../../modules/local/samtools/faidx/main'
-include { YAHS                          } from '../../../modules/nf-core/yahs/main'
+include { ARIMA_MAPPING_PIPELINE_HIC    } from '../arima_mapping_pipeline_hic'
+include { SAMTOOLS_FAIDX                } from '../../../modules/local/samtools/faidx'
+include { YAHS                          } from '../../../modules/nf-core/yahs'
 
 
 workflow SCAFFOLDING_WITH_HIC {

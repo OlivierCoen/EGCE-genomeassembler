@@ -1,5 +1,5 @@
-include { MERQURY_MERQURY as MERQURY } from '../../../../modules/nf-core/merqury/merqury/main'
-include { MERYL_COUNT                } from '../../../../modules/local/meryl/count/main'
+include { MERQURY_MERQURY as MERQURY } from '../../../../modules/nf-core/merqury/merqury'
+include { MERYL_COUNT                } from '../../../../modules/local/meryl/count'
 
 workflow QC_MERQURY {
     take:

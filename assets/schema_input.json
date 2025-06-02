@@ -13,6 +13,13 @@
                 "errorMessage": "Assembly name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
+            "technology": {
+                "type": "string",
+                "description": "The technology used for sequencing: nanopore / pacbio",
+                "enum": ["nanopore", "pacbio"],
+                "errorMessage": "Technology must be provided and must be 'nanopore' or 'pacbio'",
+                "meta": ["technology"]
+            },
             "genome_size": {
                 "type": "number",
                 "errorMessage": "Genome size must be provided and must contain digits only",
@@ -31,12 +38,6 @@
                 "default": true,
                 "description": "Run FastQC before read preparation",
                 "meta": ["run_fastqc_raw"]
-            },
-            "run_nanoq": {
-                "type": "boolean",
-                "default": true,
-                "description": "Run Nanoq before read preparation",
-                "meta": ["run_nanoq"]
             },
             "trim_reads": {
                 "type": "boolean",
@@ -111,11 +112,11 @@
                 "errorMessage": "Whether to polish the haplotig draft assemblies",
                 "meta": ["polish_haplotigs"]
             },
-            "purge_dups_haplotigs": {
+            "clean_haplotigs": {
                 "type": "boolean",
                 "default": true,
                 "errorMessage": "Whether to clean (purge duplicates) the haplotig assemblies",
-                "meta": ["purge_dups_haplotigs"]
+                "meta": ["clean_haplotigs"]
             },
             "hic_fastq_1": {
                 "type": "string",
@@ -142,6 +143,6 @@
             "hic_fastq_2": ["hic_fastq_1"],
             "hic_fastq_1": ["hic_fastq_2"]
         },
-        "required": ["name"]
+        "required": ["name", "technology"]
     }
 }

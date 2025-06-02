@@ -1,9 +1,9 @@
-include { PURGEDUPS_PURGEDUPS          } from '../../../modules/nf-core/purgedups/purgedups/main'
-include { PURGEDUPS_CALCUTS            } from '../../../modules/nf-core/purgedups/calcuts/main'
-include { PURGEDUPS_PBCSTAT            } from '../../../modules/nf-core/purgedups/pbcstat/main'
-include { PURGEDUPS_GETSEQS            } from '../../../modules/nf-core/purgedups/getseqs/main'
-include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa/main'
-include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align/main'
+include { PURGEDUPS_PURGEDUPS          } from '../../../modules/nf-core/purgedups/purgedups'
+include { PURGEDUPS_CALCUTS            } from '../../../modules/nf-core/purgedups/calcuts'
+include { PURGEDUPS_PBCSTAT            } from '../../../modules/nf-core/purgedups/pbcstat'
+include { PURGEDUPS_GETSEQS            } from '../../../modules/nf-core/purgedups/getseqs'
+include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa'
+include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align'
 
 include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
 include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
@@ -11,8 +11,8 @@ include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/mai
 workflow HAPLOTIG_CLEANING {
 
     take:
-    ch_haplotigs
     ch_reads
+    ch_haplotigs
 
     main:
 

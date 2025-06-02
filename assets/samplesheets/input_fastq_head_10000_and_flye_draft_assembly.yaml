@@ -1,4 +1,5 @@
 - name: test1
+  technology: nanopore
   genome_size: 1500000
   reads: tests/test_data/A_nas_rebasecalled.head_10000.fastq.gz
   draft_assembly:
@@ -7,6 +8,7 @@
   hic_fastq_2: tests/test_data/hic_anasatum/R2.fastq.gz
 
 - name: test2
+  technology: pacbio
   genome_size: 1500000
   reads: tests/test_data/A_nas_rebasecalled.head_10000.fastq.gz
   draft_assembly: tests/test_data/flye/output/test_fastq.assembly.fasta.gz

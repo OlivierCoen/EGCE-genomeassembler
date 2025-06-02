@@ -3,7 +3,7 @@ include { RACON_POLISH  as RACON_POLISH_ROUND_2    } from '../racon_polish/main'
 include { RACON_POLISH  as RACON_POLISH_ROUND_3    } from '../racon_polish/main'
 include { RACON_POLISH  as RACON_POLISH_ROUND_4    } from '../racon_polish/main'
 include { RACON_POLISH  as RACON_POLISH_ROUND_5    } from '../racon_polish/main'
-include { MEDAKA                                   } from '../../../modules/local/medaka/main'
+include { MEDAKA                                   } from '../../../modules/local/medaka'
 
 
 workflow POLISH_ASSEMBLY {
@@ -13,8 +13,6 @@ workflow POLISH_ASSEMBLY {
     ch_assemblies
 
     main:
-
-    ch_versions = Channel.empty()
 
     // ---------------------------------------------------
     // Alignment to respective assembly
@@ -65,7 +63,6 @@ workflow POLISH_ASSEMBLY {
     emit:
     assemblies = ch_assemblies
     polished_assembly_versions = ch_polished_assembly_versions
-    versions = ch_versions                     // channel: [ versions.yml ]
 
 }
 

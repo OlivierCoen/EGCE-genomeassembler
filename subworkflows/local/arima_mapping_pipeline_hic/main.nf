@@ -1,11 +1,11 @@
-include { BWAMEM2_INDEX                 } from '../../../modules/nf-core/bwamem2/index/main'
-include { BWAMEM2_MEM                   } from '../../../modules/nf-core/bwamem2/mem/main'
-include { ARIMA_FILTER_FIVE_END         } from '../../../modules/local/arima/filter_five_end/main'
-include { ARIMA_TWO_BAM_COMBINER        } from '../../../modules/local/arima/two_bam_combiner/main'
-include { ARIMA_GET_STATS               } from '../../../modules/local/arima/get_stats/main'
-include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/nf-core/picard/addorreplacereadgroups/main'
-include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/markduplicates/main'
-include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index/main'
+include { BWAMEM2_INDEX                 } from '../../../modules/nf-core/bwamem2/index'
+include { BWAMEM2_MEM                   } from '../../../modules/nf-core/bwamem2/mem'
+include { ARIMA_FILTER_FIVE_END         } from '../../../modules/local/arima/filter_five_end'
+include { ARIMA_TWO_BAM_COMBINER        } from '../../../modules/local/arima/two_bam_combiner'
+include { ARIMA_GET_STATS               } from '../../../modules/local/arima/get_stats'
+include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/nf-core/picard/addorreplacereadgroups'
+include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/markduplicates'
+include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index'
 
 
 workflow ARIMA_MAPPING_PIPELINE_HIC {
