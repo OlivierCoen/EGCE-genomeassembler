@@ -3,7 +3,7 @@ include { MERYL_COUNT                                } from '../../../../modules
 include { MERYL_PRINT                                } from '../../../../modules/local/meryl/print'
 
 
-workflow MAP_TO_ASSEMBLY_WINNOWMAP {
+workflow MAP_TO_REFERENCE_WINNOWMAP {
 
     take:
     ch_reads

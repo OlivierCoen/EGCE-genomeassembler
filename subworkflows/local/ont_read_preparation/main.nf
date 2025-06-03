@@ -48,8 +48,6 @@ workflow ONT_READ_PREPARATION {
 
     FASTQC_RAW ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_raw } )
 
-    NANOQ( ch_fastq_reads )
-
     // ---------------------------------------------------------------------
     // Trimming
     // ---------------------------------------------------------------------
@@ -107,6 +105,8 @@ workflow ONT_READ_PREPARATION {
     // ---------------------------------------------------------------------
 
     FASTQC_PREPARED_READS ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
+
+    NANOQ( ch_fastq_reads )
 
 
     emit:

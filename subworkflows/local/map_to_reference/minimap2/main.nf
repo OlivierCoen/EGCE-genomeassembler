@@ -1,7 +1,7 @@
 include { MINIMAP2_ALIGN                    } from '../../../../modules/local/minimap2/align'
 // include { BAM_STATS_SAMTOOLS as BAM_STATS            } from '../../local/bam_stats_samtools/main'
 
-workflow MAP_TO_ASSEMBLY_MINIMAP2 {
+workflow MAP_TO_REFERENCE_MINIMAP2 {
     take:
     ch_reads
     ch_genome_assembly

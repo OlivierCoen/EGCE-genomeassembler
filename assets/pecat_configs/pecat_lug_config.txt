@@ -1,4 +1,4 @@
-# all other mandatory / important parameters are supplied by the PECAT process
+    # all other mandatory / important parameters are supplied by the PECAT process
 prep_min_length=3000
 prep_output_coverage=80
 

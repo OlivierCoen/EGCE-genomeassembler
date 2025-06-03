@@ -11,8 +11,8 @@ nextflow_workflow {
 
         setup {
 
-            run("MAP_TO_ASSEMBLY") {
-                script "subworkflows/local/map_to_assembly/main.nf"
+            run("MAP_TO_REFERENCE") {
+                script "subworkflows/local/map_to_reference/main.nf"
                 process {
                     """
                     input[0] = Channel.of([
@@ -35,7 +35,7 @@ nextflow_workflow {
 
             workflow {
                 """
-                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                input[0] = MAP_TO_REFERENCE.out.aln_to_assembly_bam_ref
                 """
             }
         }
@@ -53,8 +53,8 @@ nextflow_workflow {
 
         setup {
 
-            run("MAP_TO_ASSEMBLY") {
-                script "subworkflows/local/map_to_assembly/main.nf"
+            run("MAP_TO_REFERENCE") {
+                script "subworkflows/local/map_to_reference/main.nf"
                 process {
                     """
                     input[0] = Channel.of(
@@ -99,7 +99,7 @@ nextflow_workflow {
 
             workflow {
                 """
-                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                input[0] = MAP_TO_REFERENCE.out.aln_to_assembly_bam_ref
                 """
             }
         }
@@ -117,8 +117,8 @@ nextflow_workflow {
 
         setup {
 
-            run("MAP_TO_ASSEMBLY") {
-                script "subworkflows/local/map_to_assembly/main.nf"
+            run("MAP_TO_REFERENCE") {
+                script "subworkflows/local/map_to_reference/main.nf"
                 process {
                     """
                     input[0] = Channel.of(
@@ -159,7 +159,7 @@ nextflow_workflow {
 
             workflow {
                 """
-                input[0] = MAP_TO_ASSEMBLY.out.aln_to_assembly_bam_ref
+                input[0] = MAP_TO_REFERENCE.out.aln_to_assembly_bam_ref
                 """
             }
         }

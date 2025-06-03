@@ -1,5 +1,5 @@
-include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2/main'
-include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap/main'
+include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2/main'
+include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap/main'
 
 include { CLAIR3                       } from '../../../modules/local/clair3'
 include { WHATSAPP_HAPLOTAG            } from '../../../modules/local/whatshap/haplotag'
@@ -25,15 +25,15 @@ workflow HAPLOTYPE_PHASING {
      def bam_format = true
      if ( params.mapper == 'winnowmap' ) {
 
-        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+        MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_REFERENCE_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
 
     } else {
 
-        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_ASSEMBLY_MINIMAP2.out.bam_ref.set { ch_bam_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+        MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_REFERENCE_MINIMAP2.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
 
     }
 

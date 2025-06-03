@@ -8,8 +8,7 @@ process HIFIASM {
         'biocontainers/hifiasm:0.25.0--h5ca1c30_0' }"
 
     input:
-    tuple val(meta) , path(long_reads)        , path(ul_reads)
-    tuple val(meta2), path(hic_read1)         , path(hic_read2)
+    tuple val(meta) , path(long_reads), path(ul_reads), path(hic_reads)
 
     output:
     tuple val(meta), path("*.r_utg.gfa")                                            , emit: raw_unitigs
@@ -33,20 +32,18 @@ process HIFIASM {
     def ul_reads_sorted = ul_reads instanceof List ? ul_reads.sort{ it.name } : ul_reads
     def ultralong = ul_reads ? "--ul ${ul_reads_sorted}" : ""
 
-    def input_hic = ""
-    if([hic_read1, hic_read2].any()) {
-        if(![hic_read1, hic_read2].every()) {
-            log.error("ERROR: Either the forward or reverse Hi-C reads are missing!")
-        } else {
-            input_hic = "--h1 ${hic_read1} --h2 ${hic_read2}"
-        }
+    if( hic_reads && !(hic_reads instanceof List) ) {
+        error "HIC reads must be a list"
     }
+    def hic_args = hic_reads ? "--h1 ${hic_reads[0]} --h2 ${hic_reads[1]}" : ""
+
     """
     hifiasm \\
         $args \\
         -t ${task.cpus} \\
         ${input_hic} \\
         ${ultralong} \\
+        ${hic_args} \\
         -o ${prefix} \\
         ${long_reads_sorted} \\
         2>| >( tee ${prefix}.stderr.log >&2 )

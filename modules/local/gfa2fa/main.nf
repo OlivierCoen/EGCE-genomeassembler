@@ -11,7 +11,7 @@ process GFA_2_FA {
     tuple val(meta), path(gfa_file)
 
     output:
-    tuple val(meta), path("*fa.gz"), emit: contigs_fasta
+    tuple val(meta), path("*fa.gz"), emit: fasta
     tuple val("${task.process}"), val('awk'), eval('echo \$(awk --version | head -n1 | sed "s/mawk //; s/ .*//")'),   topic: versions
     tuple val("${task.process}"), val('gzip'), eval('echo \$(gzip --version | head -n1 | sed "s/gzip //")'),          topic: versions
 

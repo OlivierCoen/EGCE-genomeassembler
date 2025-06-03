@@ -1,8 +1,8 @@
-include { MAP_TO_ASSEMBLY_MINIMAP2      } from '../map_to_assembly/minimap2'
-include { MAP_TO_ASSEMBLY_WINNOWMAP     } from '../map_to_assembly/winnowmap'
+include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2'
+include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap'
 include { RACON                         } from '../../../modules/local/racon'
 
-workflow RACON_POLISH {
+workflow RACON_WORKFLOW {
 
     take:
     ch_reads
@@ -19,13 +19,13 @@ workflow RACON_POLISH {
 
     def bam_format = false
     if ( params.mapper == 'winnowmap' ) {
-        MAP_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_ASSEMBLY_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_WINNOWMAP.out.versions )
+        MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_REFERENCE_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
     } else {
-        MAP_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_ASSEMBLY_MINIMAP2.out.paf_ref.set { ch_paf_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_ASSEMBLY_MINIMAP2.out.versions )
+        MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_TO_REFERENCE_MINIMAP2.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
     }
 
     // ---------------------------------------------------

@@ -1,12 +1,13 @@
-include { RACON_POLISH  as RACON_POLISH_ROUND_1    } from '../racon_polish/main'
-include { RACON_POLISH  as RACON_POLISH_ROUND_2    } from '../racon_polish/main'
-include { RACON_POLISH  as RACON_POLISH_ROUND_3    } from '../racon_polish/main'
-include { RACON_POLISH  as RACON_POLISH_ROUND_4    } from '../racon_polish/main'
-include { RACON_POLISH  as RACON_POLISH_ROUND_5    } from '../racon_polish/main'
-include { MEDAKA                                   } from '../../../modules/local/medaka'
+include { RACON_WORKFLOW  as RACON_ROUND_1    } from '../racon/main'
+include { RACON_WORKFLOW  as RACON_ROUND_2    } from '../racon/main'
+include { RACON_WORKFLOW  as RACON_ROUND_3    } from '../racon/main'
+include { RACON_WORKFLOW  as RACON_ROUND_4    } from '../racon/main'
+include { RACON_WORKFLOW as  RACON_ROUND_5    } from '../racon/main'
+
+include { MEDAKA                      } from '../../../modules/local/medaka'
 
 
-workflow POLISH_ASSEMBLY {
+workflow POLISH {
 
     take:
     ch_reads
@@ -22,28 +23,28 @@ workflow POLISH_ASSEMBLY {
     ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
     if ( params.nb_racon_rounds > 0 ) {
-        RACON_POLISH_ROUND_1 ( ch_reads, ch_assemblies, 1 )
-        ch_assemblies = RACON_POLISH_ROUND_1.out.assemblies
+        RACON_ROUND_1 ( ch_reads, ch_assemblies, 1 )
+        ch_assemblies = RACON_ROUND_1.out.assemblies
         ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
         if ( params.nb_racon_rounds > 1 ) {
-            RACON_POLISH_ROUND_2 ( ch_reads, ch_assemblies, 2 )
-            ch_assemblies = RACON_POLISH_ROUND_2.out.assemblies
+            RACON_ROUND_2 ( ch_reads, ch_assemblies, 2 )
+            ch_assemblies = RACON_ROUND_2.out.assemblies
             ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
             if ( params.nb_racon_rounds > 2 ) {
-                RACON_POLISH_ROUND_3 ( ch_reads, ch_assemblies, 3 )
-                ch_assemblies = RACON_POLISH_ROUND_3.out.assemblies
+                RACON_ROUND_3 ( ch_reads, ch_assemblies, 3 )
+                ch_assemblies = RACON_ROUND_3.out.assemblies
                 ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
                 if ( params.nb_racon_rounds > 3 ) {
-                    RACON_POLISH_ROUND_4 ( ch_reads, ch_assemblies, 4 )
-                    ch_assemblies = RACON_POLISH_ROUND_4.out.assemblies
+                    RACON_ROUND_4 ( ch_reads, ch_assemblies, 4 )
+                    ch_assemblies = RACON_ROUND_4.out.assemblies
                     ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
 
                     if ( params.nb_racon_rounds > 4 ) {
-                        RACON_POLISH_ROUND_5 ( ch_reads, ch_assemblies, 5 )
-                        ch_assemblies = RACON_POLISH_ROUND_5.out.assemblies
+                        RACON_ROUND_5 ( ch_reads, ch_assemblies, 5 )
+                        ch_assemblies = RACON_ROUND_5.out.assemblies
                         ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
                     }
                 }

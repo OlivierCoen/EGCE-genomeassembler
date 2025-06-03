@@ -5,15 +5,11 @@
 */
 include { MULTIQC                                                 } from '../modules/nf-core/multiqc/main'
 
-include { ONT_READ_PREPARATION                                    } from '../subworkflows/local/ont_read_preparation/main'
-include { ONT_READ_PREPARATION as HAPLOTYPE_ONT_READ_PREPARATION  } from '../subworkflows/local/ont_read_preparation/main'
-include { ASSEMBLY                                                } from '../subworkflows/local/assembly/main'
-include { ASSEMBLY as HAPLOTIG_ASSEMBLY                           } from '../subworkflows/local/assembly/main'
-include { HAPLOTYPE_PHASING                                       } from '../subworkflows/local/haplotype_phasing/main'
-include { HAPLOTIG_CLEANING                                       } from '../subworkflows/local/haplotig_cleaning/main'
-include { SCAFFOLDING_WITH_HIC                                    } from '../subworkflows/local/scaffolding_with_hic/main'
+include { MANUAL_PHASED_ASSEMBLY                                  } from '../subworkflows/local/manual_phased_assembly/main'
+include { AUTO_PHASED_ASSEMBLY                                    } from '../subworkflows/local/auto_phased_assembly/main'
 include { ASSEMBLY_QC                                             } from '../subworkflows/local/assembly_qc/main'
-include { ASSEMBLY_QC as HAPLOTIG_ASSEMBLY_QC                     } from '../subworkflows/local/assembly_qc/main'
+include { SCAFFOLDING_WITH_HIC                                    } from '../subworkflows/local/scaffolding_with_hic/main'
+
 
 include { paramsSummaryMap                                        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc                                    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -41,21 +37,7 @@ def inputMultiMapCriteria = multiMapCriteria {
         hic_reads: hic_fastq_1 && hic_fastq_2 ? [ new_meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
 }
 
-def runHaplotigCleaningCriteria = branchCriteria {
-    meta, assembly ->
-        to_clean: meta.clean_haplotigs
-        leave_me_alone: !meta.clean_haplotigs
-}
-
 def isNotNull = { v -> v != null }
-
-def runAssembly = { meta, assembly -> meta.run_step.assembly }
-
-def runHaplotypePhasing = { meta, assembly -> meta.run_step.haplotype_phasing }
-
-def runHaplotigAssembly = { meta, haplotype_reads -> meta.run_step.haplotig_assembly }
-
-def runHaplotigCleaning = { meta, haplotig -> meta.clean_haplotigs }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,6 +124,7 @@ workflow GENOMEASSEMBLER {
     main:
 
     ch_versions = Channel.empty()
+    ch_multiqc_files = Channel.empty()
 
     // ------------------------------------------------------------------------------------
     // INPUT DATA POST-PARSING
@@ -166,107 +149,58 @@ workflow GENOMEASSEMBLER {
 
     ch_input_haplotigs = putHaplotigFilesInSeparateChannels( ch_input_haplotigs )
 
-    // ------------------------------------------------------------------------------------
-    // READ PREPARATION
-    // ------------------------------------------------------------------------------------
 
-    // by default, we prepare all reads, even for samples for which we do not want an assembly
-    // because reads are used at multiple different crucial steps
-    ONT_READ_PREPARATION ( ch_input_reads )
-
-    ch_reads = ONT_READ_PREPARATION.out.prepared_reads
 
     // ------------------------------------------------------------------------------------
-    // ASSEMBLY
+    // PHASED ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    ASSEMBLY (
-       ch_reads.filter ( runAssembly )
-    )
+    if ( params.assembler in ["hifiasm", "flye"] ) {
 
-    // ------------------------------------------------------------------------------------
-    // QUALITY CONTROLS
-    // ------------------------------------------------------------------------------------
+        MANUAL_PHASED_ASSEMBLY (
+            ch_input_reads,
+            ch_input_draft_assemblies,
+            ch_input_haplotype_reads.hap1,
+            ch_input_haplotype_reads.hap2,
+            ch_input_haplotigs.hap1,
+            ch_input_haplotigs.hap2,
+            ch_input_hic_reads
+        )
 
-    ch_input_draft_assemblies
-       .mix ( ASSEMBLY.out.draft_assembly_versions )
-       .set { all_assembly_versions }
+        MANUAL_PHASED_ASSEMBLY.out.assemblies.set { ch_assemblies }
 
-    ASSEMBLY_QC (
-        ch_reads,
-        all_assembly_versions
-    )
+        // Adding data to MultiQC
+        ch_multiqc_files
+            .mix( MANUAL_PHASED_ASSEMBLY.out.fastqc_raw_zip.map                                   { meta, zip -> [ zip ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.fastqc_prepared_reads_zip.map                        { meta, zip -> [ zip ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.nanoq_stats.map                                      { meta, stats -> [ stats ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.flye_report.map                                      { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.assembly_busco_reports.map                           { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_raw_zip.map                   { meta, zip -> [ zip ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_prepared_reads_zip.map        { meta, zip -> [ zip ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_nanoq_stats.map                      { meta, stats -> [ stats ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotig_flye_report.map                             { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotig_assembly_busco_reports.map                  { meta, report -> [ report ] } )
+            .set { ch_multiqc_files }
 
-    // ------------------------------------------------------------------------------------
-    // HAPLOTYPE PHASING
-    // ------------------------------------------------------------------------------------
+        ch_versions = ch_versions.mix ( MANUAL_PHASED_ASSEMBLY.out.versions )
 
-    ASSEMBLY.out.assemblies
-        .mix ( ch_input_draft_assemblies )
-        .filter ( runHaplotypePhasing )
-        .set { ch_draft_assemblies_to_phase }
+    } else {
 
-    HAPLOTYPE_PHASING (
-        ch_reads,
-        ch_draft_assemblies_to_phase
-    )
+        AUTO_PHASED_ASSEMBLY (
+            ch_input_reads
+        )
 
-    HAPLOTYPE_PHASING.out.haplotype_reads
-        .mix ( ch_input_haplotype_reads.hap1 )
-        .mix ( ch_input_haplotype_reads.hap2 )
-        .set { ch_haplotig_reads }
+        AUTO_PHASED_ASSEMBLY.out.assemblies.set { ch_assemblies }
 
-    // ------------------------------------------------------------------------------------
-    // HAPLOTYPE READ PREPARATION
-    // ------------------------------------------------------------------------------------
+        // Adding data to MultiQC
+        ch_multiqc_files
+            .mix( AUTO_PHASED_ASSEMBLY.out.assembly_busco_reports.map { meta, report -> [ report ] } )
+            .set { ch_multiqc_files }
 
-    HAPLOTYPE_ONT_READ_PREPARATION ( ch_haplotig_reads )
+        ch_versions = ch_versions.mix ( AUTO_PHASED_ASSEMBLY.out.versions )
 
-    ch_haplotig_reads = HAPLOTYPE_ONT_READ_PREPARATION.out.prepared_reads
-
-    // ------------------------------------------------------------------------------------
-    // HAPLOTIG ASSEMBLIES
-    // ------------------------------------------------------------------------------------
-
-
-
-    HAPLOTIG_ASSEMBLY (
-        ch_haplotig_reads.filter ( runHaplotigAssembly )
-    )
-
-    // ------------------------------------------------------------------------------------
-    // HAPLOTIG CLEANING
-    // ------------------------------------------------------------------------------------
-
-    HAPLOTIG_ASSEMBLY.out.assemblies
-        .mix ( ch_input_haplotigs.hap1 )
-        .mix ( ch_input_haplotigs.hap2 )
-        .branch ( runHaplotigCleaningCriteria )
-        .set { ch_branched_haplotigs }
-
-    HAPLOTIG_CLEANING (
-        ch_haplotig_reads,
-        ch_branched_haplotigs.to_clean
-    )
-
-    ch_branched_haplotigs.leave_me_alone
-        .mix ( HAPLOTIG_CLEANING.out.cleaned_haplotigs )
-        .set { ch_cleaned_haplotigs }
-
-    // ------------------------------------------------------------------------------------
-    // QUALITY CONTROLS
-    // ------------------------------------------------------------------------------------
-
-    ch_input_haplotigs.hap1
-       .mix ( ch_input_haplotigs.hap2 )
-       .mix ( HAPLOTIG_ASSEMBLY.out.draft_assembly_versions )
-       .mix ( ch_cleaned_haplotigs )
-       .set { all_haplotig_assembly_versions }
-
-    HAPLOTIG_ASSEMBLY_QC (
-        ch_haplotig_reads,
-        all_haplotig_assembly_versions
-    )
+    }
 
     // ------------------------------------------------------------------------------------
     // SCAFFOLDING WITH HIC
@@ -274,7 +208,7 @@ workflow GENOMEASSEMBLER {
 
     /*
     if ( !params.skip_scaffolding_with_hic ) {
-        SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assembly )
+        SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assemblies )
         ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
         ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
     }
@@ -285,14 +219,7 @@ workflow GENOMEASSEMBLER {
     // VERSIONS
     // ------------------------------------------------------------------------------------
 
-    ch_versions = ch_versions
-                    .mix ( ONT_READ_PREPARATION.out.versions )
-                    .mix ( ASSEMBLY.out.versions )
-                    .mix ( ASSEMBLY_QC.out.versions )
-                    .mix ( HAPLOTYPE_PHASING.out.versions )
-                    .mix ( HAPLOTIG_ASSEMBLY.out.versions )
-                    .mix ( HAPLOTIG_CLEANING.out.versions )
-                    .mix ( HAPLOTIG_ASSEMBLY_QC.out.versions )
+    //ch_versions = ch_versions
                     //.mix ( SCAFFOLDING_WITH_HIC.out.versions )
 
     // Collate and save software versions obtained from topic channels
@@ -341,18 +268,7 @@ workflow GENOMEASSEMBLER {
                             .mix( ch_collated_versions )
                             .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )
 
-    // Adding data to MultiQC
-    ch_multiqc_files = ch_multiqc_files
-                        .mix( ONT_READ_PREPARATION.out.fastqc_raw_zip.map            { meta, zip -> [ zip ] } )
-                        .mix( ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip.map { meta, zip -> [ zip ] } )
-                        .mix( ONT_READ_PREPARATION.out.nanoq_stats.map               { meta, stats -> [ stats ] } )
-                        .mix( ASSEMBLY.out.flye_report.map                           { meta, report -> [ report ] } )
-                        .mix( ASSEMBLY_QC.out.assembly_busco_reports.map                        { meta, report -> [ report ] } )
-                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.fastqc_raw_zip.map            { meta, zip -> [ zip ] } )
-                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.fastqc_prepared_reads_zip.map { meta, zip -> [ zip ] } )
-                        .mix( HAPLOTYPE_ONT_READ_PREPARATION.out.nanoq_stats.map               { meta, stats -> [ stats ] } )
-                        .mix( HAPLOTIG_ASSEMBLY_QC.out.assembly_busco_reports.map       { meta, report -> [ report ] } )
-                        .mix( HAPLOTIG_ASSEMBLY.out.flye_report.map                  { meta, report -> [ report ] } )
+
 
     MULTIQC (
         ch_multiqc_files.collect(),
