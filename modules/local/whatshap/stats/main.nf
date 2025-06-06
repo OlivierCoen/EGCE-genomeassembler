@@ -1,4 +1,4 @@
-process WHATSAPP_STATS {
+process WHATSHAP_STATS {
     tag "$meta.id"
     label 'process_high'
 
@@ -8,7 +8,7 @@ process WHATSAPP_STATS {
         'community.wave.seqera.io/library/whatshap:2.7--41cae4706d221f38' }"
 
     input:
-    tuple val(meta), path(vcf)
+    tuple val(meta), path(vcf), path(vcf_index)
 
     output:
     tuple val(meta), path("*.tsv"),                                            emit: stats

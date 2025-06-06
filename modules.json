@@ -25,6 +25,11 @@
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
                         "installed_by": ["modules"]
                     },
+                    "fastp": {
+                        "branch": "master",
+                        "git_sha": "8864afe586537bf562eac7b83349c26207f3cb4d",
+                        "installed_by": ["modules"]
+                    },
                     "merqury/merqury": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
@@ -103,6 +108,16 @@
                     "seqkit/seq": {
                         "branch": "master",
                         "git_sha": "9fe7867a4f012db581d7bd560228ded1074eb0e5",
+                        "installed_by": ["modules"]
+                    },
+                    "tabix/bgzip": {
+                        "branch": "master",
+                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "installed_by": ["modules"]
+                    },
+                    "tabix/tabix": {
+                        "branch": "master",
+                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
                         "installed_by": ["modules"]
                     },
                     "yahs": {

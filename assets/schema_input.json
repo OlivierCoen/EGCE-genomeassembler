@@ -13,12 +13,12 @@
                 "errorMessage": "Assembly name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
-            "technology": {
+            "platform": {
                 "type": "string",
-                "description": "The technology used for sequencing: nanopore / pacbio",
+                "description": "The platform used for sequencing: nanopore / pacbio",
                 "enum": ["nanopore", "pacbio"],
-                "errorMessage": "Technology must be provided and must be 'nanopore' or 'pacbio'",
-                "meta": ["technology"]
+                "errorMessage": "platform must be provided and must be 'nanopore' or 'pacbio'",
+                "meta": ["platform"]
             },
             "genome_size": {
                 "type": "number",
@@ -133,6 +133,24 @@
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
                 "description": "Path to Fastq file (compressed) for Hi-C reads (R2).",
                 "errorMessage": "FastQ file for Hi-C reads cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "run_fastqc_raw_hic": {
+                "type": "boolean",
+                "default": true,
+                "description": "Run FastQC before short read (Hi-C) preparation",
+                "meta": ["run_fastqc_raw_hic"]
+            },
+            "trim_filter_reads_hic": {
+                "type": "boolean",
+                "default": true,
+                "description": "Trim (auto-detect adapters) and filter short reads (Hi-C) with Fastp",
+                "meta": ["trim_filter_reads_hic"]
+            },
+            "run_fastqc_prepared_hic": {
+                "type": "boolean",
+                "default": true,
+                "description": "Run FastQC after read preparation",
+                "meta": ["run_fastqc_prepared_hic"]
             }
         },
         "dependentRequired": {
@@ -143,6 +161,6 @@
             "hic_fastq_2": ["hic_fastq_1"],
             "hic_fastq_1": ["hic_fastq_2"]
         },
-        "required": ["name", "technology"]
+        "required": ["name", "platform"]
     }
 }

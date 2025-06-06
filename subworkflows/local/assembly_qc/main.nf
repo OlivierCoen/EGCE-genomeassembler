@@ -42,6 +42,7 @@ workflow ASSEMBLY_QC {
     if ( !params.skip_busco ) {
         QC_BUSCO( ch_assemblies )
         QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
+        QC_BUSCO.out.short_summary_txt.set { busco_short_summaries }
         ch_versions = ch_versions.mix ( QC_BUSCO.out.versions )
     }
 
@@ -60,7 +61,8 @@ workflow ASSEMBLY_QC {
 
     emit:
     assembly_quast_reports
-    assembly_busco_reports
+    busco_batch_summaries
+    busco_short_summaries
     assembly_merqury_reports
     versions = ch_versions                     // channel: [ versions.yml ]
 

@@ -43,6 +43,30 @@
                 }
             }
         },
+        "general_options": {
+            "title": "General options",
+            "type": "object",
+            "default": "",
+            "properties": {
+                "assembly_mode": {
+                    "type": "string",
+                    "description": "Pipeline mode : type of assembly",
+                    "enum": ["diploid", "haplotype"],
+                    "default": "diploid"
+                },
+                "meryl_k_value": {
+                    "type": "number",
+                    "description": "K-mer value for meryl counting",
+                    "default": 15
+                },
+                "mapper": {
+                    "type": "string",
+                    "description": "Mapper used",
+                    "enum": ["winnowmap", "minimap2"],
+                    "default": "minimap2"
+                }
+            }
+        },
         "steps": {
             "title": "Steps",
             "type": "object",
@@ -77,24 +101,6 @@
             },
             "fa_icon": "fas fa-forward"
         },
-        "general_options": {
-            "title": "General options",
-            "type": "object",
-            "default": "",
-            "properties": {
-                "meryl_k_value": {
-                    "type": "number",
-                    "description": "K-mer value for meryl counting",
-                    "default": 15
-                },
-                "mapper": {
-                    "type": "string",
-                    "description": "Mapper used",
-                    "enum": ["winnowmap", "minimap2"],
-                    "default": "winnowmap"
-                }
-            }
-        },
         "read_preparation_options": {
             "title": "Read preparation options",
             "type": "object",
@@ -118,30 +124,55 @@
             "properties": {
                 "assembler": {
                     "type": "string",
-                    "description": "Assembler to use",
-                    "enum": ["flye", "hifiasm","pecat"],
+                    "description": "Draft assembly tool",
+                    "enum": ["hifiasm", "flye"],
                     "default": "hifiasm"
-                },
-                "pecat_config_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "pattern": "^\\S+\\.txt$",
-                    "description": "Pecat config file.",
-                    "help_text": "An example file is available at tests/test_data/pecat/unzip/pecat_optional_config.txt",
-                    "fa_icon": "fas fa-file-csv",
-                    "default": "assets/pecat_configs/pecat_default_config.txt"
-                },
-                "flye_args": {
-                    "type": "string",
-                    "description": "Additional args for flye"
-                },
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "polishing_options": {
+            "title": "Polishing options",
+            "type": "object",
+            "description": "Options controlling polishing",
+            "default": "",
+            "properties": {
                 "nb_racon_rounds": {
                     "type": "number",
                     "default": 1,
                     "description": "Number of Racon polishing rounds before polishing with Medaka",
                     "minimum": 0,
                     "maximum": 5
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "phasing_options": {
+            "title": "Phasing options",
+            "type": "object",
+            "description": "Options controlling phasing",
+            "default": "",
+            "properties": {
+                "variant_caller": {
+                    "type": "string",
+                    "description": "Variant caller to use",
+                    "enum": ["clair3", "pepper_margin_deepvariant"],
+                    "default": "clair3",
+                    "fa_icon": "fas fa-forward"
+                },
+                "clair3_model": {
+                    "type": "string",
+                    "description": "Model to use for Clair3 phasing",
+                    "enum": ["ont_guppy5", "ont", "hifi", "hifi_revio", "r1041_e82_400bps_sup_v410", "r1041_e82_400bps_sup_v500", "r941_prom_hac_g360+g422", "r941_prom_sup_g5014"],
+                    "default": "ont_guppy5",
+                    "fa_icon": "fas fa-forward"
+                },
+                "phasing_tool": {
+                    "type": "string",
+                    "description": "Tool to use for haplotype phasing",
+                    "enum": ["whatshap", "longphase"],
+                    "default": "whatshap",
+                    "fa_icon": "fas fa-forward"
                 }
             },
             "fa_icon": "fas fa-forward"
@@ -307,16 +338,22 @@
             "$ref": "#/$defs/input_output_options"
         },
         {
-            "$ref": "#/$defs/steps"
+            "$ref": "#/$defs/general_options"
         },
         {
-            "$ref": "#/$defs/general_options"
+            "$ref": "#/$defs/steps"
         },
         {
             "$ref": "#/$defs/read_preparation_options"
         },
         {
             "$ref": "#/$defs/assembly_options"
+        },
+        {
+            "$ref": "#/$defs/polishing_options"
+        },
+        {
+            "$ref": "#/$defs/phasing_options"
         },
         {
             "$ref": "#/$defs/qc_options"

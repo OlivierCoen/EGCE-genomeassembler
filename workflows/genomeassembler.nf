@@ -24,16 +24,16 @@ include { softwareVersionsToYAML                                  } from '../sub
 */
 
 def inputMultiMapCriteria = multiMapCriteria {
-    meta, reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2, hic_fastq_1, hic_fastq_2 ->
+    meta, reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotype_1, haplotype_2, hic_fastq_1, hic_fastq_2 ->
 
-        def first_step = getFirstStep ( reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2 )
+        def first_step = getFirstStep ( reads, draft_assembly, haplotype_1_reads, haplotype_2_reads, haplotype_1, haplotype_2 )
         def run_step_map = createStepMap( first_step )
         def new_meta = meta + [ run_step: run_step_map ]
 
         reads: reads ? [ new_meta, reads ] : null
         draft_assemblies: draft_assembly ? [ new_meta, draft_assembly ] : null
         haplotype_reads: haplotype_1_reads && haplotype_2_reads ? [ new_meta, haplotype_1_reads, haplotype_2_reads ] : null
-        haplotigs: haplotig_1 && haplotig_2 ? [ new_meta, haplotig_1, haplotig_2 ] : null
+        haplotypes: haplotype_1 && haplotype_2 ? [ new_meta, haplotype_1, haplotype_2 ] : null
         hic_reads: hic_fastq_1 && hic_fastq_2 ? [ new_meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
 }
 
@@ -49,17 +49,17 @@ def getOrderedSteps() {
     def ordered_steps = [
         "assembly",
         "haplotype_phasing",
-        "haplotig_assembly"
+        "haplotype_assembly"
     ]
     return ordered_steps
 }
 
 
-def getFirstStep ( long_reads, assembly, haplotype_1_reads, haplotype_2_reads, haplotig_1, haplotig_2 ) {
+def getFirstStep ( long_reads, assembly, haplotype_1_reads, haplotype_2_reads, haplotype_1, haplotype_2 ) {
 
     def ordered_steps = getOrderedSteps()
 
-    if ( haplotig_1 && haplotig_2 ) {
+    if ( haplotype_1 && haplotype_2 ) {
         return null
     } else if ( haplotype_1_reads && haplotype_2_reads ) {
         return ordered_steps[-1]
@@ -69,7 +69,7 @@ def getFirstStep ( long_reads, assembly, haplotype_1_reads, haplotype_2_reads, h
         return ordered_steps[-3]
     } else {
         error(
-            "Could not determine first assembly step to run with provided inputs: ${long_reads}, ${assembly}, ${haplotype_1_reads}, ${haplotype_2_reads}, ${haplotig_1}, ${haplotig_2}"
+            "Could not determine first assembly step to run with provided inputs: ${long_reads}, ${assembly}, ${haplotype_1_reads}, ${haplotype_2_reads}, ${haplotype_1}, ${haplotype_2}"
         )
     }
 }
@@ -98,14 +98,14 @@ def createStepMap( target_step ) {
 }
 
 
-def putHaplotigFilesInSeparateChannels ( ch_files ) {
+def putHaplotypeFilesInSeparateChannels ( ch_files ) {
     return ch_files
         .multiMap {
             meta, file_1, file_2 ->
                 hap1:
-                    [ meta + [ haplotig: 1 ], file_1 ]
+                    [ meta + [ haplotype: 1 ], file_1 ]
                 hap2:
-                    [ meta + [ haplotig: 2 ], file_2 ]
+                    [ meta + [ haplotype: 2 ], file_2 ]
                 }
 }
 
@@ -139,15 +139,15 @@ workflow GENOMEASSEMBLER {
     ch_input.reads.filter( isNotNull ).set { ch_input_reads }
     ch_input.draft_assemblies.filter( isNotNull ).set { ch_input_draft_assemblies }
     ch_input.haplotype_reads.filter( isNotNull ).set { ch_input_haplotype_reads }
-    ch_input.haplotigs.filter( isNotNull ).set { ch_input_haplotigs }
+    ch_input.haplotypes.filter( isNotNull ).set { ch_input_haplotypes }
     ch_input.hic_reads.filter( isNotNull ).set { ch_input_hic_reads }
 
-    // separating haplotig-specific files in separate channels
+    // separating haplotype-specific files in separate channels
     // we don't do it directly in the multiMap because it gives more flexibility this way
     // in the future, one can add support for polyploid assemblies
-    ch_input_haplotype_reads = putHaplotigFilesInSeparateChannels( ch_input_haplotype_reads )
+    ch_input_haplotype_reads = putHaplotypeFilesInSeparateChannels( ch_input_haplotype_reads )
 
-    ch_input_haplotigs = putHaplotigFilesInSeparateChannels( ch_input_haplotigs )
+    ch_input_haplotypes = putHaplotypeFilesInSeparateChannels( ch_input_haplotypes )
 
 
 
@@ -162,8 +162,8 @@ workflow GENOMEASSEMBLER {
             ch_input_draft_assemblies,
             ch_input_haplotype_reads.hap1,
             ch_input_haplotype_reads.hap2,
-            ch_input_haplotigs.hap1,
-            ch_input_haplotigs.hap2,
+            ch_input_haplotypes.hap1,
+            ch_input_haplotypes.hap2,
             ch_input_hic_reads
         )
 
@@ -175,12 +175,14 @@ workflow GENOMEASSEMBLER {
             .mix( MANUAL_PHASED_ASSEMBLY.out.fastqc_prepared_reads_zip.map                        { meta, zip -> [ zip ] } )
             .mix( MANUAL_PHASED_ASSEMBLY.out.nanoq_stats.map                                      { meta, stats -> [ stats ] } )
             .mix( MANUAL_PHASED_ASSEMBLY.out.flye_report.map                                      { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.assembly_busco_reports.map                           { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.busco_batch_summaries.map                            { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.busco_short_summaries.map                            { meta, report -> [ report ] }.flatten() )
             .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_raw_zip.map                   { meta, zip -> [ zip ] } )
             .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_prepared_reads_zip.map        { meta, zip -> [ zip ] } )
             .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_nanoq_stats.map                      { meta, stats -> [ stats ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotig_flye_report.map                             { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotig_assembly_busco_reports.map                  { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_flye_report.map                            { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_busco_batch_summaries.map                  { meta, report -> [ report ] } )
+            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_busco_short_summaries.map                  { meta, report -> [ report ] }.flatten() )
             .set { ch_multiqc_files }
 
         ch_versions = ch_versions.mix ( MANUAL_PHASED_ASSEMBLY.out.versions )
@@ -195,7 +197,8 @@ workflow GENOMEASSEMBLER {
 
         // Adding data to MultiQC
         ch_multiqc_files
-            .mix( AUTO_PHASED_ASSEMBLY.out.assembly_busco_reports.map { meta, report -> [ report ] } )
+            .mix( AUTO_PHASED_ASSEMBLY.out.busco_batch_summaries.map { meta, report -> [ report ] } )
+            .mix( AUTO_PHASED_ASSEMBLY.out.busco_short_summaries.map { meta, report -> [ report ] }.flatten() )
             .set { ch_multiqc_files }
 
         ch_versions = ch_versions.mix ( AUTO_PHASED_ASSEMBLY.out.versions )
@@ -205,16 +208,14 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
     // SCAFFOLDING WITH HIC
     // ------------------------------------------------------------------------------------
-
     /*
-    if ( !params.skip_scaffolding_with_hic ) {
-        SCAFFOLDING_WITH_HIC ( ch_hic_reads, ch_assemblies )
-        ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
-        ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
-    }
+    SCAFFOLDING_WITH_HIC (
+        ch_input_hic_reads,
+        ch_assemblies
+    )
+    ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
+    ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
     */
-
-
     // ------------------------------------------------------------------------------------
     // VERSIONS
     // ------------------------------------------------------------------------------------
@@ -263,7 +264,7 @@ workflow GENOMEASSEMBLER {
     ch_methods_description = Channel.value( methodsDescriptionText(ch_multiqc_custom_methods_description) )
 
     // Adding metadata to MultiQC
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = ch_multiqc_files
                             .mix( ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml') )
                             .mix( ch_collated_versions )
                             .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )

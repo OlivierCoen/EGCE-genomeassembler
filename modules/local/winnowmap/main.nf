@@ -25,10 +25,13 @@ process WINNOWMAP {
     def bam_index = "${prefix}.bam##idx##${prefix}.bam.bai --write-index"
     def bam_output = bam_format ? "-a | samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2}" : "-o ${prefix}.paf"
     def gzip_paf_output = bam_format ? "" : "gzip -n ${prefix}.paf"
+    def preset = meta.platform == "nanopore" ? "ont": "pb"
+    // TODO: complete the preset function
     """
     winnowmap \\
-        -x map-ont \\
+        -x map-${preset} \\
         -W $repetitive_kmers \\
+        -y \\
         $ref_fasta \\
         $ont_reads \\
         $bam_output

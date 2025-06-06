@@ -17,15 +17,12 @@ process GFA_2_FA {
 
     script:
     """
-    outfile=\$(basename $gfa_file .gfa).fa.gz
-
     awk '/^S/{print ">"\$2;print \$3}' ${gfa_file} \\
-        | gzip > \$outfile
+        | gzip > ${gfa_file.simpleName}.fa.gz
     """
 
     stub:
     """
-    outfile=\$(basename $gfa_file .gfa).fa.gz
-    touch \$outfile
+    touch ${gfa_file.simpleName}.fa.gz
     """
 }

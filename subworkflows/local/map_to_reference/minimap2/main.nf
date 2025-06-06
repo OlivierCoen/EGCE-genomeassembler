@@ -40,7 +40,6 @@ workflow MAP_TO_REFERENCE_MINIMAP2 {
     }
     */
 
-
     emit:
     paf_ref = MINIMAP2_ALIGN.out.paf_ref
     bam_ref = MINIMAP2_ALIGN.out.bam_ref

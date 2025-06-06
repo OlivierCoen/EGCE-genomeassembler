@@ -40,11 +40,11 @@ process FLYE {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     // flye mode
-    if ( !meta.technology ) { error "Cannot run Flye without technology" }
-    def technology = meta.technology == "nanopore" ? "nano": meta.technology
+    if ( !meta.platform ) { error "Cannot run Flye without knowing platform" }
+    def platform = meta.platform == "nanopore" ? "nano": meta.platform
     if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
     def qscore_category = getQScoreCategory( mean_quality )
-    def mode = "--${technology}-${qscore_category}"
+    def mode = "--${platform}-${qscore_category}"
 
     // genome size
     def genome_size_arg = meta.genome_size ? "--genome-size ${meta.genome_size}" : ""
@@ -55,16 +55,20 @@ process FLYE {
         $reads \\
         --out-dir . \\
         --threads \\
-        $task.cpus \\
+        ${task.cpus} \\
         $genome_size_arg \\
         $args
 
     gzip -c assembly.fasta > ${prefix}.assembly.fasta.gz
     gzip -c assembly_graph.gfa > ${prefix}.assembly_graph.gfa.gz
     gzip -c assembly_graph.gv > ${prefix}.assembly_graph.gv.gz
-    mv assembly_info.txt ${prefix}.assembly_info.txt
+
     mv flye.log ${prefix}.flye.log
     mv params.json ${prefix}.params.json
+
+    # format assembly info file
+    tr -s ' ' '\t' < assembly_info.txt > assembly_info.txt.tmp && mv assembly_info.txt.tmp ${prefix}.assembly_info.txt
+
     """
 
     stub:

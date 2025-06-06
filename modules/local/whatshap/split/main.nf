@@ -1,4 +1,4 @@
-process WHATSAPP_SPLIT {
+process WHATSHAP_SPLIT {
     tag "$meta.id"
     label 'process_high'
 

@@ -27,19 +27,15 @@ process MINIMAP2_ALIGN {
     def prefix = task.ext.prefix ?: "${reads.simpleName}_mapped_to_${reference.simpleName}"
     def bam_index = "${prefix}.bam##idx##${prefix}.bam.bai --write-index"
     def bam_output = bam_format ? "-a | samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2}" : "-o ${prefix}.paf"
-    def bam_input = "${reads.extension}".matches('sam|bam|cram')
-    def samtools_reset_fastq = bam_input ? "samtools reset --threads ${task.cpus-1} $args3 $reads | samtools fastq --threads ${task.cpus-1} $args4 |" : ''
-    def query = bam_input ? "-" : reads
-    def target = reference ?: (bam_input ? error("BAM input requires reference") : reads)
     def gzip_paf_output = bam_format ? "" : "gzip -n ${prefix}.paf"
 
     """
-    $samtools_reset_fastq \\
     minimap2 \\
         $args \\
         -t $task.cpus \\
-        $target \\
-        $query \\
+        -y \\
+        $reference \\
+        $reads \\
         $bam_output
 
     $gzip_paf_output

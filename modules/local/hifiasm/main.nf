@@ -8,7 +8,7 @@ process HIFIASM {
         'biocontainers/hifiasm:0.25.0--h5ca1c30_0' }"
 
     input:
-    tuple val(meta) , path(long_reads), path(ul_reads), path(hic_reads)
+    tuple val(meta) , path(long_reads), path(ul_reads)
 
     output:
     tuple val(meta), path("*.r_utg.gfa")                                            , emit: raw_unitigs
@@ -21,7 +21,7 @@ process HIFIASM {
     tuple val(meta), path("*.ec.fa.gz")                                             , emit: corrected_reads  , optional: true
     tuple val(meta), path("*.ovlp.paf.gz")                                          , emit: read_overlaps    , optional: true
     tuple val(meta), path("${prefix}.stderr.log")                                   , emit: log
-    tuple val("${task.process}"), val('hifiasm'), eval('hifiasm --version 2>&1'),   topic: versions
+    tuple val("${task.process}"), val('hifiasm'), eval('hifiasm --version'),   topic: versions
 
 
     script:
@@ -32,18 +32,21 @@ process HIFIASM {
     def ul_reads_sorted = ul_reads instanceof List ? ul_reads.sort{ it.name } : ul_reads
     def ultralong = ul_reads ? "--ul ${ul_reads_sorted}" : ""
 
+    /*
     if( hic_reads && !(hic_reads instanceof List) ) {
         error "HIC reads must be a list"
     }
     def hic_args = hic_reads ? "--h1 ${hic_reads[0]} --h2 ${hic_reads[1]}" : ""
+    */
+
+    // Note: "Hifiasm purges haplotig duplications by default.
+    // For inbred or homozygous genomes, you may disable purging with option -l0"
 
     """
     hifiasm \\
         $args \\
         -t ${task.cpus} \\
-        ${input_hic} \\
         ${ultralong} \\
-        ${hic_args} \\
         -o ${prefix} \\
         ${long_reads_sorted} \\
         2>| >( tee ${prefix}.stderr.log >&2 )

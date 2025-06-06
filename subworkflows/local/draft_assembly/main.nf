@@ -27,10 +27,10 @@ workflow DRAFT_ASSEMBLY {
 
     take:
     ch_reads
-    ch_hic_reads
 
     main:
 
+    ch_versions = Channel.empty()
     ch_flye_report = Channel.empty()
     ch_alternate_assemblies = Channel.empty()
 
@@ -47,7 +47,7 @@ workflow DRAFT_ASSEMBLY {
 
     } else if ( params.assembler == "hifiasm" ) {
 
-        HIFIASM_WORKFLOW ( ch_reads, ch_hic_reads )
+        HIFIASM_WORKFLOW ( ch_reads )
 
         HIFIASM_WORKFLOW.out.assemblies.set { ch_assemblies }
         HIFIASM_WORKFLOW.out.draft_assembly_versions.set { ch_alternate_assemblies }
@@ -80,6 +80,7 @@ workflow DRAFT_ASSEMBLY {
     assemblies                       = ch_assemblies
     flye_report                      = ch_flye_report
     draft_assembly_versions          = ch_draft_assembly_versions
+    versions                         = ch_versions
 
 
 }

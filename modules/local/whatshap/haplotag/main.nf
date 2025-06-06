@@ -1,4 +1,4 @@
-process WHATSAPP_HAPLOTAG {
+process WHATSHAP_HAPLOTAG {
     tag "$meta.id"
     label 'process_high'
 
@@ -10,10 +10,11 @@ process WHATSAPP_HAPLOTAG {
 
 
     input:
-    tuple val(meta), path(bam), path(bai), path(vcf), path(vcf_index), path(fasta), path(fasta_index)
+    tuple val(meta), path(bam), path(bai), path(fasta), path(fasta_index), path(vcf), path(vcf_index)
 
     output:
-    tuple val(meta), path("*_list.txt.gz"),                            emit: haplotag_list
+    tuple val(meta), path("*_haplotagged.bam"),                                emit: haplotagged_bam
+    tuple val(meta), path("*_list.txt.gz"),                                    emit: haplotag_list
     tuple val("${task.process}"), val('whatshap'), eval('whatshap --version'), topic: versions
 
     script:
@@ -22,13 +23,10 @@ process WHATSAPP_HAPLOTAG {
     """
     zcat ${fasta} > assembly.fasta
 
-    # TODO: find a way to remove --ignore-read-groups
-
     whatshap haplotag \\
         --reference assembly.fasta \\
         --output ${prefix}_haplotagged.bam \\
         --output-haplotag-list ${prefix}_list.txt.gz \\
-        --ignore-read-groups \\
         ${vcf} \\
         ${bam}
 
@@ -38,6 +36,7 @@ process WHATSAPP_HAPLOTAG {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.bam
+    touch ${prefix}_list.txt.gz
+    touch ${prefix}_haplotagged.bam
     """
 }

@@ -9,6 +9,7 @@ process CLAIR3 {
 
     input:
     tuple val(meta), path(bam), path(bai), path(fasta), path(fai)
+    val model
 
     output:
     tuple val(meta), path("clair3_output/merge_output.vcf.gz"),                                        emit: vcf
@@ -18,15 +19,17 @@ process CLAIR3 {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def model = "ont_guppy5"
+    if ( !meta.platform ) { error "Cannot run Clair3 without known platform" }
+    def platform = meta.platform == "nanopore" ? "ont": "hifi"
     """
     zcat ${fasta} > assembly.fasta
 
     run_clair3.sh \\
+       ${args} \\
       --bam_fn ${bam} \\
       --ref_fn assembly.fasta \\
       --threads ${task.cpus} \\
-      --platform ont \\
+      --platform ${platform} \\
       --output clair3_output/ \\
       --model_path \$(dirname \$(which run_clair3.sh))/models/${model}/ \\
       --include_all_ctgs
@@ -38,5 +41,6 @@ process CLAIR3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.vcf
+    touch ${prefix}.vcf.tbi
     """
 }

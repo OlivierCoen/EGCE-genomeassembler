@@ -6,26 +6,17 @@ workflow HIFIASM_WORKFLOW {
 
     take:
     ch_reads
-    ch_hic_reads
 
     main:
 
-    ch_hic_reads
-        .map { meta, hic_reads_1, hic_reads_2 ->
-            [ meta, [ hic_reads_1, hic_reads_2 ] ]
-        }
-        .set { prepared_hic_reads }
-
     // TODO: parse Nanoq output to distinguish between long and ultra long reads
     ch_reads
-        .map { meta, reads ->
-            [ meta, reads, [] ]
-        }
-        .join( prepared_hic_reads )
+        .map { meta, reads -> [ meta, reads, [] ] }
         .set { hifiasm_inputs }
 
     HIFIASM( hifiasm_inputs )
 
+    /*
     HIFIASM.out.primary_contigs
         .map { meta, primary_contigs -> [ meta + [ type: 'primary' ], primary_contigs ] }
         .set { gfa_primary_contigs }
@@ -39,8 +30,9 @@ workflow HIFIASM_WORKFLOW {
         .mix( gfa_haplotig_1_contigs )
         .mix( gfa_haplotig_2_contigs )
         .set { gfa_assemblies }
+    */
 
-    GFA_2_FA( gfa_assemblies )
+    GFA_2_FA( HIFIASM.out.primary_contigs )
 
     GFA_2_FA.out.fasta
         .tap { draft_assembly_versions }
