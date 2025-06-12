@@ -5,11 +5,6 @@
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {
-                    "busco/busco": {
-                        "branch": "master",
-                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
-                        "installed_by": ["modules"]
-                    },
                     "bwamem2/index": {
                         "branch": "master",
                         "git_sha": "a29f18660f5e3748d44d6f716241e70c942c065d",
@@ -30,9 +25,9 @@
                         "git_sha": "8864afe586537bf562eac7b83349c26207f3cb4d",
                         "installed_by": ["modules"]
                     },
-                    "merqury/merqury": {
+                    "gfatools/gfa2fa": {
                         "branch": "master",
-                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "git_sha": "81880787133db07d9b4c1febd152c090eb8325dc",
                         "installed_by": ["modules"]
                     },
                     "meryl/count": {
@@ -65,14 +60,9 @@
                         "git_sha": "956a7c2d20df53c1e6acc05ca9dd5059bb9cca99",
                         "installed_by": ["modules"]
                     },
-                    "purgedups/calcuts": {
+                    "purgedups/histplot": {
                         "branch": "master",
-                        "git_sha": "81880787133db07d9b4c1febd152c090eb8325dc",
-                        "installed_by": ["modules"]
-                    },
-                    "purgedups/getseqs": {
-                        "branch": "master",
-                        "git_sha": "81880787133db07d9b4c1febd152c090eb8325dc",
+                        "git_sha": "c278136a74d71706a0b72b0c7139cbb7dfb8141c",
                         "installed_by": ["modules"]
                     },
                     "purgedups/pbcstat": {

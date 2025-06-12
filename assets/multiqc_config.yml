@@ -3,11 +3,22 @@ report_comment: >
   analysis pipeline.
 
 report_section_order:
+
+  quast_summary:
+    order: 1300
+  busco_summary:
+    order: 1201
   busco:
-    order: 1101
-  flye_report:
-    order: 1100
-  fastqc_trimmed:
+    order: 1200
+  contig_size_distributions:
+    order: 1199
+  merqury_assembly_qv:
+    order: 1099
+  merqury_contigs_qv:
+    order: 1098
+  nanoq_report:
+    order: 1002
+  fastqc_prepared:
     order: 1001
   fastqc_raw:
     order: 1000
@@ -20,6 +31,7 @@ report_section_order:
 
 run_modules:
   - busco
+  - quast
   - custom_content
   - fastqc
 
@@ -31,7 +43,7 @@ module_order:
       path_filters:
         - "*_raw_fastqc.zip"
   - fastqc:
-      anchor: "fastqc_trimmed"
+      anchor: "fastqc_prepared"
       name: "FastQC (trimmed and / or filtered)"
       info: "This section of the report shows FastQC results after adapter trimming and / or filtering."
       path_filters:
@@ -42,42 +54,99 @@ export_plots: true
 
 disable_version_detection: true
 
+skip_generalstats: true
+
 custom_data:
 
   busco_summary:
-    section_name: "BUSCO"
+    section_name: "BUSCO summary"
     file_format: "tsv"
-    #no_violin: true
-    sort_rows: false
+    #sort_rows: false
     description: |
       BUSCO summary
-    plot_type: "table"
-
-  flye_report:
-    section_name: "Flye assembly"
-    file_format: "tsv"
-    #no_violin: true
-    sort_rows: false
-    description: |
-      Flye assembly report
     plot_type: "table"
 
   nanoq_report:
     section_name: "NanoQ report"
     file_format: "tsv"
-    #no_violin: true
-    sort_rows: false
+    #sort_rows: false
     description: |
       Nanoq report
     plot_type: "table"
 
+  contig_size_distributions:
+    section_name: "Contig size distributions"
+    file_format: "tsv"
+    description: |
+      Nanoq report
+    plot_type: "linegraph"
+    pconfig:
+      categories: true
+
+  merqury_assembly_qv:
+    section_name: "Merqury Assembly Quality Value"
+    file_format: "tsv"
+    description: |
+      Assembly Quality Value as computed by Merqury. The higher the value, the better the quality of the assembly.
+      QV = −10⋅log 10 ( error rate )
+    plot_type: "table"
+    headers:
+      assembly:
+        title: "Assembly"
+      unique_kmers:
+        title: "Unique kmers"
+      total_kmers:
+        title: "Total kmers"
+      qv:
+        title: "QV"
+      error_rate:
+        title: "Error rate"
+        format: "{:,e}"
+
+  merqury_contigs_qv:
+    section_name: "Merqury Contig Quality Value"
+    file_format: "tsv"
+    sort_rows: false
+    description: |
+      Quality Value  per contig as computed by Merqury. The higher the value, the better the quality of the contig.
+      QV = −10⋅log 10 ( error rate )
+    plot_type: "table"
+    headers:
+      assembly:
+        title: "Assembly"
+      contig:
+        title: "Contig"
+      unique_kmers:
+        title: "Unique kmers"
+      total_kmers:
+        title: "Total kmers"
+      qv:
+        title: "QV"
+      error_rate:
+        title: "Error rate"
+        format: "{:,e}"
+
+  quast_summary:
+    section_name: "Quast summary"
+    file_format: "tsv"
+    description: |
+      Quast summary
+    plot_type: "table"
+
+
 sp:
   busco_summary:
     fn: "*-busco.batch_summary.txt"
-  flye_report:
-    fn: "*.assembly_info.txt"
   nanoq_report:
     fn: "*_nanoq_summary.tsv"
+  contig_size_distributions:
+    fn: "*_contig_sizes.tsv"
+  merqury_assembly_qv:
+    fn: "*_qv_assembly.tsv"
+  merqury_contigs_qv:
+    fn: "*_qv_contigs.tsv"
+  quast_summary:
+    fn: "*_quast_report.tsv"
 
 
 

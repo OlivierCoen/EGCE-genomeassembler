@@ -1,0 +1,50 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_contig_sizes.tsv:md5,6df5187b2f854172448e4a8887b896b0"
+                    ]
+                ],
+                "1": [
+                    [
+                        "CONTIG_STATS",
+                        "python",
+                        "3.13.3"
+                    ]
+                ],
+                "2": [
+                    [
+                        "CONTIG_STATS",
+                        "pandas",
+                        "2.3.0"
+                    ]
+                ],
+                "3": [
+                    [
+                        "CONTIG_STATS",
+                        "biopython",
+                        "1.85"
+                    ]
+                ],
+                "contig_sizes": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test_contig_sizes.tsv:md5,6df5187b2f854172448e4a8887b896b0"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.2"
+        },
+        "timestamp": "2025-06-06T11:01:00.87489233"
+    }
+}

@@ -1,0 +1,30 @@
+nextflow_process {
+
+    name "Test Process CONTIG_STATS"
+    script "modules/local/contig_stats/main.nf"
+    process "CONTIG_STATS"
+    tag "contig_stats"
+
+    test("Should run without failures") {
+
+        when {
+            process {
+                """
+                input[0] =  Channel.of(
+                    [
+                        [ id: "test" ],
+                        file( '$projectDir/tests/test_data/contig_stats/*.fasta', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

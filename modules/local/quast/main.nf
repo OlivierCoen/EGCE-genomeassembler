@@ -4,19 +4,20 @@ process QUAST {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/a5/a515d04307ea3e0178af75132105cd36c87d0116c6f9daecf81650b973e870fd/data' :
-        'community.wave.seqera.io/library/quast:5.3.0--755a216045b6dbdd' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/24/245c56c9733954bbf2675e19b922d63772731d7bc7ebe6964b8119fb6a9a3a12/data' :
+        'community.wave.seqera.io/library/quast_pandas:45a80fbbe1a6f7b8' }"
 
     input:
     tuple val(meta), path(assembly_list), path(aln_long_reads_assembly_bam_list)
 
 
    output:
-    path "${meta.id}*/*",                                                                                       emit: results
-    path "*_quast_report.tsv",                                                                                  emit: tsv
-    tuple val("${task.process}"), val('quast'), eval('quast --version | grep "QUAST" | sed "s#QUAST ##g"'),     topic: versions
+    path("${meta.id}*/*"),                                                                                                  emit: results
 
-
+    path("*_quast_report.tsv"),                                                                                             topic: mqc_quast_report
+    tuple val("${task.process}"), val('python'),       eval("python3 --version | sed 's/Python //'"),                       topic: versions
+    tuple val("${task.process}"), val('pandas'),       eval('python3 -c "import pandas; print(pandas.__version__)"'),       topic: versions
+    tuple val("${task.process}"), val('quast'), eval('quast --version | grep "QUAST" | sed "s#QUAST ##g"'),                 topic: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -33,7 +34,9 @@ process QUAST {
         --bam ${bam} \\
         ${args}
 
-    ln -s ${prefix}/report.tsv ${prefix}_quast_report.tsv
+    format_quast_report.py \\
+        --report ${prefix}/report.tsv \\
+        --out ${prefix}_quast_report.tsv
     """
 
 }

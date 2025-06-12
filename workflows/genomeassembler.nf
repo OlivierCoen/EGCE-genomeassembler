@@ -3,19 +3,12 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { MULTIQC                                                 } from '../modules/nf-core/multiqc/main'
 
-include { MANUAL_PHASED_ASSEMBLY                                  } from '../subworkflows/local/manual_phased_assembly/main'
-include { AUTO_PHASED_ASSEMBLY                                    } from '../subworkflows/local/auto_phased_assembly/main'
-include { ASSEMBLY_QC                                             } from '../subworkflows/local/assembly_qc/main'
-include { SCAFFOLDING_WITH_HIC                                    } from '../subworkflows/local/scaffolding_with_hic/main'
-
-
-include { paramsSummaryMap                                        } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc                                    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { customSoftwareVersionsToYAML                            } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
-include { methodsDescriptionText                                  } from '../subworkflows/local/utils_nfcore_genomeassembler_pipeline'
-include { softwareVersionsToYAML                                  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { MANUAL_ASSEMBLY                                         } from '../subworkflows/local/manual_assembly'
+include { AUTO_ASSEMBLY                                           } from '../subworkflows/local/auto_assembly'
+include { ASSEMBLY_QC                                             } from '../subworkflows/local/assembly_qc'
+include { SCAFFOLDING_WITH_HIC                                    } from '../subworkflows/local/scaffolding_with_hic'
+include { MULTIQC_WORKFLOW                                        } from '../subworkflows/local/multiqc'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,7 +117,6 @@ workflow GENOMEASSEMBLER {
     main:
 
     ch_versions = Channel.empty()
-    ch_multiqc_files = Channel.empty()
 
     // ------------------------------------------------------------------------------------
     // INPUT DATA POST-PARSING
@@ -157,7 +149,7 @@ workflow GENOMEASSEMBLER {
 
     if ( params.assembler in ["hifiasm", "flye"] ) {
 
-        MANUAL_PHASED_ASSEMBLY (
+        MANUAL_ASSEMBLY (
             ch_input_reads,
             ch_input_draft_assemblies,
             ch_input_haplotype_reads.hap1,
@@ -167,41 +159,23 @@ workflow GENOMEASSEMBLER {
             ch_input_hic_reads
         )
 
-        MANUAL_PHASED_ASSEMBLY.out.assemblies.set { ch_assemblies }
+        MANUAL_ASSEMBLY.out.assemblies.set { ch_assemblies }
+        MANUAL_ASSEMBLY.out.reads.set { ch_reads }
+        MANUAL_ASSEMBLY.out.all_draft_assembly_versions_and_alternatives.set { ch_all_draft_assembly_versions_and_alternatives }
 
-        // Adding data to MultiQC
-        ch_multiqc_files
-            .mix( MANUAL_PHASED_ASSEMBLY.out.fastqc_raw_zip.map                                   { meta, zip -> [ zip ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.fastqc_prepared_reads_zip.map                        { meta, zip -> [ zip ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.nanoq_stats.map                                      { meta, stats -> [ stats ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.flye_report.map                                      { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.busco_batch_summaries.map                            { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.busco_short_summaries.map                            { meta, report -> [ report ] }.flatten() )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_raw_zip.map                   { meta, zip -> [ zip ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_fastqc_prepared_reads_zip.map        { meta, zip -> [ zip ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_reads_nanoq_stats.map                      { meta, stats -> [ stats ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_flye_report.map                            { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_busco_batch_summaries.map                  { meta, report -> [ report ] } )
-            .mix( MANUAL_PHASED_ASSEMBLY.out.haplotype_busco_short_summaries.map                  { meta, report -> [ report ] }.flatten() )
-            .set { ch_multiqc_files }
-
-        ch_versions = ch_versions.mix ( MANUAL_PHASED_ASSEMBLY.out.versions )
+        ch_versions = ch_versions.mix ( MANUAL_ASSEMBLY.out.versions )
 
     } else {
 
-        AUTO_PHASED_ASSEMBLY (
+        AUTO_ASSEMBLY (
             ch_input_reads
         )
 
-        AUTO_PHASED_ASSEMBLY.out.assemblies.set { ch_assemblies }
+        AUTO_ASSEMBLY.out.assemblies.set { ch_assemblies }
+        AUTO_ASSEMBLY.out.reads.set { ch_reads }
+        AUTO_ASSEMBLY.out.draft_assembly_versions.set { ch_all_draft_assembly_versions_and_alternatives }
 
-        // Adding data to MultiQC
-        ch_multiqc_files
-            .mix( AUTO_PHASED_ASSEMBLY.out.busco_batch_summaries.map { meta, report -> [ report ] } )
-            .mix( AUTO_PHASED_ASSEMBLY.out.busco_short_summaries.map { meta, report -> [ report ] }.flatten() )
-            .set { ch_multiqc_files }
-
-        ch_versions = ch_versions.mix ( AUTO_PHASED_ASSEMBLY.out.versions )
+        ch_versions = ch_versions.mix ( AUTO_ASSEMBLY.out.versions )
 
     }
 
@@ -216,72 +190,24 @@ workflow GENOMEASSEMBLER {
     ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
     ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
     */
+
     // ------------------------------------------------------------------------------------
-    // VERSIONS
+    // QC
     // ------------------------------------------------------------------------------------
 
-    //ch_versions = ch_versions
-                    //.mix ( SCAFFOLDING_WITH_HIC.out.versions )
-
-    // Collate and save software versions obtained from topic channels
-    // TODO: use the nf-core functions when they are adapted to channel topics
-
-    ch_collated_versions = customSoftwareVersionsToYAML( Channel.topic('versions') )
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'software_mqc_topic_versions.yml',
-            sort: true,
-            newLine: true
-        )
-    ch_versions = ch_versions.concat( Channel.fromPath("${params.outdir}/pipeline_info/software_mqc_topic_versions.yml") )
-
-    // Collate and save software versions
-    softwareVersionsToYAML( ch_versions )
-        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'software_mqc_versions.yml', sort: true, newLine: true)
-        .set { ch_collated_versions }
+    ASSEMBLY_QC (
+        ch_reads,
+        ch_all_draft_assembly_versions_and_alternatives
+    )
 
     // ------------------------------------------------------------------------------------
     // MULTIQC
     // ------------------------------------------------------------------------------------
 
-    ch_multiqc_config = Channel.fromPath( "$projectDir/assets/multiqc_config.yml", checkIfExists: true )
-
-    summary_params = paramsSummaryMap( workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary = Channel.value( paramsSummaryMultiqc(summary_params) )
-
-    ch_multiqc_custom_config = params.multiqc_config ?
-                                    Channel.fromPath(params.multiqc_config, checkIfExists: true) :
-                                    Channel.empty()
-
-    ch_multiqc_logo = params.multiqc_logo ?
-                        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
-                        Channel.empty()
-
-    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
-                                                file(params.multiqc_methods_description, checkIfExists: true) :
-                                                file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-
-    ch_methods_description = Channel.value( methodsDescriptionText(ch_multiqc_custom_methods_description) )
-
-    // Adding metadata to MultiQC
-    ch_multiqc_files = ch_multiqc_files
-                            .mix( ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml') )
-                            .mix( ch_collated_versions )
-                            .mix( ch_methods_description.collectFile( name: 'methods_description_mqc.yaml', sort: true ) )
-
-
-
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        []
-    )
+    MULTIQC_WORKFLOW ( ch_versions )
 
     emit:
-    multiqc_report = MULTIQC.out.report.toList()
+    multiqc_report = MULTIQC_WORKFLOW.out.multiqc_report.toList()
 
 
 }

@@ -29,10 +29,6 @@ workflow LONG_READ_PREPARATION {
     main:
 
     ch_versions = Channel.empty()
-    ch_fastqc_raw_zip = Channel.empty()
-    ch_fastqc_prepared_reads_zip = Channel.empty()
-    ch_porechop_logs = Channel.empty()
-    ch_nanoq_stats = Channel.empty()
 
     // the pipeline accepts reads in fasta format
     ch_reads
@@ -57,13 +53,13 @@ workflow LONG_READ_PREPARATION {
             trim_me: meta.trim_reads
             leave_me_alone: !meta.trim_reads
         }
-        .set { ch_fastq_reads }
+        .set { ch_branched_fastq_reads }
 
-    PORECHOP_ABI( ch_fastq_reads.trim_me, [] )
+    PORECHOP_ABI( ch_branched_fastq_reads.trim_me, [] )
 
-    ch_fastq_reads.leave_me_alone
+    ch_branched_fastq_reads.leave_me_alone
         .mix ( PORECHOP_ABI.out.reads )
-        .set { ch_fastq_reads }
+        .set { ch_trimmed_fastq_reads }
 
     ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
 
@@ -71,50 +67,44 @@ workflow LONG_READ_PREPARATION {
     // Filtering
     // ---------------------------------------------------------------------
 
-    ch_fastq_reads
+    ch_trimmed_fastq_reads
         .branch { meta, reads ->
             filter_me: meta.filter_reads
-            leave_me_alone: !meta.trim_reads
+            leave_me_alone: !meta.filter_reads
         }
-        .set { ch_fastq_reads }
+        .set { ch_branched_trimmed_fastq_reads }
 
     if ( params.filtering_tool == "chopper" ) {
 
-        CHOPPER( ch_fastq_reads.filter_me, [] )
+        CHOPPER( ch_branched_trimmed_fastq_reads.filter_me, [] )
 
-        ch_fastq_reads.leave_me_alone
-            .mix ( CHOPPER.out.fastq )
-            .set { ch_fastq_reads }
-
+        CHOPPER.out.fastq.set { ch_filtered_fastq_reads }
         ch_versions = ch_versions.mix ( CHOPPER.out.versions )
 
-
     } else { // seqkit seq
-        SEQKIT_SEQ( ch_fastq_reads.filter_me )
 
-        ch_fastq_reads.leave_me_alone
-            .mix ( SEQKIT_SEQ.out.fastx )
-            .set { ch_fastq_reads }
+        SEQKIT_SEQ( ch_branched_trimmed_fastq_reads.filter_me )
 
+        SEQKIT_SEQ.out.fastx.set { ch_filtered_fastq_reads }
         ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
 
     }
+
+    ch_branched_trimmed_fastq_reads.leave_me_alone
+        .mix ( ch_filtered_fastq_reads )
+        .set { ch_prepared_fastq_reads }
 
     // ---------------------------------------------------------------------
     // Quality control on trimmed / filtered reads
     // ---------------------------------------------------------------------
 
-    FASTQC_PREPARED_READS ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
+    FASTQC_PREPARED_READS ( ch_prepared_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
 
-    NANOQ( ch_fastq_reads )
+    NANOQ( ch_prepared_fastq_reads )
 
 
     emit:
-    prepared_reads = ch_fastq_reads
-    fastqc_raw_zip = FASTQC_RAW.out.zip
-    fastqc_prepared_reads_zip = FASTQC_PREPARED_READS.out.zip
-    porechop_logs = PORECHOP_ABI.out.log
-    nanoq_stats = NANOQ.out.report
+    prepared_reads = ch_prepared_fastq_reads
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

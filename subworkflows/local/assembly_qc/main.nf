@@ -1,8 +1,11 @@
 include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2/main'
 include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap/main'
-include { QC_QUAST                      } from '../qc/quast/main'
-include { QC_BUSCO                      } from '../qc/busco/main'
-include { QC_MERQURY                    } from '../qc/merqury/main'
+
+include { BUSCO_BUSCO as BUSCO           } from '../../../modules/local/busco/busco'
+include { MERQURY                        } from '../../../modules/local/merqury'
+include { MERYL_COUNT                    } from '../../../modules/local/meryl/count'
+include { QUAST                          } from '../../../modules/local/quast'
+include { CONTIG_STATS                   } from '../../../modules/local/contig_stats'
 
 
 workflow ASSEMBLY_QC {
@@ -14,25 +17,31 @@ workflow ASSEMBLY_QC {
     main:
     ch_versions = Channel.empty()
 
-    assembly_quast_reports = Channel.empty()
-    assembly_busco_reports = Channel.empty()
-    assembly_merqury_reports = Channel.empty()
+    CONTIG_STATS ( ch_assemblies )
 
     if ( !params.skip_quast ) {
 
         def bam_format = true
         if ( params.mapper == 'winnowmap' ) {
+
             MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
             MAP_TO_REFERENCE_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
             ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
+
         } else {
+
             MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
             MAP_TO_REFERENCE_MINIMAP2.out.bam_ref.set { ch_bam_ref }
             ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
+
         }
 
-        QC_QUAST( ch_bam_ref )
-        QC_QUAST.out.quast_tsv.set { assembly_quast_reports }
+        ch_bam_ref
+            .groupTuple() // [ meta, [bam1, bam2, bam3], [ref1, ref2, ref3]
+            .map { meta, bam_list, ref_list -> [ meta, ref_list, bam_list ] } // inverting lists
+            .set { quast_input }
+
+        QUAST( quast_input )
 
     }
 
@@ -40,30 +49,42 @@ workflow ASSEMBLY_QC {
     QC on initial assembly
     */
     if ( !params.skip_busco ) {
-        QC_BUSCO( ch_assemblies )
-        QC_BUSCO.out.batch_summary.set { assembly_busco_reports }
-        QC_BUSCO.out.short_summary_txt.set { busco_short_summaries }
-        ch_versions = ch_versions.mix ( QC_BUSCO.out.versions )
+
+        ch_assemblies
+            .groupTuple() // one run of BUSCO per meta
+            .set { busco_input }
+
+        def busco_config_file = []
+        def clean_intermediates = false
+        BUSCO(
+            busco_input,
+            'genome',
+            params.busco_lineage,
+            params.busco_db ? file(params.busco_db, checkIfExists: true) : [],
+            busco_config_file,
+            clean_intermediates
+            )
+
     }
 
     if ( !params.skip_merqury ) {
-        QC_MERQURY(
+
+        MERYL_COUNT(
             ch_reads,
-            ch_assemblies
+            params.meryl_k_value
         )
-        QC_MERQURY.out.stats
-            .join( QC_MERQURY.out.spectra_asm_hist )
-            .join( QC_MERQURY.out.spectra_cn_hist )
-            .join( QC_MERQURY.out.assembly_qv )
-            .set { assembly_merqury_reports }
-        ch_versions = ch_versions.mix ( QC_MERQURY.out.versions )
+
+        MERYL_COUNT.out.meryl_db
+            .combine( ch_assemblies, by: 0 ) // cartesian product with meta as matching key
+            .set { merqury_input }
+        MERYL_COUNT.out.meryl_db.view { v -> "meryl_db: $v" }
+        ch_assemblies.view { v -> "assembly: $v" }
+        merqury_input.view { v -> "merqury_input: $v" }
+        MERQURY( merqury_input )
+
     }
 
     emit:
-    assembly_quast_reports
-    busco_batch_summaries
-    busco_short_summaries
-    assembly_merqury_reports
     versions = ch_versions                     // channel: [ versions.yml ]
 
 }

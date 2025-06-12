@@ -17,7 +17,7 @@ process MINIMAP2_ALIGN {
     tuple val(meta), path("*.paf.gz"), path(reference),                                   optional: true,   emit: paf_ref
     tuple val(meta), path("*.bai"),                                                       optional: true,   emit: index
     tuple val("${task.process}"), val('minimap2'), eval('minimap2 --version'),                              topic: versions
-    tuple val("${task.process}"), val('samtools'), eval('samtools --version | head -1 | awk "{print $2}"'), topic: versions
+    tuple val("${task.process}"), val('samtools'), eval('samtools --version | head -1 | sed "s/samtools //g"'), topic: versions
 
     script:
     def args  = task.ext.args ?: ''

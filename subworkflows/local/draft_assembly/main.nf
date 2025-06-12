@@ -43,7 +43,6 @@ workflow DRAFT_ASSEMBLY {
         FLYE( ch_flye_input )
 
         FLYE.out.fasta.set { ch_assemblies }
-        FLYE.out.txt.set { ch_flye_report }
 
     } else if ( params.assembler == "hifiasm" ) {
 
@@ -62,22 +61,22 @@ workflow DRAFT_ASSEMBLY {
 
     ch_assemblies
         .branch ( polishBranchCriteria )
-        .set { ch_assemblies }
+        .set { ch_branched_assemblies }
 
-    POLISH ( ch_reads, ch_assemblies.polish_me )
+    POLISH ( ch_reads, ch_branched_assemblies.polish_me )
 
     // collecting all intermediate and final assemblies (for QC)
-    ch_assemblies.leave_me_alone
+    ch_branched_assemblies.leave_me_alone
         .mix ( POLISH.out.polished_assembly_versions )
         .mix ( ch_alternate_assemblies )
         .set { ch_draft_assembly_versions }
 
-    ch_assemblies.leave_me_alone
+    ch_branched_assemblies.leave_me_alone
         .mix ( POLISH.out.assemblies )
-        .set { ch_assemblies }
+        .set { ch_draft_assemblies }
 
     emit:
-    assemblies                       = ch_assemblies
+    assemblies                       = ch_draft_assemblies
     flye_report                      = ch_flye_report
     draft_assembly_versions          = ch_draft_assembly_versions
     versions                         = ch_versions

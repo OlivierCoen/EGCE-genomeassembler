@@ -11,9 +11,10 @@ process FASTQC {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path("*.html"), emit: html
-    tuple val(meta), path("*.zip") , emit: zip
-    tuple val("${task.process}"), val('fastqc'), eval('fastqc --version | sed "/FastQC v/!d; s/.*v//"'),   topic: versions
+    tuple val(meta), path("*.html"),                                                                     emit: html
+
+    path("*.zip"),                                                                                       topic: mqc_fastqc_zip
+    tuple val("${task.process}"), val('fastqc'), eval('fastqc --version | sed "/FastQC v/!d; s/.*v//"'), topic: versions
 
     script:
     def args          = task.ext.args ?: ''
@@ -40,6 +41,7 @@ process FASTQC {
         ${args} \\
         --threads ${task.cpus} \\
         --memory ${fastqc_memory} \\
+        --quiet \\
         ${renamed_files}
     """
 

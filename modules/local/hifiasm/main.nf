@@ -9,6 +9,7 @@ process HIFIASM {
 
     input:
     tuple val(meta) , path(long_reads), path(ul_reads)
+    val assembly_mode
 
     output:
     tuple val(meta), path("*.r_utg.gfa")                                            , emit: raw_unitigs
@@ -41,10 +42,12 @@ process HIFIASM {
 
     // Note: "Hifiasm purges haplotig duplications by default.
     // For inbred or homozygous genomes, you may disable purging with option -l0"
-
+    def haplotig_purging_args = assembly_mode == "haplotype" ? "-l0": ""
     """
     hifiasm \\
+        -l0 \\
         $args \\
+        $haplotig_purging_args \\
         -t ${task.cpus} \\
         ${ultralong} \\
         -o ${prefix} \\

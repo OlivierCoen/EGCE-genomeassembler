@@ -30,9 +30,11 @@ process FLYE {
     tuple val(meta), path("*.fasta.gz"),                               emit: fasta
     tuple val(meta), path("*.gfa.gz")  ,                               emit: gfa
     tuple val(meta), path("*.gv.gz")   ,                               emit: gv
-    tuple val(meta), path("*.txt")     ,                               emit: txt
     tuple val(meta), path("*.log")     ,                               emit: log
     tuple val(meta), path("*.json")    ,                               emit: json
+
+    path("*.txt"),                                                     topic: mqc_flye_report
+
     tuple val("${task.process}"), val('flye'), eval('flye --version'), topic: versions
 
     script:
@@ -67,8 +69,8 @@ process FLYE {
     mv params.json ${prefix}.params.json
 
     # format assembly info file
-    tr -s ' ' '\t' < assembly_info.txt > assembly_info.txt.tmp && mv assembly_info.txt.tmp ${prefix}.assembly_info.txt
-
+    tr -s ' ' ',' < assembly_info.txt > assembly_info.txt.tmp && mv assembly_info.txt.tmp ${prefix}.assembly_info.txt
+    rm assembly_info.txt
     """
 
     stub:

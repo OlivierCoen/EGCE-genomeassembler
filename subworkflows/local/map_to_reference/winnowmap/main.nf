@@ -18,6 +18,8 @@ workflow MAP_TO_REFERENCE_WINNOWMAP {
         ch_assembly_fasta,
         params.meryl_k_value
     )
+    ch_versions = ch_versions.mix ( MERYL_COUNT.out.versions )
+
     MERYL_PRINT( MERYL_COUNT.out.meryl_db )
 
     // Grouping by meta and giving to Winnowmap
