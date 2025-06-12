@@ -1,0 +1,30 @@
+nextflow_process {
+
+    name "Test Process VERKKO"
+    script "modules/local/verkko/main.nf"
+    process "VERKKO"
+    tag "verkko"
+
+    test("Should run without failures") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of(
+                    [
+                        [ id: "test", genome_size: 1500000 ],
+                        file( '$projectDir/tests/test_data/long_reads/a_thaliana/HiFi-Col-0_test_data.fastq.gz', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert snapshot(process.out).match()
+        }
+
+    }
+
+}

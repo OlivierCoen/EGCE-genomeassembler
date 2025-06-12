@@ -1,5 +1,5 @@
 process PURGEDUPS_CALCUTS {
-    tag "${assembly.simpleName}"
+    tag "${meta.id}"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"

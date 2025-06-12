@@ -12,7 +12,7 @@ process NANOQ {
 
     output:
     path("*_nanoq_summary.tsv"),                                                                                            topic: mqc_nanoq_report
-    tuple val(meta), eval("cat *_nanoq_summary.tsv | tail -n 1 | tr -s ' ' | cut -d' ' -f8"),                               topic: mean_qualities
+    tuple val(meta), eval("cat *_nanoq_summary.tsv | tail -n 1 | tr '\t' ',' | cut -d',' -f9"),                               topic: mean_qualities
     tuple val("${task.process}"), val('python'),       eval("python3 --version | sed 's/Python //'"),                       topic: versions
     tuple val("${task.process}"), val('pandas'),       eval('python3 -c "import pandas; print(pandas.__version__)"'),       topic: versions
     tuple val("${task.process}"), val('nanoq'), eval('nanoq --version | sed -e "s/nanoq //g"'),                             topic: versions

@@ -1,3 +1,0 @@
-name,genome_size,reads,draft_assembly,polish_draft_assembly,hic_fastq_1,hic_fastq_2
-test1,1500000,tests/test_data/A_nas_rebasecalled.head_10000.fastq.gz,,true,tests/test_data/hic_anasatum/R1.fastq.gz,tests/test_data/hic_anasatum/R2.fastq.gz
-test2,1500000,tests/test_data/A_nas_rebasecalled.head_10000.fastq.gz,tests/test_data/flye/output/test_fastq.assembly.fasta.gz,,tests/test_data/hic_anasatum/R1.fastq.gz,tests/test_data/hic_anasatum/R2.fastq.gz

@@ -77,9 +77,7 @@ workflow ASSEMBLY_QC {
         MERYL_COUNT.out.meryl_db
             .combine( ch_assemblies, by: 0 ) // cartesian product with meta as matching key
             .set { merqury_input }
-        MERYL_COUNT.out.meryl_db.view { v -> "meryl_db: $v" }
-        ch_assemblies.view { v -> "assembly: $v" }
-        merqury_input.view { v -> "merqury_input: $v" }
+
         MERQURY( merqury_input )
 
     }

@@ -39,7 +39,7 @@ workflow HAPLOTIG_PURGING {
 
     PURGEDUPS_PBCSTAT( ch_paf )
     PURGEDUPS_PBCSTAT.out.stat.set { ch_stats }
-
+    ch_stats.view()
     PURGEDUPS_CALCUTS(
         ch_stats,
         params.assembly_mode

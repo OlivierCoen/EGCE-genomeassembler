@@ -1,6 +1,6 @@
 def getQScoreCategory ( qual ) {
 
-    def mean_quality = qual.toFloat()
+    mean_quality = qual.toFloat()
 
     if ( mean_quality < 7 ) {
         warning "Very low quality reads: $mean_quality"
@@ -33,8 +33,6 @@ process FLYE {
     tuple val(meta), path("*.log")     ,                               emit: log
     tuple val(meta), path("*.json")    ,                               emit: json
 
-    path("*.txt"),                                                     topic: mqc_flye_report
-
     tuple val("${task.process}"), val('flye'), eval('flye --version'), topic: versions
 
     script:
@@ -45,8 +43,8 @@ process FLYE {
     if ( !meta.platform ) { error "Cannot run Flye without knowing platform" }
     def platform = meta.platform == "nanopore" ? "nano": meta.platform
     if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
-    def qscore_category = getQScoreCategory( mean_quality )
-    def mode = "--${platform}-${qscore_category}"
+    qscore_category = getQScoreCategory( mean_quality )
+    mode = "--${platform}-${qscore_category}"
 
     // genome size
     def genome_size_arg = meta.genome_size ? "--genome-size ${meta.genome_size}" : ""
@@ -67,10 +65,6 @@ process FLYE {
 
     mv flye.log ${prefix}.flye.log
     mv params.json ${prefix}.params.json
-
-    # format assembly info file
-    tr -s ' ' ',' < assembly_info.txt > assembly_info.txt.tmp && mv assembly_info.txt.tmp ${prefix}.assembly_info.txt
-    rm assembly_info.txt
     """
 
     stub:
