@@ -1,6 +1,8 @@
 process VERKKO {
     tag "$meta.id"
-    label 'process_very_high'
+    label 'process_high_cpu'
+    label 'process_high_memory'
+    label 'process_long'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

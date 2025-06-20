@@ -29,8 +29,6 @@ workflow SCAFFOLDING_WITH_HIC {
         SAMTOOLS_FAIDX.out.fai.map { meta, index -> [ index ]}
     )
 
-    YAHS.out.scaffolds_fasta.view()
-
     ch_versions = ch_versions
                     .mix ( HIC_SHORT_READS_PREPARATION.out.versions )
                     .mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )

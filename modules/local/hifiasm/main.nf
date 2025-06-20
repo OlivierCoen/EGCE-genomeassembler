@@ -1,6 +1,8 @@
 process HIFIASM {
     tag "$meta.id"
-    label 'process_very_high'
+    label 'process_high_cpu'
+    label 'process_high_memory'
+    label 'process_long'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -33,6 +35,8 @@ process HIFIASM {
     def ul_reads_sorted = ul_reads instanceof List ? ul_reads.sort{ it.name } : ul_reads
     def ultralong = ul_reads ? "--ul ${ul_reads_sorted}" : ""
 
+    def ont_arg = meta.platform == "nanopore" ? "--ont": ""
+
     /*
     if( hic_reads && !(hic_reads instanceof List) ) {
         error "HIC reads must be a list"
@@ -46,6 +50,7 @@ process HIFIASM {
     """
     hifiasm \\
         $args \\
+        $ont_arg \\
         $haplotig_purging_args \\
         -t ${task.cpus} \\
         ${ultralong} \\
