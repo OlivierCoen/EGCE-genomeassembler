@@ -45,7 +45,6 @@ process HIFIASM {
     def haplotig_purging_args = assembly_mode == "haplotype" ? "-l0": ""
     """
     hifiasm \\
-        -l0 \\
         $args \\
         $haplotig_purging_args \\
         -t ${task.cpus} \\
