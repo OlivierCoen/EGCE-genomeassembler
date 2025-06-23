@@ -14,11 +14,11 @@ workflow MAP_TO_REFERENCE_WINNOWMAP {
 
     ch_versions = Channel.empty()
 
+    def winnowmap_meryl_k_value = 15
     MERYL_COUNT(
         ch_assembly_fasta,
-        params.meryl_k_value
+        winnowmap_meryl_k_value
     )
-    ch_versions = ch_versions.mix ( MERYL_COUNT.out.versions )
 
     MERYL_PRINT( MERYL_COUNT.out.meryl_db )
 

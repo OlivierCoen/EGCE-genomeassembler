@@ -43,9 +43,8 @@ process FLYE {
 
     // genome size
     def genome_size_arg = meta.genome_size ? "--genome-size ${meta.genome_size}" : ""
-    targs = task.ext.args
-    println "tatgsff" + targs
-    if ( targs.contains('--nano-raw') || targs.contains('--nano-corr') || targs.contains('--nano-hq') || targs.contains('--pacbio-raw') || targs.contains('--pacbio-corr') || targs.contains('--pacbio-hq') ) {
+
+    if ( args.contains('--nano-raw') || args.contains('--nano-corr') || args.contains('--nano-hq') || args.contains('--pacbio-raw') || args.contains('--pacbio-corr') || args.contains('--pacbio-hq') ) {
         mode = ""
     } else {
         // flye mode
@@ -55,6 +54,7 @@ process FLYE {
         qscore_category = getQScoreCategory( mean_quality )
         mode = "--${platform}-${qscore_category}"
     }
+
     """
     flye \\
         ${mode} \\
