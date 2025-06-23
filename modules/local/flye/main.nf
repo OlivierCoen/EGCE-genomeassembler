@@ -41,25 +41,29 @@ process FLYE {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
-    // flye mode
-    if ( !meta.platform ) { error "Cannot run Flye without knowing platform" }
-    def platform = meta.platform == "nanopore" ? "nano": meta.platform
-    if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
-    qscore_category = getQScoreCategory( mean_quality )
-    mode = "--${platform}-${qscore_category}"
-
     // genome size
     def genome_size_arg = meta.genome_size ? "--genome-size ${meta.genome_size}" : ""
-
+    targs = task.ext.args
+    println "tatgsff" + targs
+    if ( targs.contains('--nano-raw') || targs.contains('--nano-corr') || targs.contains('--nano-hq') || targs.contains('--pacbio-raw') || targs.contains('--pacbio-corr') || targs.contains('--pacbio-hq') ) {
+        mode = ""
+    } else {
+        // flye mode
+        if ( !meta.platform ) { error "Cannot run Flye without knowing platform" }
+        def platform = meta.platform == "nanopore" ? "nano": meta.platform
+        if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
+        qscore_category = getQScoreCategory( mean_quality )
+        mode = "--${platform}-${qscore_category}"
+    }
     """
     flye \\
         ${mode} \\
+        ${args} \\
         $reads \\
         --out-dir . \\
         --threads \\
         ${task.cpus} \\
-        $genome_size_arg \\
-        $args
+        $genome_size_arg
 
     gzip -c assembly.fasta > ${prefix}.assembly.fasta.gz
     gzip -c assembly_graph.gfa > ${prefix}.assembly_graph.gfa.gz
