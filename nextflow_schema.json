@@ -143,6 +143,11 @@
                     "description": "Number of Racon polishing rounds before polishing with Medaka",
                     "minimum": 0,
                     "maximum": 5
+                },
+                "skip_medaka": {
+                    "type": "boolean",
+                    "description": "Skip polishing with Medaka",
+                    "fa_icon": "fas fa-check-circle"
                 }
             },
             "fa_icon": "fas fa-forward"

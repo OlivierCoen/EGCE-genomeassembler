@@ -52,14 +52,16 @@ workflow POLISH {
         }
     }
 
-    ch_reads
-        .join( ch_assemblies )
-        .set { ch_medaka_input }
+    if ( !params.skip_medaka ) {
 
-    MEDAKA ( ch_medaka_input )
-    ch_assemblies = MEDAKA.out.assembly
-    ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
+        ch_reads
+            .join( ch_assemblies )
+            .set { ch_medaka_input }
 
+        MEDAKA ( ch_medaka_input )
+        ch_assemblies = MEDAKA.out.assembly
+        ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
+    }
 
     emit:
     assemblies = ch_assemblies
