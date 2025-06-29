@@ -6,8 +6,8 @@ process MEDAKA {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/medaka:1.4.4--py38h130def0_0' :
-        'biocontainers/medaka:1.4.4--py38h130def0_0' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/18/1842062447c537b95476a00c46d1f3776096972f66ef0935923ae238a39c16ad/data' :
+        'community.wave.seqera.io/library/medaka_pigz:38dfdf8a96315448' }"
 
     input:
     tuple val(meta), path(reads), path(assembly)
@@ -20,8 +20,8 @@ process MEDAKA {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}_medaka"
     """
-    zcat $reads > reads.fastq
-    zcat $assembly > assembly.fasta
+    pigz -dc $reads > reads.fastq
+    pigz -dc $assembly > assembly.fasta
 
     medaka_consensus \\
         -t $task.cpus \\
@@ -31,6 +31,6 @@ process MEDAKA {
 
     mv medaka/consensus.fasta ${prefix}.fa
 
-    gzip -n ${prefix}.fa
+    pigz ${prefix}.fa
     """
 }
