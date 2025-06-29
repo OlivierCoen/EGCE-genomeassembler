@@ -27,10 +27,9 @@ process MEDAKA {
         -t $task.cpus \\
         $args \\
         -i reads.fastq \\
-        -d assembly.fasta \\
-        -o ./
+        -d assembly.fasta
 
-    mv consensus.fasta ${prefix}.fa
+    mv medaka/consensus.fasta ${prefix}.fa
 
     gzip -n ${prefix}.fa
     """
