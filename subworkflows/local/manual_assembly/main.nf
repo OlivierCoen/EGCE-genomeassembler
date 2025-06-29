@@ -73,13 +73,19 @@ workflow MANUAL_ASSEMBLY {
     // PRIMARY ASSEMBLY
     // --------------------------------------------------------
 
-    DRAFT_ASSEMBLY ( ch_prepared_reads )
+    ch_prepared_reads
+        .filter ( runAssembly )
+        .set { ch_prepared_reads_to_assemble }
+
+    DRAFT_ASSEMBLY ( ch_prepared_reads_to_assemble )
 
     DRAFT_ASSEMBLY.out.assemblies
         .mix ( ch_input_draft_assemblies )
         .set { ch_all_draft_assemblies }
-    ch_all_draft_assemblies.view { v -> "all draft: " + v}
-    DRAFT_ASSEMBLY.out.draft_assembly_versions.set { ch_all_draft_assembly_versions_and_alternatives }
+
+    DRAFT_ASSEMBLY.out.draft_assembly_versions
+        .mix ( ch_input_draft_assemblies )
+        .set { ch_all_draft_assembly_versions_and_alternatives }
 
     ch_versions = ch_versions
         .mix ( LONG_READ_PREPARATION.out.versions )
