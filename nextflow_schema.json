@@ -97,6 +97,11 @@
                     "type": "boolean",
                     "description": "Skip the Merqury analyses",
                     "fa_icon": "fas fa-check-circle"
+                },
+                "skip_nanoq": {
+                    "type": "boolean",
+                    "description": "Skip NanoQ",
+                    "fa_icon": "fas fa-check-circle"
                 }
             },
             "fa_icon": "fas fa-forward"

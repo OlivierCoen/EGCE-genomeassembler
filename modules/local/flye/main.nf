@@ -50,7 +50,7 @@ process FLYE {
         // flye mode
         if ( !meta.platform ) { error "Cannot run Flye without knowing platform" }
         def platform = meta.platform == "nanopore" ? "nano": meta.platform
-        if ( !mean_quality ) { error "Cannot run Flye without mean quality" }
+        if ( !mean_quality ) { error "Cannot run Flye without mean quality? You must run NanoQ before running Flye." }
         qscore_category = getQScoreCategory( mean_quality )
         mode = "--${platform}-${qscore_category}"
     }

@@ -100,7 +100,9 @@ workflow LONG_READ_PREPARATION {
 
     FASTQC_PREPARED_READS ( ch_prepared_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
 
-    NANOQ( ch_prepared_fastq_reads )
+    if ( !params.skip_nanoq ) {
+        NANOQ( ch_prepared_fastq_reads )
+    }
 
 
     emit:
