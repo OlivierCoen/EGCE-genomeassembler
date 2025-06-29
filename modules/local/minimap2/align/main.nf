@@ -28,10 +28,12 @@ process MINIMAP2_ALIGN {
     def bam_index = "${prefix}.bam##idx##${prefix}.bam.bai --write-index"
     def bam_output = bam_format ? "-a | samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2}" : "-o ${prefix}.paf"
     def gzip_paf_output = bam_format ? "" : "gzip -n ${prefix}.paf"
+    def preset = meta.platform == "nanopore" ? "map-ont": "map-pb"
 
     """
     minimap2 \\
         $args \\
+        -x $preset \\
         -t $task.cpus \\
         -y \\
         $reference \\
