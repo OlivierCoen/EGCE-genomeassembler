@@ -1,6 +1,6 @@
-include { FASTP                              } from '../../../modules/nf-core/fastp'
-include { FASTQC as FASTQC_RAW               } from '../../../modules/local/fastqc'
-include { FASTQC as FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc'
+include { FASTP                                              } from '../../../modules/nf-core/fastp'
+include { FASTQC as HIC_SHORT_READS_FASTQC_RAW               } from '../../../modules/local/fastqc'
+include { FASTQC as HIC_SHORT_READS_FASTQC_PREPARED_READS    } from '../../../modules/local/fastqc'
 
 
 workflow HIC_SHORT_READS_PREPARATION {
@@ -10,11 +10,15 @@ workflow HIC_SHORT_READS_PREPARATION {
 
     main:
 
+    ch_versions = Channel.empty()
+
     // ---------------------------------------------------------------------
     // Quality control on raw reads
     // ---------------------------------------------------------------------
 
-    FASTQC_RAW ( ch_hic_short_reads.filter { meta, assembly -> meta.run_fastqc_raw_hic } )
+    HIC_SHORT_READS_FASTQC_RAW (
+        ch_hic_short_reads.filter { meta, assembly -> meta.run_fastqc_raw_hic }
+    )
 
     // ---------------------------------------------------------------------
     // Trimming / Filtering
@@ -25,16 +29,16 @@ workflow HIC_SHORT_READS_PREPARATION {
             trim_me: meta.trim_filter_reads_hic
             leave_me_alone: !meta.trim_filter_reads_hic
         }
-        .set { ch_hic_short_reads }
+        .set { ch_branched_hic_short_reads }
 
     FASTP (
-        ch_hic_short_reads.trim_me,
+        ch_branched_hic_short_reads.trim_me,
         [], false, false, true
     )
 
-    ch_fastq_reads.leave_me_alone
+    ch_branched_hic_short_reads.leave_me_alone
         .mix ( FASTP.out.reads )
-        .set { ch_hic_short_reads }
+        .set { ch_prepared_hic_short_reads }
 
     ch_versions = ch_versions.mix ( FASTP.out.versions )
 
@@ -42,12 +46,12 @@ workflow HIC_SHORT_READS_PREPARATION {
     // Quality control on trimmed / filtered reads
     // ---------------------------------------------------------------------
 
-    FASTQC_PREPARED_READS ( ch_hic_short_reads.filter { meta, assembly -> meta.run_fastqc_prepared_hic } )
+    HIC_SHORT_READS_FASTQC_PREPARED_READS (
+        ch_prepared_hic_short_reads.filter { meta, assembly -> meta.run_fastqc_prepared_hic }
+    )
 
     emit:
-    prepared_hic_short_reads        = ch_hic_short_reads
-    fastqc_raw_zip                  = FASTQC_RAW.out.zip
-    fastqc_prepared_reads_zip       = FASTQC_PREPARED_READS.out.zip
+    prepared_hic_short_reads        = ch_prepared_hic_short_reads
     fastp_json                      = FASTP.out.json
     versions                        = ch_versions
 }

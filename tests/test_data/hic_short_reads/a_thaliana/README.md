@@ -7,16 +7,26 @@ Reads were mapped separately against [Col-CEN_v1.2.Chr1_5MB-7MB.fasta](../../ref
 
 SAM files were separately processed as follows:
 ```bash
-samtools view -b -o <all.bam> <in.sam>
-samtools sort -@ 12 <all.sorted.bam> <all.bam>
+samtools sort -@ 24 --output-fmt BAM -o SRR22354810_1.sorted.bam SRR22354810_1.sam
 # separating mapped and unmapped reads
-samtools view -b -F 4 -o <mapped.bam> <all.sorted.bam>
-samtools view -b -f 4 -o <unmapped.bam> <all.sorted.bam>
+samtools view -b -F 4 -o SRR22354810_1.sorted.mapped.bam SRR22354810_1.sorted.bam
+samtools view -b -f 4 -o SRR22354810_1.sorted.unmapped.bam SRR22354810_1.sorted.bam
 # subsampling reads: sampling fraction were chosen according to % of mapped reads
-samtools view -b -s 0.04 -o <mapped.sampled.bam> <mapped.bam>
-samtools view -b -s 0.0001 -o <unmapped.sampled.bam> <unmapped.bam>
+samtools view -b -s 0.04 -o SRR22354810_1.sorted.mapped.sampled.bam SRR22354810_1.sorted.mapped.bam
+samtools view -b -s 0.0001 -o SRR22354810_1.sorted.unmapped.sampled.bam SRR22354810_1.sorted.unmapped.bam
 # merging
-samtools merge <merged.bam> <mapped.sampled.bam> <unmapped.sampled.bam>
+samtools merge SRR22354810_1.merged.bam SRR22354810_1.sorted.mapped.sampled.bam SRR22354810_1.sorted.unmapped.sampled.bam
+# sort by names
+samtools sort -@ 24 -n -o SRR22354810_1.merged.sorted.bam SRR22354810_1.merged.bam
+# getting IDs in mate 1 BAM
+samtools view SRR22354810_1.merged.sorted.bam | cut -f1 | sort | uniq > readnames.txt
+samtools view -h -N readnames.txt SRR22354810_2.sam | samtools view -bo SRR22354810_2.filtered.bam
+# sort by name
+samtools sort -@ 24 -n -o SRR22354810_2.filtered.sorted.bam SRR22354810_2.filtered.bam
 # make FASTQ files out of BAM files
-samtools fastq --reference Col-CEN_v1.2.Chr1_5MB-7MB.fasta <merged.bam> | gzip -n > <fastq file>
+samtools fastq --reference Col-CEN_v1.2.Chr1_5MB-7MB.fasta SRR22354810_1.merged.sorted.bam > SRR22354810_1.sampled.fq
+samtools fastq --reference Col-CEN_v1.2.Chr1_5MB-7MB.fasta SRR22354810_2.filtered.sorted.bam > SRR22354810_2.sampled.fq
 ```
+samtools version used: 1.22
+
+Since both Fastq files not ha

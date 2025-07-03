@@ -1,7 +1,7 @@
 include { HIC_SHORT_READS_PREPARATION   } from '../hic_short_reads_preparation'
 include { ARIMA_MAPPING_PIPELINE_HIC    } from '../arima_mapping_pipeline_hic'
 include { SAMTOOLS_FAIDX                } from '../../../modules/local/samtools/faidx'
-include { YAHS                          } from '../../../modules/nf-core/yahs'
+include { YAHS                          } from '../../../modules/local/yahs'
 
 
 workflow SCAFFOLDING_WITH_HIC {
@@ -32,12 +32,9 @@ workflow SCAFFOLDING_WITH_HIC {
     ch_versions = ch_versions
                     .mix ( HIC_SHORT_READS_PREPARATION.out.versions )
                     .mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )
-                    .mix ( YAHS.out.versions )
 
     emit:
     scaffolds_fasta = YAHS.out.scaffolds_fasta
-    fastqc_raw_zip                  = HIC_SHORT_READS_PREPARATION.out.fastqc_raw_zip
-    fastqc_prepared_reads_zip       = HIC_SHORT_READS_PREPARATION.out.fastqc_prepared_reads_zip
     fastp_json                      = HIC_SHORT_READS_PREPARATION.out.fastp_json
     versions = ch_versions                     // channel: [ versions.yml ]
 }

@@ -182,14 +182,14 @@ workflow GENOMEASSEMBLER {
     // ------------------------------------------------------------------------------------
     // SCAFFOLDING WITH HIC
     // ------------------------------------------------------------------------------------
-    /*
+
     SCAFFOLDING_WITH_HIC (
         ch_input_hic_reads,
         ch_assemblies
     )
     ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
     ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
-    */
+
 
     // ------------------------------------------------------------------------------------
     // QC
