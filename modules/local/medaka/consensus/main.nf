@@ -1,4 +1,4 @@
-process MEDAKA {
+process MEDAKA_CONSENSUS {
     tag "$meta.id"
     label 'process_high_cpu'
     label 'process_high_memory'
@@ -15,6 +15,7 @@ process MEDAKA {
     output:
     tuple val(meta), path("*.fa.gz"), emit: assembly
     tuple val("${task.process}"), val('medaka'), eval('medaka --version 2>&1 | sed "s/medaka //g"'),   topic: versions
+    tuple val("${task.process}"), val('pigz'), eval('pigz --version | sed "s/pigz //g"'),            topic: versions
 
     script:
     def args = task.ext.args ?: ''

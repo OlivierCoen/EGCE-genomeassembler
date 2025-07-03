@@ -1,10 +1,10 @@
-include { RACON_WORKFLOW  as RACON_ROUND_1    } from '../racon/main'
-include { RACON_WORKFLOW  as RACON_ROUND_2    } from '../racon/main'
-include { RACON_WORKFLOW  as RACON_ROUND_3    } from '../racon/main'
-include { RACON_WORKFLOW  as RACON_ROUND_4    } from '../racon/main'
-include { RACON_WORKFLOW as  RACON_ROUND_5    } from '../racon/main'
+include { RACON_WORKFLOW  as RACON_ROUND_1    } from '../racon'
+include { RACON_WORKFLOW  as RACON_ROUND_2    } from '../racon'
+include { RACON_WORKFLOW  as RACON_ROUND_3    } from '../racon'
+include { RACON_WORKFLOW  as RACON_ROUND_4    } from '../racon'
+include { RACON_WORKFLOW as  RACON_ROUND_5    } from '../racon'
 
-include { MEDAKA                      } from '../../../modules/local/medaka'
+include { MEDAKA_WORKFLOW                     } from '../medaka'
 
 
 workflow POLISH {
@@ -54,12 +54,8 @@ workflow POLISH {
 
     if ( !params.skip_medaka ) {
 
-        ch_reads
-            .join( ch_assemblies )
-            .set { ch_medaka_input }
-
-        MEDAKA ( ch_medaka_input )
-        ch_assemblies = MEDAKA.out.assembly
+        MEDAKA_WORKFLOW ( ch_reads, ch_assemblies )
+        ch_assemblies = MEDAKA_WORKFLOW.out.assembly
         ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
     }
 

@@ -8,7 +8,7 @@ process QUAST {
         'community.wave.seqera.io/library/quast_pandas:45a80fbbe1a6f7b8' }"
 
     input:
-    tuple val(meta), path(assembly_list), path(aln_long_reads_assembly_bam_list)
+    tuple val(meta), path(assembly_list, stageAs: "*/*"), path(aln_long_reads_assembly_bam_list, stageAs: "*/*")
 
 
    output:
