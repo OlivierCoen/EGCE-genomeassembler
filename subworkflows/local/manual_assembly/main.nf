@@ -4,6 +4,8 @@ include { LONG_READ_PREPARATION as HAPLOTYPE_LONG_READ_PREPARATION           } f
 include { DRAFT_ASSEMBLY                                                     } from '../draft_assembly/main'
 include { DRAFT_ASSEMBLY as HAPLOTYPE_DRAFT_ASSEMBLY                         } from '../draft_assembly/main'
 
+include { POLISH                                                             } from '../polish/main'
+
 include { HAPLOTYPE_PHASING                                                  } from '../haplotype_phasing'
 include { HAPLOTIG_PURGING                                                   } from '../haplotig_purging'
 
@@ -21,6 +23,12 @@ def runHaplotypeCleaningCriteria = branchCriteria {
         leave_me_alone: !meta.clean_haplotypes
 }
 */
+
+def polishBranchCriteria = branchCriteria { meta, assembly ->
+    polish_me: meta.polish_draft_assembly
+    leave_me_alone: !meta.polish_draft_assembly
+}
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,10 +89,30 @@ workflow MANUAL_ASSEMBLY {
 
     DRAFT_ASSEMBLY.out.assemblies
         .mix ( ch_input_draft_assemblies )
-        .set { ch_all_draft_assemblies }
+        .set { ch_draft_assemblies }
 
-    DRAFT_ASSEMBLY.out.draft_assembly_versions
-        .mix ( ch_input_draft_assemblies )
+    // --------------------------------------------------------
+    // POLISHING
+    // --------------------------------------------------------
+
+    ch_draft_assemblies
+        .branch ( polishBranchCriteria )
+        .set { ch_branched_draft_assemblies }
+
+    POLISH (
+        ch_prepared_reads,
+        ch_branched_draft_assemblies.polish_me
+    )
+
+    // collecting all final polished draft assemblies
+    ch_branched_draft_assemblies.leave_me_alone
+        .mix ( POLISH.out.assemblies )
+        .set { ch_draft_assemblies }
+
+    // collecting all intermediate and final assemblies (for QC)
+    ch_branched_draft_assemblies.leave_me_alone
+        .mix ( POLISH.out.polished_assembly_versions )
+        .mix ( DRAFT_ASSEMBLY.out.alternate_assemblies )
         .set { ch_all_draft_assembly_versions_and_alternatives }
 
     ch_versions = ch_versions
@@ -96,7 +124,7 @@ workflow MANUAL_ASSEMBLY {
 
         HAPLOTIG_PURGING (
             ch_prepared_reads,
-            ch_all_draft_assemblies
+            ch_draft_assemblies
         )
 
         HAPLOTIG_PURGING.out.purged_assemblies.set { ch_assemblies }
@@ -114,7 +142,7 @@ workflow MANUAL_ASSEMBLY {
         // HAPLOTYPE PHASING
         // ------------------------------------------------------------------------------------
 
-        ch_all_draft_assemblies
+        ch_draft_assemblies
             .filter ( runHaplotypePhasing )
             .set { ch_all_draft_assemblies_to_phase }
 
@@ -152,6 +180,8 @@ workflow MANUAL_ASSEMBLY {
             .mix ( ch_assemblies )
             .mix ( HAPLOTYPE_DRAFT_ASSEMBLY.out.draft_assembly_versions )
             .set { ch_all_draft_assembly_versions_and_alternatives }
+
+        // TODO: put polishing here
 
         ch_versions = ch_versions
             .mix ( HAPLOTYPE_PHASING.out.versions )
