@@ -58,8 +58,7 @@ workflow MEDAKA_WORKFLOW {
         }
         .map { meta, contig_ids ->
                 def nb_contigs = contig_ids.size()
-                def chunk_size = nb_contigs.intdiv( 2 ) // getting chunk size
-                [ meta, contig_ids.collate( chunk_size ) ]
+                [ meta, contig_ids.collate( params.medaka_contig_chunksize ) ]
         }
         .transpose() // each chunk of contig IDS becomes a separate item
         .map { meta, contig_ids ->

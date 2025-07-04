@@ -1,6 +1,6 @@
 process MEDAKA_INFERENCE {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_low'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -22,6 +22,7 @@ process MEDAKA_INFERENCE {
     """
     #model=\$(medaka tools resolve_model --auto_model consensus a_thaliana_ont_test.fastq.gz)
     #echo \$model
+
     medaka inference \\
         --threads $nb_threads \\
         --cpu \\

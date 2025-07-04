@@ -153,6 +153,12 @@
                     "type": "boolean",
                     "description": "Skip polishing with Medaka",
                     "fa_icon": "fas fa-check-circle"
+                },
+                "medaka_contig_chunksize": {
+                    "type": "number",
+                    "default": 100,
+                    "description": "Number of contigs in a chunk to give to Medaka inference",
+                    "minimum": 1
                 }
             },
             "fa_icon": "fas fa-forward"
