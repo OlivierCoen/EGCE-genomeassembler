@@ -29,6 +29,7 @@ process WINNOWMAP {
     // TODO: complete the preset function
     """
     winnowmap \\
+        -t ${task.cpus} \\
         -x map-${preset} \\
         -W $repetitive_kmers \\
         -y \\
