@@ -2,6 +2,11 @@ process MEDAKA_INFERENCE {
     tag "$meta.id"
 
     label "process_single"
+    // limiting processes at once to avoid OOM
+    maxForks 20
+    cpus 1
+    memory 2.GB
+
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
