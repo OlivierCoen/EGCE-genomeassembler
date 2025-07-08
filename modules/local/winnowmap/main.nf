@@ -23,18 +23,22 @@ process WINNOWMAP {
     def args2 = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def bam_index = "${prefix}.bam##idx##${prefix}.bam.bai --write-index"
-    def bam_output = bam_format ? "-a | samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2}" : "-o ${prefix}.paf"
+    def bam_output = bam_format ? "-a -o ${prefix}.unsorted.bam" : "-o ${prefix}.paf"
+    def samtools_command = bam_format ? "samtools sort -@ ${task.cpus-1} -o ${bam_index} ${args2} ${prefix}.unsorted.bam && rm ${prefix}.unsorted.bam" : ""
     def gzip_paf_output = bam_format ? "" : "gzip -n ${prefix}.paf"
     def preset = meta.platform == "nanopore" ? "ont": "pb"
     // TODO: complete the preset function
     """
     winnowmap \\
+        -t $task.cpus \\
         -x map-${preset} \\
         -W $repetitive_kmers \\
         -y \\
         $ref_fasta \\
         $ont_reads \\
         $bam_output
+
+    $samtools_command
 
     $gzip_paf_output
     """
