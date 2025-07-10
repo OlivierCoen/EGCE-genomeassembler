@@ -13,7 +13,7 @@ process YAHS {
     path fai
 
     output:
-    tuple val(meta), path("*scaffolds_final.fa") ,                                          emit: scaffolds_fasta,  optional: true
+    tuple val(meta), path("*scaffolds_final.fa.gz") ,                                       emit: scaffolds_fasta,  optional: true
     tuple val(meta), path("*scaffolds_final.agp"),                                          emit: scaffolds_agp,    optional: true
     tuple val(meta), path("*bin")                ,                                          emit: binary
     tuple val("${task.process}"), val('yahs'), eval('yahs --version 2>&1'),                 topic: versions
@@ -35,6 +35,8 @@ process YAHS {
         -o $prefix \\
         \$reference \\
         $hic_map
+
+    pigz ${prefix}_scaffold_final.fa
     """
 
     stub:
