@@ -187,8 +187,12 @@ workflow GENOMEASSEMBLER {
         ch_input_hic_reads,
         ch_assemblies
     )
-    ch_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
+    ch_final_assembly = SCAFFOLDING_WITH_HIC.out.scaffolds_fasta
     ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
+
+    ch_all_draft_assembly_versions_and_alternatives
+        .mix ( ch_final_assembly )
+        .set { ch_all_draft_assembly_versions_and_alternatives }
 
 
     // ------------------------------------------------------------------------------------
