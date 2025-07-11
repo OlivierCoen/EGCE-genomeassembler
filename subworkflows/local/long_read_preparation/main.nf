@@ -36,77 +36,67 @@ workflow LONG_READ_PREPARATION {
             meta, reads ->
                 reads.name.endsWith('.fastq') || reads.name.endsWith('.fastq.gz') || reads.name.endsWith('.fq') || reads.name.endsWith('.fq.gz')
         }
-        .set { ch_fastq_reads }
+        .set { ch_reads }
 
     // ---------------------------------------------------------------------
     // Quality control on raw reads
     // ---------------------------------------------------------------------
 
-    FASTQC_RAW ( ch_fastq_reads.filter { meta, assembly -> meta.run_fastqc_raw } )
+    if ( !params.skip_long_reads_fastqc_raw ) {
+        FASTQC_RAW ( ch_reads )
+    }
 
     // ---------------------------------------------------------------------
     // Trimming
     // ---------------------------------------------------------------------
 
-    ch_fastq_reads
-        .branch { meta, reads ->
-            trim_me: meta.trim_reads
-            leave_me_alone: !meta.trim_reads
-        }
-        .set { ch_branched_fastq_reads }
+    if ( !params.skip_long_reads_trimming ) {
 
-    PORECHOP_ABI( ch_branched_fastq_reads.trim_me, [] )
+        PORECHOP_ABI( ch_reads, [] )
+        PORECHOP_ABI.out.reads.set { ch_reads }
+        ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
 
-    ch_branched_fastq_reads.leave_me_alone
-        .mix ( PORECHOP_ABI.out.reads )
-        .set { ch_trimmed_fastq_reads }
-
-    ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
+    }
 
     // ---------------------------------------------------------------------
     // Filtering
     // ---------------------------------------------------------------------
 
-    ch_trimmed_fastq_reads
-        .branch { meta, reads ->
-            filter_me: meta.filter_reads
-            leave_me_alone: !meta.filter_reads
+    if ( !params.skip_long_reads_filtering ) {
+
+        if ( params.filtering_tool == "chopper" ) {
+
+            CHOPPER( ch_reads, [] )
+
+            CHOPPER.out.fastq.set { ch_reads }
+            ch_versions = ch_versions.mix ( CHOPPER.out.versions )
+
+        } else { // seqkit seq
+
+            SEQKIT_SEQ( ch_reads )
+
+            SEQKIT_SEQ.out.fastx.set { ch_reads }
+            ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
+
         }
-        .set { ch_branched_trimmed_fastq_reads }
-
-    if ( params.filtering_tool == "chopper" ) {
-
-        CHOPPER( ch_branched_trimmed_fastq_reads.filter_me, [] )
-
-        CHOPPER.out.fastq.set { ch_filtered_fastq_reads }
-        ch_versions = ch_versions.mix ( CHOPPER.out.versions )
-
-    } else { // seqkit seq
-
-        SEQKIT_SEQ( ch_branched_trimmed_fastq_reads.filter_me )
-
-        SEQKIT_SEQ.out.fastx.set { ch_filtered_fastq_reads }
-        ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
 
     }
-
-    ch_branched_trimmed_fastq_reads.leave_me_alone
-        .mix ( ch_filtered_fastq_reads )
-        .set { ch_prepared_fastq_reads }
 
     // ---------------------------------------------------------------------
     // Quality control on trimmed / filtered reads
     // ---------------------------------------------------------------------
 
-    FASTQC_PREPARED_READS ( ch_prepared_fastq_reads.filter { meta, assembly -> meta.run_fastqc_prepared } )
+    if ( !params.skip_long_reads_fastqc_prepared ) {
+        FASTQC_PREPARED_READS ( ch_reads )
+    }
 
-    if ( !params.skip_nanoq ) {
-        NANOQ( ch_prepared_fastq_reads )
+    if ( !params.skip_long_read_nanoq ) {
+        NANOQ( ch_reads )
     }
 
 
     emit:
-    prepared_reads = ch_prepared_fastq_reads
+    prepared_reads = ch_reads
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

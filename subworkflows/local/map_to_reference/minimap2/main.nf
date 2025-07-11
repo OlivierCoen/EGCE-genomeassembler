@@ -16,7 +16,7 @@ workflow MAP_TO_REFERENCE_MINIMAP2 {
     // Alignment to respective assembly
     // ---------------------------------------------------
     ch_reads
-        .combine( ch_genome_assembly, by: 0 )  // cartesian product with meta as matching key
+        .combine( ch_genome_assembly, by: [0] )  // cartesian product with meta as matching key
         .set { align_input }
 
     MINIMAP2_ALIGN( align_input, bam_format )

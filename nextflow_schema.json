@@ -73,15 +73,105 @@
             "description": "Skips specific steps",
             "default": "",
             "properties": {
-                "skip_purging": {
+                 "skip_long_read_preparation": {
                     "type": "boolean",
-                    "description": "Skip the haplotig purging step",
+                    "description": "Skip long read preparation",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_scaffolding_with_hic": {
+                 "skip_long_reads_fastqc_raw": {
                     "type": "boolean",
-                    "description": "Skip the scaffolding with Hi-C step",
+                    "description": "Skip FastQC before long read preparation",
                     "fa_icon": "fas fa-hand-scissors"
+                },
+                 "skip_long_reads_trimming": {
+                    "type": "boolean",
+                    "description": "Skip trimming during long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_reads_filtering": {
+                    "type": "boolean",
+                    "description": "Skip filtering during long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_reads_fastqc_prepared": {
+                    "type": "boolean",
+                    "description": "Skip FastQC after long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_read_nanoq": {
+                    "type": "boolean",
+                    "description": "Skip NanoQ",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_draft_assembly": {
+                    "type": "boolean",
+                    "description": "Skip the draft assembly step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_draft_assembly_polishing": {
+                    "type": "boolean",
+                    "description": "Skip the polising of the draft assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_draft_assembly_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the draft assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_short_read_preparation": {
+                    "type": "boolean",
+                    "description": "Skip long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_short_reads_fastqc_raw": {
+                    "type": "boolean",
+                    "description": "Skip FastQC before short read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                 "skip_short_reads_cleaning": {
+                    "type": "boolean",
+                    "description": "Skip cleaning (trimming and filtering ) during short read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_short_reads_fastqc_prepared": {
+                    "type": "boolean",
+                    "description": "Skip FastQC after short read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_first_scaffolding_with_hic": {
+                    "type": "boolean",
+                    "description": "Skip the first scaffolding with Hi-C step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_first_scaffolded_assembly_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the first scaffolded assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_first_scaffolded_assembly_cleaning": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the first scaffolded assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_second_scaffolding_with_hic": {
+                    "type": "boolean",
+                    "description": "Skip the first scaffolding with Hi-C step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_second_scaffolded_assembly_cleaning": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the second scaffolded assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_scaffolded_assembly_merging": {
+                    "type": "boolean",
+                    "description": "Skip the final merging of scaffolds",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_qc": {
+                    "type": "boolean",
+                    "description": "Skip all quality controls",
+                    "fa_icon": "fas fa-check-circle"
                 },
                 "skip_busco": {
                     "type": "boolean",
@@ -96,11 +186,6 @@
                 "skip_merqury": {
                     "type": "boolean",
                     "description": "Skip the Merqury analyses",
-                    "fa_icon": "fas fa-check-circle"
-                },
-                "skip_nanoq": {
-                    "type": "boolean",
-                    "description": "Skip NanoQ",
                     "fa_icon": "fas fa-check-circle"
                 }
             },

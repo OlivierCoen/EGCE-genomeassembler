@@ -8,7 +8,7 @@ process ARIMA_TWO_BAM_COMBINER {
         'community.wave.seqera.io/library/samtools_perl:57518a456f66aec6' }"
 
     input:
-    tuple val(meta), path(r1_bam), path(r2_bam)
+    tuple val(meta), path(r1_bam, stageAs: "*/*"), path(r2_bam, stageAs: "*/*")
     tuple val(meta2), path(reference_genome_index)
     val mapq_filter
 

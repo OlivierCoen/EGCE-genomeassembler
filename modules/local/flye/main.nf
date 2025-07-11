@@ -57,9 +57,8 @@ process FLYE {
 
     """
     flye \\
-        ${mode} \\
         ${args} \\
-        $reads \\
+        ${mode} $reads \\
         --out-dir . \\
         --threads \\
         ${task.cpus} \\

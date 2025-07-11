@@ -9,4 +9,4 @@ testing*
 null/
 .nf-test/
 .idea/
-local.config
+local/local.config

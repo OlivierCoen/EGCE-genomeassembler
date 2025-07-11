@@ -8,9 +8,7 @@ process YAHS {
         'community.wave.seqera.io/library/yahs_pigz:0ea95483ff8bc79e' }"
 
     input:
-    tuple val(meta), path(hic_map)
-    path fasta
-    path fai
+    tuple val(meta), path(hic_map), path(fasta), path(fai)
 
     output:
     tuple val(meta), path("*scaffolds_final.fa.gz") ,                                       emit: scaffolds_fasta,  optional: true
@@ -36,7 +34,7 @@ process YAHS {
         \$reference \\
         $hic_map
 
-    pigz ${prefix}_scaffold_final.fa
+    pigz ${prefix}_scaffolds_final.fa
     """
 
     stub:

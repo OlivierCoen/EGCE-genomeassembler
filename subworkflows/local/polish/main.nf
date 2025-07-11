@@ -15,6 +15,8 @@ workflow POLISH {
 
     main:
 
+    ch_versions = Channel.empty()
+
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
@@ -60,8 +62,8 @@ workflow POLISH {
     }
 
     emit:
-    assemblies = ch_assemblies
-    polished_assembly_versions = ch_polished_assembly_versions
-
+    assemblies                  = ch_assemblies
+    polished_assembly_versions  = ch_polished_assembly_versions
+    versions                    = ch_versions
 }
 

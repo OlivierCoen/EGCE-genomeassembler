@@ -20,10 +20,8 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
 
     ch_hic_read_pairs
         .multiMap { meta, reads ->
-            def meta1 = [ id: "${meta.id}_R1", sample: meta.id]
-            def meta2 = [ id: "${meta.id}_R2", sample: meta.id ]
-            r1: [ meta1, reads[0] ]
-            r2: [ meta2, reads[1] ]
+            r1: [ meta, reads[0] ]
+            r2: [ meta, reads[1] ]
         }
         .set { ch_hic_reads }
 
@@ -45,7 +43,6 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     ARIMA_FILTER_FIVE_END ( BWAMEM2_MEM.out.bam )
 
     ARIMA_FILTER_FIVE_END.out.bam
-        .map { meta, file -> [ [ id: meta.sample ], file ] }
         .groupTuple()
         .map { meta, files -> [ meta, *files ] }
         .set { ch_filtered_bam }

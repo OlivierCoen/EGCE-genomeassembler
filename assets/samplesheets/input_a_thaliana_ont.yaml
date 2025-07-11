@@ -2,9 +2,6 @@
   platform: nanopore
   genome_size: 1500000
   reads: tests/test_data/long_reads/a_thaliana/ONT-Col-0_test_data.fastq.gz
-  trim_reads: false
-  draft_assembly:
-  polish_draft_assembly: true
   hic_fastq_1: tests/test_data/hic_short_reads/a_thaliana/SRR22354810_1.sampled.fq.gz
   hic_fastq_2: tests/test_data/hic_short_reads/a_thaliana/SRR22354810_2.sampled.fq.gz
 
