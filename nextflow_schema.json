@@ -124,24 +124,19 @@
                     "description": "Skip the haplotig purging step on the first scaffolded assembly",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_first_scaffolded_assembly_cleaning": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig purging step on the first scaffolded assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
                 "skip_second_scaffolding_with_hic": {
                     "type": "boolean",
                     "description": "Skip the first scaffolding with Hi-C step",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_second_scaffolded_assembly_cleaning": {
+                "skip_second_scaffolded_assembly_purging": {
                     "type": "boolean",
                     "description": "Skip the haplotig purging step on the second scaffolded assembly",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_scaffolded_assembly_merging": {
+                "skip_closing_gaps_final_assembly": {
                     "type": "boolean",
-                    "description": "Skip the final merging of scaffolds",
+                    "description": "Skip the step consisting in closing gaps in the final assembly",
                     "fa_icon": "fas fa-hand-scissors"
                 },
                 "skip_qc": {
@@ -444,9 +439,6 @@
     "allOf": [
         {
             "$ref": "#/$defs/input_output_options"
-        },
-        {
-            "$ref": "#/$defs/general_options"
         },
         {
             "$ref": "#/$defs/steps"

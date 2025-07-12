@@ -22,7 +22,7 @@ workflow ASSEMBLY_QC {
     if ( !params.skip_quast ) {
 
         def bam_format = true
-        if ( quast_mapper.mapper == 'winnowmap' ) {
+        if ( params.quast_mapper == 'winnowmap' ) {
 
             MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
             MAP_TO_REFERENCE_WINNOWMAP.out.bam_ref.set { ch_bam_ref }

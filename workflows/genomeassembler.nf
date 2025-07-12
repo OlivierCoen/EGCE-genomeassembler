@@ -9,11 +9,15 @@ include { DRAFT_ASSEMBLY                                                     } f
 include { POLISH                                                             } from '../subworkflows/local/polish'
 include { ASSEMBLY_QC                                                        } from '../subworkflows/local/assembly_qc'
 include { HIC_SHORT_READS_PREPARATION                                        } from '../subworkflows/local/hic_short_reads_preparation'
-include { SCAFFOLDING_WITH_HIC                                               } from '../subworkflows/local/scaffolding_with_hic'
+include { SCAFFOLDING_WITH_HIC as FIRST_SCAFFOLDING_WITH_HIC                 } from '../subworkflows/local/scaffolding_with_hic'
+include { SCAFFOLDING_WITH_HIC as SECOND_SCAFFOLDING_WITH_HIC                } from '../subworkflows/local/scaffolding_with_hic'
 include { MULTIQC_WORKFLOW                                                   } from '../subworkflows/local/multiqc'
 
 include { HAPLOTIG_PURGING as DRAFT_ASSEMBLY_PURGING                         } from '../subworkflows/local/haplotig_purging'
-include { HAPLOTIG_PURGING as SCAFFOLDED_ASSEMBLY_PURGING                    } from '../subworkflows/local/haplotig_purging'
+include { HAPLOTIG_PURGING as FIRST_SCAFFOLDED_ASSEMBLY_PURGING              } from '../subworkflows/local/haplotig_purging'
+include { HAPLOTIG_PURGING as SECOND_SCAFFOLDED_ASSEMBLY_PURGING             } from '../subworkflows/local/haplotig_purging'
+
+include { CLOSE_GAPS                                                         } from '../subworkflows/local/close_gaps'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,12 +136,12 @@ workflow GENOMEASSEMBLER {
 
     if ( !params.skip_first_scaffolding_with_hic ) {
 
-        SCAFFOLDING_WITH_HIC (
+        FIRST_SCAFFOLDING_WITH_HIC (
             ch_hic_reads,
             ch_assemblies
         )
-        SCAFFOLDING_WITH_HIC.out.scaffolds_fasta.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
+        FIRST_SCAFFOLDING_WITH_HIC.out.scaffolds_fasta.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( FIRST_SCAFFOLDING_WITH_HIC.out.versions )
 
     }
 
@@ -146,12 +150,53 @@ workflow GENOMEASSEMBLER {
     // --------------------------------------------------------
 
     if ( !params.skip_first_scaffolded_assembly_purging ) {
-        SCAFFOLDED_ASSEMBLY_PURGING (
+        FIRST_SCAFFOLDED_ASSEMBLY_PURGING (
             ch_long_reads,
             ch_assemblies
         )
-        SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
+        FIRST_SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( FIRST_SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
+    }
+
+    // ------------------------------------------------------------------------------------
+    // SECOND SCAFFOLDING WITH HIC
+    // ------------------------------------------------------------------------------------
+
+    if ( !params.skip_second_scaffolding_with_hic ) {
+
+        SECOND_SCAFFOLDING_WITH_HIC (
+            ch_hic_reads,
+            ch_assemblies
+        )
+        SECOND_SCAFFOLDING_WITH_HIC.out.scaffolds_fasta.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( SECOND_SCAFFOLDING_WITH_HIC.out.versions )
+
+    }
+
+    // --------------------------------------------------------
+    // PURGING OF SECOND SCAFFOLDED ASSEMBLY
+    // --------------------------------------------------------
+
+    if ( !params.skip_second_scaffolded_assembly_purging ) {
+        SECOND_SCAFFOLDED_ASSEMBLY_PURGING (
+            ch_long_reads,
+            ch_assemblies
+        )
+        SECOND_SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( SECOND_SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
+    }
+
+    // --------------------------------------------------------
+    // CLOSING GAPS in FINAL ASSEMBLY
+    // --------------------------------------------------------
+
+    if ( !params.skip_second_scaffolded_assembly_purging ) {
+        CLOSE_GAPS (
+            ch_long_reads,
+            ch_assemblies
+        )
+        CLOSE_GAPS.out.scaffolds_fasta.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( CLOSE_GAPS.out.versions )
     }
 
     // ------------------------------------------------------------------------------------
