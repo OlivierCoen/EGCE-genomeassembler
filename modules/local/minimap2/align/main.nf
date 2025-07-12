@@ -36,6 +36,7 @@ process MINIMAP2_ALIGN {
         -x $preset \\
         -t $task.cpus \\
         -y \\
+        --split-prefix tmp_split_prefix \\
         $reference \\
         $reads \\
         $bam_output
