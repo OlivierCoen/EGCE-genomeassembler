@@ -43,30 +43,6 @@
                 }
             }
         },
-        "general_options": {
-            "title": "General options",
-            "type": "object",
-            "default": "",
-            "properties": {
-                "assembly_mode": {
-                    "type": "string",
-                    "description": "Pipeline mode : type of assembly",
-                    "enum": ["diploid", "haplotype"],
-                    "default": "diploid"
-                },
-                "meryl_k_value": {
-                    "type": "number",
-                    "description": "K-mer value for meryl counting",
-                    "default": 15
-                },
-                "mapper": {
-                    "type": "string",
-                    "description": "Mapper used",
-                    "enum": ["winnowmap", "minimap2"],
-                    "default": "minimap2"
-                }
-            }
-        },
         "steps": {
             "title": "Steps",
             "type": "object",
@@ -191,6 +167,30 @@
             },
             "fa_icon": "fas fa-forward"
         },
+        "mapping_options": {
+            "title": "Mapping options",
+            "type": "object",
+            "default": "",
+            "properties": {
+                "meryl_k_value": {
+                    "type": "number",
+                    "description": "K-mer value for meryl counting",
+                    "default": 15
+                },
+                "mapper": {
+                    "type": "string",
+                    "description": "Mapper used",
+                    "enum": ["winnowmap", "minimap2"],
+                    "default": "winnowmap"
+                },
+                "quast_mapper": {
+                    "type": "string",
+                    "description": "Mapper used for Quast",
+                    "enum": ["winnowmap", "minimap2"],
+                    "default": "minimap2"
+                }
+            }
+        },
         "read_preparation_options": {
             "title": "Read preparation options",
             "type": "object",
@@ -212,6 +212,12 @@
             "description": "Options controlling assembly",
             "default": "",
             "properties": {
+                "assembly_mode": {
+                    "type": "string",
+                    "description": "Pipeline mode : type of assembly",
+                    "enum": ["diploid", "haplotype"],
+                    "default": "diploid"
+                },
                 "assembler": {
                     "type": "string",
                     "description": "Draft assembly tool",
@@ -290,8 +296,9 @@
                 },
                 "busco_lineage": {
                     "type": "string",
-                    "description": "Busco lineage to use",
-                    "default": "eukaryota_odb10"
+                    "description": "Busco lineage to use.",
+                    "default": "auto",
+                    "help": "Example: arthropoda_odb10. See list of lineages at https://busco.ezlab.org/list_of_lineages.html. Otherwise, choose auto / auto_prok / auto_euk to et Busco automatically detect which lineage to use."
                 }
             }
         },
