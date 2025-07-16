@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import argparse
 from Bio import SeqIO
+import json
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Compute assembly stats for a fasta file")
     parser.add_argument("--fasta", type=str, required=True)
+    parser.add_argument("--out", dest="outfile", type=str, required=True)
     return parser.parse_args()
 
 
@@ -33,3 +35,6 @@ if __name__ == "__main__":
     nx_stats = calculate_nx_stats(contig_lengths)
     for n, stats in nx_stats.items():
         print(f"N{n}: {stats['N']} | L{n}: {stats['L']}")
+
+    with open(args.outfile, "w") as fout:
+        json.dump(nx_stats, fout)

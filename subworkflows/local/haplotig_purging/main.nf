@@ -5,9 +5,11 @@ include { PURGEDUPS_GETSEQS            } from '../../../modules/local/purgedups/
 include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa'
 include { PURGEDUPS_HISTPLOT           } from '../../../modules/nf-core/purgedups/histplot'
 include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align'
+include { ASSEMBLY_STATS               } from '../../../modules/local/assembly_stats'
 
-include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2/main'
-include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap/main'
+include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2'
+include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap'
+
 
 workflow HAPLOTIG_PURGING {
 
@@ -69,6 +71,10 @@ workflow HAPLOTIG_PURGING {
         .set { ch_getseqs_input }
 
     PURGEDUPS_GETSEQS ( ch_getseqs_input )
+    PURGEDUPS_GETSEQS.out.purged.set { ch_purged_assemblies }
+
+    // Stats
+    ASSEMBLY_STATS ( ch_purged_assemblies )
 
     ch_versions = ch_versions
                     .mix ( PURGEDUPS_PBCSTAT.out.versions )
@@ -77,7 +83,7 @@ workflow HAPLOTIG_PURGING {
 
 
     emit:
-    purged_assemblies                      = PURGEDUPS_GETSEQS.out.purged
+    purged_assemblies                      = ch_purged_assemblies
     versions                               = ch_versions                     // channel: [ versions.yml ]
 }
 

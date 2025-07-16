@@ -1,5 +1,6 @@
 include { FLYE                                 } from '../../../modules/local/flye'
-include { HIFIASM_WORKFLOW                     } from '../hifiasm/main'
+include { HIFIASM_WORKFLOW                     } from '../hifiasm'
+include { ASSEMBLY_STATS                       } from '../../../modules/local/assembly_stats'
 
 
 /*
@@ -40,6 +41,8 @@ workflow DRAFT_ASSEMBLY {
     } else {
         error ("Unknown assembler in this subworkflow: ${params.assembler}") // this should not happen
     }
+
+    ASSEMBLY_STATS ( ch_assemblies )
 
     emit:
     assemblies                       = ch_assemblies

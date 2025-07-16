@@ -6,6 +6,8 @@ include { RACON_WORKFLOW as  RACON_ROUND_5    } from '../racon'
 
 include { MEDAKA_WORKFLOW                     } from '../medaka'
 
+include { ASSEMBLY_STATS                       } from '../../../modules/local/assembly_stats'
+
 
 workflow POLISH {
 
@@ -60,6 +62,8 @@ workflow POLISH {
         ch_assemblies = MEDAKA_WORKFLOW.out.assembly
         ch_polished_assembly_versions = ch_polished_assembly_versions.mix ( ch_assemblies )
     }
+
+    ASSEMBLY_STATS ( ch_assemblies )
 
     emit:
     assemblies                  = ch_assemblies
