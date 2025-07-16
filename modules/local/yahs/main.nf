@@ -1,5 +1,5 @@
 process YAHS {
-    tag "$meta.id"
+    tag "${fasta.simpleName}"
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,7 +11,7 @@ process YAHS {
     tuple val(meta), path(hic_map), path(fasta), path(fai)
 
     output:
-    tuple val(meta), path("*scaffolds_final.fa.gz") ,                                       emit: scaffolds_fasta,  optional: true
+    tuple val(meta), path("*_scaffolded.fa.gz") ,                                           emit: scaffolds_fasta,  optional: true
     tuple val(meta), path("*scaffolds_final.agp"),                                          emit: scaffolds_agp,    optional: true
     tuple val(meta), path("*bin")                ,                                          emit: binary
     tuple val("${task.process}"), val('yahs'), eval('yahs --version 2>&1'),                 topic: versions
@@ -22,7 +22,7 @@ process YAHS {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${fasta.simpleName}"
 
     """
     pigz -dkf $fasta
@@ -35,11 +35,12 @@ process YAHS {
         $hic_map
 
     pigz ${prefix}_scaffolds_final.fa
+    mv ${prefix}_scaffolds_final.fa.gz ${prefix}_scaffolded.fa.gz
     """
 
     stub:
     """
-    touch ${prefix}_scaffold_final.fa
+    touch ${prefix}_scaffolded.fa.gz
     touch ${prefix}_scaffolds_final.agp
     touch ${prefix}.bin
     """
