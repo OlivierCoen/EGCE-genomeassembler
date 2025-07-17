@@ -1,5 +1,5 @@
 process PRETEXTSNAPSHOT {
-    tag "${fasta.baseName}"
+    tag "${pretext_map.baseName}"
     label 'process_medium'
 
     errorStrategy = 'ignore'
