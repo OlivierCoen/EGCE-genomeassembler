@@ -158,6 +158,11 @@
                     "type": "boolean",
                     "description": "Skip the Merqury analyses",
                     "fa_icon": "fas fa-check-circle"
+                },
+                "skip_hic_contact_maps": {
+                    "type": "boolean",
+                    "description": "Skip computation of Hi-C contact maps using Pretext",
+                    "fa_icon": "fas fa-check-circle"
                 }
             },
             "fa_icon": "fas fa-forward"
