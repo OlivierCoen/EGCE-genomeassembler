@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/environment-schema.json
+channels:
+  - conda-forge
+  - bioconda
+  - a_ludi
+dependencies:
+  - a_ludi::dentist-core=4.0.0
+  - bioconda::snakemake=9.8.0
