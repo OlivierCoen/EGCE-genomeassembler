@@ -66,7 +66,7 @@ workflow MULTIQC_WORKFLOW {
     ch_multiqc_files
         .mix( Channel.topic('mqc_busco_batch_summary') )
         .mix( Channel.topic('mqc_busco_short_summaries_txt') )
-        .mix( Channel.topic('mqc_contig_sizes') )
+        .mix( Channel.topic('mqc_assembly_stats') )
         .mix( Channel.topic('mqc_fastqc_zip') )
         .mix( Channel.topic('mqc_flye_report') )
         .mix( Channel.topic('mqc_assembly_qv') )

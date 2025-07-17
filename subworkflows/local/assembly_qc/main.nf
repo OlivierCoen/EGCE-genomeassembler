@@ -5,7 +5,7 @@ include { BUSCO_BUSCO as BUSCO           } from '../../../modules/local/busco/bu
 include { MERQURY                        } from '../../../modules/local/merqury'
 include { MERYL_COUNT                    } from '../../../modules/local/meryl/count'
 include { QUAST                          } from '../../../modules/local/quast'
-include { CONTIG_STATS                   } from '../../../modules/local/contig_stats'
+//include { CONTIG_STATS                   } from '../../../modules/local/contig_stats'
 
 
 workflow ASSEMBLY_QC {
@@ -17,7 +17,7 @@ workflow ASSEMBLY_QC {
     main:
     ch_versions = Channel.empty()
 
-    CONTIG_STATS ( ch_assemblies )
+    //CONTIG_STATS ( ch_assemblies )
 
     if ( !params.skip_quast ) {
 

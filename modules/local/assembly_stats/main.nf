@@ -12,7 +12,7 @@ process ASSEMBLY_STATS {
 
     output:
     path("*.stats.json"),                                                                                                   emit: stats
-
+    path("*.stats.json"),                                                                                                   topic: mqc_assembly_stats
     tuple val("${task.process}"), val('python'),       eval("python3 --version | sed 's/Python //'"),                       topic: versions
     tuple val("${task.process}"), val('biopython'),    eval('python3 -c "import Bio; print(Bio.__version__)"'),             topic: versions
 

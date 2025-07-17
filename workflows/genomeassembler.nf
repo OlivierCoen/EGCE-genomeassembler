@@ -195,7 +195,7 @@ workflow GENOMEASSEMBLER {
             ch_long_reads,
             ch_assemblies
         )
-        CLOSE_GAPS.out.scaffolds_fasta.set { ch_assemblies }
+        CLOSE_GAPS.out.assemblies.set { ch_assemblies }
         ch_versions = ch_versions.mix ( CLOSE_GAPS.out.versions )
     }
 

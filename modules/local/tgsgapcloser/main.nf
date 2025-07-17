@@ -11,25 +11,22 @@ process TGSGAPCLOSER {
     tuple val(meta), path(assembly), path(reads)
 
     output:
-    path("*_gapclosed.fa.gz"),                                                                                           topic: assembly
-    tuple val("${task.process}"), val('tgsgapcloser'), eval("tgsgapcloser | grep Version |  grep -oP '\d+\.\d+\.\d+'"),  topic: versions
+    tuple val(meta), path("*_gapclosed.fa.gz"),                                                                               emit: assembly
+    tuple val("${task.process}"), val('tgsgapcloser'), eval("tgsgapcloser | grep Version |  grep -oP '\\d+\\.\\d+\\.\\d+'"),  topic: versions
 
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${assembly.simpleName}"
     def tgstype = meta.platform == "nanopore" ? "ont": "pb"
-    def minmap_arg = "\'-x map-${tgstype} \'"
     """
     tgsgapcloser \\
+        ${args} \\
         --thread ${task.cpus} \\
         --ne \\
-        --minmap_arg $minmap_arg \\
         --tgstype $tgstype \\
-        ${args} \\
         --scaff $assembly \\
         --reads $reads \\
-        --output $prefix \\
-        1> tgsgapcloser.log 2>&1
+        --output $prefix
 
     mv ${prefix}.contig ${prefix}_gapclosed.fa
     pigz ${prefix}_gapclosed.fa
