@@ -1,5 +1,5 @@
-include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2/main'
-include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap/main'
+include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_long_reads_to_assembly/minimap2/main'
+include { MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP     } from '../map_long_reads_to_assembly/winnowmap/main'
 
 //include { CLAIR3_PHASE_WHATSHAP        } from '../../../modules/local/clair3/phase_whatshap'
 //include { CLAIR3_PHASE_LONGPHASE       } from '../../../modules/local/clair3/phase_longphase'
@@ -35,10 +35,10 @@ workflow HAPLOTYPE_PHASING {
      def bam_format = true
      if ( params.mapper == 'winnowmap' ) {
 
-        MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_REFERENCE_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
-        MAP_TO_REFERENCE_WINNOWMAP.out.bai.set { ch_bai }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bai.set { ch_bai }
+        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 

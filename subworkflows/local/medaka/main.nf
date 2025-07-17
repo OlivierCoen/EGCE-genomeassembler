@@ -1,5 +1,5 @@
-include { MAP_TO_REFERENCE_MINIMAP2                    } from '../map_to_reference/minimap2'
-include { MAP_TO_REFERENCE_WINNOWMAP                   } from '../map_to_reference/winnowmap'
+include { MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2          } from '../map_long_reads_to_assembly/minimap2'
+include { MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP         } from '../map_long_reads_to_assembly/winnowmap'
 include { MEDAKA_INFERENCE                             } from '../../../modules/local/medaka/inference'
 include { MEDAKA_SEQUENCE                              } from '../../../modules/local/medaka/sequence'
 include { EXTRACT_CONTIG_IDS                           } from '../../../modules/local/extract_contig_ids'
@@ -23,15 +23,15 @@ workflow MEDAKA_WORKFLOW {
     def bam_format = true
     if ( params.mapper == 'winnowmap' ) {
 
-        MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_REFERENCE_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 
-        MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_REFERENCE_MINIMAP2.out.bam_ref.set { ch_bam_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
+        MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.bam_ref.set { ch_bam_ref }
+        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
 
     }
 

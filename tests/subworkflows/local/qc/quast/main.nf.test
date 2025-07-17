@@ -12,7 +12,7 @@ nextflow_workflow {
         setup {
 
             run("MAP_TO_REFERENCE") {
-                script "subworkflows/local/map_to_reference/minimap2/main.nf"
+                script "subworkflows/local/map_long_reads_to_assembly/minimap2/main.nf"
                 process {
                     """
                     input[0] = Channel.of([
@@ -54,7 +54,7 @@ nextflow_workflow {
         setup {
 
             run("MAP_TO_REFERENCE") {
-                script "subworkflows/local/map_to_reference/minimap2/main.nf"
+                script "subworkflows/local/map_long_reads_to_assembly/minimap2/main.nf"
                 process {
                     """
                     input[0] = Channel.of(
@@ -118,7 +118,7 @@ nextflow_workflow {
         setup {
 
             run("MAP_TO_REFERENCE") {
-                script "subworkflows/local/map_to_reference/minimap2/main.nf"
+                script "subworkflows/local/map_long_reads_to_assembly/minimap2/main.nf"
                 process {
                     """
                     input[0] = Channel.of(

@@ -7,8 +7,8 @@ include { PURGEDUPS_HISTPLOT           } from '../../../modules/nf-core/purgedup
 include { MINIMAP2_SELF_ALIGNMENT      } from '../../../modules/local/minimap2/self_align'
 include { ASSEMBLY_STATS               } from '../../../modules/local/assembly_stats'
 
-include { MAP_TO_REFERENCE_MINIMAP2      } from '../map_to_reference/minimap2'
-include { MAP_TO_REFERENCE_WINNOWMAP     } from '../map_to_reference/winnowmap'
+include { MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2      } from '../map_long_reads_to_assembly/minimap2'
+include { MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP     } from '../map_long_reads_to_assembly/winnowmap'
 
 
 workflow HAPLOTIG_PURGING {
@@ -24,15 +24,15 @@ workflow HAPLOTIG_PURGING {
     def bam_format = false
     if ( params.mapper == 'winnowmap' ) {
 
-        MAP_TO_REFERENCE_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_REFERENCE_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_WINNOWMAP.out.versions )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+        MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 
-        MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
-        MAP_TO_REFERENCE_MINIMAP2.out.paf_ref.set { ch_paf_ref }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
+        MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+        MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.paf_ref.set { ch_paf_ref }
+        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
     }
 
     ch_paf_ref
