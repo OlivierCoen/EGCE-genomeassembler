@@ -8,10 +8,8 @@ process BWAMEM2_MEM {
         'community.wave.seqera.io/library/bwa-mem2_htslib_samtools:e1f420694f8e42bd' }"
 
     input:
-    tuple val(meta), path(reads)
-    tuple val(meta2), path(index)
-    tuple val(meta3), path(fasta)
-    val   sort_bam
+    tuple val(meta), path(reads), path(fasta), path(fai)
+    val sort_bam
 
     output:
     tuple val(meta), path("*.sam")  , emit: sam , optional:true
@@ -19,7 +17,8 @@ process BWAMEM2_MEM {
     tuple val(meta), path("*.cram") , emit: cram, optional:true
     tuple val(meta), path("*.crai") , emit: crai, optional:true
     tuple val(meta), path("*.csi")  , emit: csi , optional:true
-    path  "versions.yml"            , emit: versions
+    tuple val("${task.process}"), val('bwamem2'), eval("bwa-mem2 version 2>&1 | tail -1 | sed 's/.* //'"),    topic: versions
+    tuple val("${task.process}"), val('samtools'), eval("samtools --version | sed '1!d; s/samtools //'"),    topic: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -27,7 +26,7 @@ process BWAMEM2_MEM {
     script:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: reads instanceof Path ? "${reads.simpleName}_${fasta.simpleName}" : "${fasta.simpleName}"
     def samtools_command = sort_bam ? 'sort' : 'view'
 
     def extension_pattern = /(--output-fmt|-O)+\s+(\S+)/
@@ -46,12 +45,6 @@ process BWAMEM2_MEM {
         \$INDEX \\
         $reads \\
         | samtools $samtools_command $args2 -@ $task.cpus ${reference} -o ${prefix}.${extension} -
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bwamem2: \$(echo \$(bwa-mem2 version 2>&1) | sed 's/.* //')
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 
     stub:
@@ -73,11 +66,5 @@ process BWAMEM2_MEM {
     """
     touch ${prefix}.${extension}
     ${create_index}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bwamem2: \$(echo \$(bwa-mem2 version 2>&1) | sed 's/.* //')
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
-    END_VERSIONS
     """
 }
