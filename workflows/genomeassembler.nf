@@ -7,17 +7,14 @@
 include { LONG_READ_PREPARATION                                              } from '../subworkflows/local/long_read_preparation'
 include { DRAFT_ASSEMBLY                                                     } from '../subworkflows/local/draft_assembly'
 include { POLISH                                                             } from '../subworkflows/local/polish'
-include { ASSEMBLY_QC                                                        } from '../subworkflows/local/assembly_qc'
+include { HAPLOTIG_PURGING as DRAFT_ASSEMBLY_PURGING                         } from '../subworkflows/local/haplotig_purging'
 include { HIC_SHORT_READS_PREPARATION                                        } from '../subworkflows/local/hic_short_reads_preparation'
-include { SCAFFOLDING_WITH_HIC as FIRST_SCAFFOLDING_WITH_HIC                 } from '../subworkflows/local/scaffolding_with_hic'
-include { SCAFFOLDING_WITH_HIC as SECOND_SCAFFOLDING_WITH_HIC                } from '../subworkflows/local/scaffolding_with_hic'
+include { SCAFFOLDING_WITH_HIC                                               } from '../subworkflows/local/scaffolding_with_hic'
+include { HAPLOTIG_PURGING as SCAFFOLDED_ASSEMBLY_PURGING                    } from '../subworkflows/local/haplotig_purging'
+include { CLOSE_GAPS                                                         } from '../subworkflows/local/close_gaps'
+include { ASSEMBLY_QC                                                        } from '../subworkflows/local/assembly_qc'
 include { MULTIQC_WORKFLOW                                                   } from '../subworkflows/local/multiqc'
 
-include { HAPLOTIG_PURGING as DRAFT_ASSEMBLY_PURGING                         } from '../subworkflows/local/haplotig_purging'
-include { HAPLOTIG_PURGING as FIRST_SCAFFOLDED_ASSEMBLY_PURGING              } from '../subworkflows/local/haplotig_purging'
-include { HAPLOTIG_PURGING as SECOND_SCAFFOLDED_ASSEMBLY_PURGING             } from '../subworkflows/local/haplotig_purging'
-
-include { CLOSE_GAPS                                                         } from '../subworkflows/local/close_gaps'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,66 +128,42 @@ workflow GENOMEASSEMBLER {
      }
 
     // ------------------------------------------------------------------------------------
-    // FIRST SCAFFOLDING WITH HIC
+    // SCAFFOLDING WITH HIC + PURGING
     // ------------------------------------------------------------------------------------
 
-    if ( !params.skip_first_scaffolding_with_hic ) {
+    if ( !params.skip_scaffolding_with_hic ) {
 
-        FIRST_SCAFFOLDING_WITH_HIC (
+        SCAFFOLDING_WITH_HIC(
             ch_hic_reads,
             ch_assemblies
         )
-        FIRST_SCAFFOLDING_WITH_HIC.out.scaffolds_fasta.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( FIRST_SCAFFOLDING_WITH_HIC.out.versions )
 
-    }
+        SCAFFOLDING_WITH_HIC.out.scaffolded_assemblies.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( SCAFFOLDING_WITH_HIC.out.versions )
 
-    // --------------------------------------------------------
-    // PURGING OF FIRST SCAFFOLDED ASSEMBLY
-    // --------------------------------------------------------
-
-    if ( !params.skip_first_scaffolded_assembly_purging ) {
-        FIRST_SCAFFOLDED_ASSEMBLY_PURGING (
-            ch_long_reads,
-            ch_assemblies
-        )
-        FIRST_SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( FIRST_SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
     }
 
     // ------------------------------------------------------------------------------------
-    // SECOND SCAFFOLDING WITH HIC
+    // PURGING SCAFFOLDING ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    if ( !params.skip_second_scaffolding_with_hic ) {
+    if ( !params.skip_scaffolded_assembly_purging ) {
 
-        SECOND_SCAFFOLDING_WITH_HIC (
-            ch_hic_reads,
-            ch_assemblies
-        )
-        SECOND_SCAFFOLDING_WITH_HIC.out.scaffolds_fasta.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( SECOND_SCAFFOLDING_WITH_HIC.out.versions )
-
-    }
-
-    // --------------------------------------------------------
-    // PURGING OF SECOND SCAFFOLDED ASSEMBLY
-    // --------------------------------------------------------
-
-    if ( !params.skip_second_scaffolded_assembly_purging ) {
-        SECOND_SCAFFOLDED_ASSEMBLY_PURGING (
+        SCAFFOLDED_ASSEMBLY_PURGING(
             ch_long_reads,
             ch_assemblies
         )
-        SECOND_SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
-        ch_versions = ch_versions.mix ( SECOND_SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
+
+        SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies.set { ch_assemblies }
+        ch_versions = ch_versions.mix ( SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
+
     }
 
     // --------------------------------------------------------
-    // CLOSING GAPS in FINAL ASSEMBLY
+    // CLOSING GAPS IN FINAL ASSEMBLY
     // --------------------------------------------------------
 
-    if ( !params.skip_second_scaffolded_assembly_purging ) {
+    if ( !params.skip_closing_gaps_final_assembly ) {
         CLOSE_GAPS (
             ch_long_reads,
             ch_assemblies

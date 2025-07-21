@@ -20,11 +20,25 @@ workflow SCAFFOLDING_WITH_HIC {
     // MAPPING OF HI-C READS TO ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    ARIMA_MAPPING_PIPELINE_HIC (
-        ch_hic_reads,
-        ch_assemblies
-    )
-    ARIMA_MAPPING_PIPELINE_HIC.out.alignment.set { ch_hic_bam }
+    if ( params.skip_arima_hic_mapping_pipeline ) {
+
+        if ( params.hic_reads_mapping ) {
+            ch_hic_bam = Channel.fromPath( params.hic_reads_mapping, checkExists: true )
+        } else {
+            error("You must provide a BAM file consisting of Hi-C reads mapped to the current assembly if you set --skip_arima_hic_mapping_pipeline")
+        }
+
+    } else {
+
+        ARIMA_MAPPING_PIPELINE_HIC (
+            ch_hic_reads,
+            ch_assemblies
+        )
+
+        ARIMA_MAPPING_PIPELINE_HIC.out.alignment.set { ch_hic_bam }
+        ch_versions = ch_versions.mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )
+
+    }
 
     // ------------------------------------------------------------------------------------
     // MAKING CONTACT MAP BEFORE SCAFFOLDING
@@ -58,11 +72,8 @@ workflow SCAFFOLDING_WITH_HIC {
     ASSEMBLY_STATS ( ch_scaffolded_assemblies )
 
 
-    ch_versions = ch_versions
-                    .mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )
-
     emit:
-    scaffolds_fasta                 = ch_scaffolded_assemblies
-    versions                        = ch_versions                     // channel: [ versions.yml ]
+    scaffolded_assemblies          = ch_scaffolded_assemblies
+    versions                          = ch_versions                     // channel: [ versions.yml ]
 }
 

@@ -49,51 +49,6 @@
             "description": "Skips specific steps",
             "default": "",
             "properties": {
-                 "skip_long_read_preparation": {
-                    "type": "boolean",
-                    "description": "Skip long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                 "skip_long_reads_fastqc_raw": {
-                    "type": "boolean",
-                    "description": "Skip FastQC before long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                 "skip_long_reads_trimming": {
-                    "type": "boolean",
-                    "description": "Skip trimming during long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_long_reads_filtering": {
-                    "type": "boolean",
-                    "description": "Skip filtering during long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_long_reads_fastqc_prepared": {
-                    "type": "boolean",
-                    "description": "Skip FastQC after long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_long_read_nanoq": {
-                    "type": "boolean",
-                    "description": "Skip NanoQ",
-                    "fa_icon": "fas fa-check-circle"
-                },
-                "skip_draft_assembly": {
-                    "type": "boolean",
-                    "description": "Skip the draft assembly step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_draft_assembly_polishing": {
-                    "type": "boolean",
-                    "description": "Skip the polising of the draft assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_draft_assembly_purging": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig purging step on the draft assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
                 "skip_short_read_preparation": {
                     "type": "boolean",
                     "description": "Skip long read preparation",
@@ -114,50 +69,10 @@
                     "description": "Skip FastQC after short read preparation",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_first_scaffolding_with_hic": {
-                    "type": "boolean",
-                    "description": "Skip the first scaffolding with Hi-C step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_first_scaffolded_assembly_purging": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig purging step on the first scaffolded assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_second_scaffolding_with_hic": {
-                    "type": "boolean",
-                    "description": "Skip the first scaffolding with Hi-C step",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_second_scaffolded_assembly_purging": {
-                    "type": "boolean",
-                    "description": "Skip the haplotig purging step on the second scaffolded assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
                 "skip_closing_gaps_final_assembly": {
                     "type": "boolean",
                     "description": "Skip the step consisting in closing gaps in the final assembly",
                     "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_qc": {
-                    "type": "boolean",
-                    "description": "Skip all quality controls",
-                    "fa_icon": "fas fa-check-circle"
-                },
-                "skip_busco": {
-                    "type": "boolean",
-                    "description": "Skip the Busco analyses",
-                    "fa_icon": "fas fa-check-circle"
-                },
-                "skip_quast": {
-                    "type": "boolean",
-                    "description": "Skip the Quast analyses",
-                    "fa_icon": "fas fa-check-circle"
-                },
-                "skip_merqury": {
-                    "type": "boolean",
-                    "description": "Skip the Merqury analyses",
-                    "fa_icon": "fas fa-check-circle"
                 },
                 "skip_hic_contact_maps": {
                     "type": "boolean",
@@ -191,12 +106,42 @@
                 }
             }
         },
-        "read_preparation_options": {
-            "title": "Read preparation options",
+        "long_read_preparation_options": {
+            "title": "Long read preparation options",
             "type": "object",
-            "description": "Options controlling read trimming and filtering.",
+            "description": "Options controlling long read QC, trimming and filtering.",
             "default": "",
             "properties": {
+                "skip_long_read_preparation": {
+                    "type": "boolean",
+                    "description": "Skip long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                 "skip_long_reads_fastqc_raw": {
+                    "type": "boolean",
+                    "description": "Skip FastQC before long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                 "skip_long_reads_trimming": {
+                    "type": "boolean",
+                    "description": "Skip trimming during long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_reads_filtering": {
+                    "type": "boolean",
+                    "description": "Skip filtering during long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_reads_fastqc_prepared": {
+                    "type": "boolean",
+                    "description": "Skip FastQC after long read preparation",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_long_read_nanoq": {
+                    "type": "boolean",
+                    "description": "Skip NanoQ",
+                    "fa_icon": "fas fa-check-circle"
+                },
                 "filtering_tool": {
                     "type": "string",
                     "description": "Quality control tool to use",
@@ -212,6 +157,21 @@
             "description": "Options controlling assembly",
             "default": "",
             "properties": {
+                "skip_draft_assembly": {
+                    "type": "boolean",
+                    "description": "Skip the draft assembly step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_draft_assembly_polishing": {
+                    "type": "boolean",
+                    "description": "Skip the polising of the draft assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_draft_assembly_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the draft assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
                 "assembly_mode": {
                     "type": "string",
                     "description": "Pipeline mode : type of assembly",
@@ -223,16 +183,7 @@
                     "description": "Draft assembly tool",
                     "enum": ["hifiasm", "flye"],
                     "default": "flye"
-                }
-            },
-            "fa_icon": "fas fa-forward"
-        },
-        "polishing_options": {
-            "title": "Polishing options",
-            "type": "object",
-            "description": "Options controlling polishing",
-            "default": "",
-            "properties": {
+                },
                 "nb_racon_rounds": {
                     "type": "number",
                     "default": 1,
@@ -284,12 +235,65 @@
             },
             "fa_icon": "fas fa-forward"
         },
+        "scaffolding_options": {
+            "title": "Scaffolding options",
+            "type": "object",
+            "description": "Options for assembly scaffolding with Hi-C reads",
+            "default": "",
+            "properties": {
+                "skip_scaffolding_with_hic": {
+                    "type": "boolean",
+                    "description": "Skip the first scaffolding with Hi-C step",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_scaffolded_assembly_purging": {
+                    "type": "boolean",
+                    "description": "Skip the haplotig purging step on the first scaffolded assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "skip_arima_hic_mapping_pipeline": {
+                    "type": "boolean",
+                    "description": "Skip the mapping of Hi-C reads to the assembly to be scaffolded.",
+                    "fa_icon": "fas fa-hand-scissors",
+                    "help": "If you set this parameter, uou must also provide a BAM file (ideally obtained with the Arima mapping pipeline) with --hic_reads_mapping."
+                },
+                "hic_reads_mapping": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.bam$",
+                    "description": "Path to BAM mapping file of Hi-C reads to the assembly to be scaffolded.",
+                    "help_text": "Ideally, this BAM file was obtained with the Arima mapping pipeline.",
+                    "fa_icon": "fas fa-file-csv"
+                }
+            }
+        },
         "qc_options": {
             "title": "QC options",
             "type": "object",
             "description": "Options for QC tools",
             "default": "",
             "properties": {
+                "skip_qc": {
+                    "type": "boolean",
+                    "description": "Skip all quality controls",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_busco": {
+                    "type": "boolean",
+                    "description": "Skip the Busco analyses",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_quast": {
+                    "type": "boolean",
+                    "description": "Skip the Quast analyses",
+                    "fa_icon": "fas fa-check-circle"
+                },
+                "skip_merqury": {
+                    "type": "boolean",
+                    "description": "Skip the Merqury analyses",
+                    "fa_icon": "fas fa-check-circle"
+                },
                 "busco_db": {
                     "type": "string",
                     "description": "Path to busco db (optional)"
@@ -449,13 +453,13 @@
             "$ref": "#/$defs/steps"
         },
         {
-            "$ref": "#/$defs/read_preparation_options"
+            "$ref": "#/$defs/long_read_preparation_options"
         },
         {
             "$ref": "#/$defs/assembly_options"
         },
         {
-            "$ref": "#/$defs/polishing_options"
+            "$ref": "#/$defs/scaffolding_options"
         },
         {
             "$ref": "#/$defs/phasing_options"
