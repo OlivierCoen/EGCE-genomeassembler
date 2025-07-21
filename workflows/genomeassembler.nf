@@ -180,6 +180,7 @@ workflow GENOMEASSEMBLER {
 
         ASSEMBLY_QC (
             ch_long_reads,
+            ch_hic_reads,
             ch_assemblies
         )
         ch_versions = ch_versions.mix ( ASSEMBLY_QC.out.versions )

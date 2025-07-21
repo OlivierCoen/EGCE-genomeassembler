@@ -1,17 +1,21 @@
 include { MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2      } from '../map_long_reads_to_assembly/minimap2/main'
 include { MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP     } from '../map_long_reads_to_assembly/winnowmap/main'
 
-include { BUSCO_BUSCO as BUSCO           } from '../../../modules/local/busco/busco'
-include { MERQURY                        } from '../../../modules/local/merqury'
-include { MERYL_COUNT                    } from '../../../modules/local/meryl/count'
-include { QUAST                          } from '../../../modules/local/quast'
-//include { CONTIG_STATS                   } from '../../../modules/local/contig_stats'
+include { ARIMA_MAPPING_PIPELINE_HIC               } from '../arima_mapping_pipeline_hic'
+include { HIC_CONTACT_MAP                          } from '../hic_contact_map'
+
+include { BUSCO_BUSCO as BUSCO                     } from '../../../modules/local/busco/busco'
+include { MERQURY                                  } from '../../../modules/local/merqury'
+include { MERYL_COUNT                              } from '../../../modules/local/meryl/count'
+include { QUAST                                    } from '../../../modules/local/quast'
+//include { CONTIG_STATS                           } from '../../../modules/local/contig_stats'
 
 
 workflow ASSEMBLY_QC {
 
     take:
-    ch_reads
+    ch_long_reads
+    ch_hic_reads
     ch_assemblies
 
     main:
@@ -19,18 +23,22 @@ workflow ASSEMBLY_QC {
 
     //CONTIG_STATS ( ch_assemblies )
 
+    // ------------------------------------------------------------------------------------
+    // QUAST
+    // ------------------------------------------------------------------------------------
+
     if ( !params.skip_quast ) {
 
         def bam_format = true
         if ( params.quast_mapper == 'winnowmap' ) {
 
-            MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
+            MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_long_reads, ch_assemblies, bam_format )
             MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
             ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
         } else {
 
-            MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
+            MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_long_reads, ch_assemblies, bam_format )
             MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.bam_ref.set { ch_bam_ref }
             ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
 
@@ -45,9 +53,10 @@ workflow ASSEMBLY_QC {
 
     }
 
-    /*
-    QC on initial assembly
-    */
+   // ------------------------------------------------------------------------------------
+    // BUSCO
+    // ------------------------------------------------------------------------------------
+
     if ( !params.skip_busco ) {
 
         ch_assemblies
@@ -67,10 +76,14 @@ workflow ASSEMBLY_QC {
 
     }
 
+    // ------------------------------------------------------------------------------------
+    // MERQURY
+    // ------------------------------------------------------------------------------------
+
     if ( !params.skip_merqury ) {
 
         MERYL_COUNT(
-            ch_reads,
+            ch_long_reads,
             params.meryl_k_value
         )
 
@@ -80,6 +93,23 @@ workflow ASSEMBLY_QC {
 
         MERQURY( merqury_input )
 
+    }
+
+    // ------------------------------------------------------------------------------------
+    // HI-C CONTACT MAP
+    // ------------------------------------------------------------------------------------
+
+    if ( !params.skip_hic_contact_maps ) {
+
+        ARIMA_MAPPING_PIPELINE_HIC (
+            ch_hic_reads,
+            ch_assemblies
+        )
+
+        HIC_CONTACT_MAP (
+            ARIMA_MAPPING_PIPELINE_HIC.out.alignment,
+            ch_assemblies
+        )
     }
 
     emit:
