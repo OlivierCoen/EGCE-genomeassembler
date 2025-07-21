@@ -59,10 +59,14 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     // ------------------------------------------------------------------------------------
 
     ARIMA_FILTER_FIVE_END ( BWAMEM2_MEM.out.bam )
-    ARIMA_FILTER_FIVE_END.out.bam.set { ch_cp}
+
     ARIMA_FILTER_FIVE_END.out.bam
         .groupTuple()
-        .map { meta, files -> [ meta, *files ] }
+        .map {
+            meta, files ->
+                def (read_1, read_2) = files
+                [ meta, read_1, read_2 ]
+        }
         .join( ch_reference_genome_index )
         .set { arima_combiner_input }
 
