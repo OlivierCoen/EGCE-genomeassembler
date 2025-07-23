@@ -1,0 +1,125 @@
+{
+    "Should run without failures": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test:md5,4282d8b3a08f17fba7a69bb97a380e47"
+                        },
+                        "a_thaliana_ont_test_scaffolds_final_purged.fa_gapclosed.fasta.gz:md5,6023275fd5003c458eb1d32a7a2a59b4"
+                    ]
+                ],
+                "1": [
+                    [
+                        "FGAP",
+                        "fgap",
+                        "1.8.1"
+                    ]
+                ],
+                "2": [
+                    [
+                        "FGAP",
+                        "pigz",
+                        "2.8"
+                    ]
+                ],
+                "gapclosed_assemblies": [
+                    [
+                        {
+                            "id": "test:md5,4282d8b3a08f17fba7a69bb97a380e47"
+                        },
+                        "a_thaliana_ont_test_scaffolds_final_purged.fa_gapclosed.fasta.gz:md5,6023275fd5003c458eb1d32a7a2a59b4"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.6"
+        },
+        "timestamp": "2025-07-23T17:41:08.88986705"
+    },
+    "No gap to close": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "a_thaliana_ont_test_scaffolds_final_purged_gapclosed.fasta.gz:md5,6023275fd5003c458eb1d32a7a2a59b4"
+                    ]
+                ],
+                "1": [
+                    [
+                        "FGAP",
+                        "fgap",
+                        "1.8.1"
+                    ]
+                ],
+                "2": [
+                    [
+                        "FGAP",
+                        "pigz",
+                        "2.8"
+                    ]
+                ],
+                "gapclosed_assemblies": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "a_thaliana_ont_test_scaffolds_final_purged_gapclosed.fasta.gz:md5,6023275fd5003c458eb1d32a7a2a59b4"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.6"
+        },
+        "timestamp": "2025-07-23T18:30:51.912615555"
+    },
+    "Example data provided by FGAP": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "DRAFT_ecoli_hiseq454_gapclosed.fasta.gz:md5,60b991f00a53507e346dee76b3e1b04d"
+                    ]
+                ],
+                "1": [
+                    [
+                        "FGAP",
+                        "fgap",
+                        "1.8.1"
+                    ]
+                ],
+                "2": [
+                    [
+                        "FGAP",
+                        "pigz",
+                        "2.8"
+                    ]
+                ],
+                "gapclosed_assemblies": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "DRAFT_ecoli_hiseq454_gapclosed.fasta.gz:md5,60b991f00a53507e346dee76b3e1b04d"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.6"
+        },
+        "timestamp": "2025-07-23T18:31:26.282062012"
+    }
+}

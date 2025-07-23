@@ -1,16 +1,3 @@
-FROM mambaorg/micromamba
-
-USER $MAMBA_USER
-
-
-RUN micromamba install --name base --yes --file /tmp/env.lock \
-    && micromamba clean --all --yes
-
-COPY --chown=$MAMBA_USER:$MAMBA_USER scripts /opt
-
-ENV PATH="/opt:${PATH}"
-WORKDIR /home
-
 FROM mambaorg/micromamba:1.5.10-noble
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER conda-linux-64.lock /tmp/env.lock

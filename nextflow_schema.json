@@ -69,11 +69,6 @@
                     "description": "Skip FastQC after short read preparation",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_closing_gaps_final_assembly": {
-                    "type": "boolean",
-                    "description": "Skip the step consisting in closing gaps in the final assembly",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
                 "skip_hic_contact_maps": {
                     "type": "boolean",
                     "description": "Skip computation of Hi-C contact maps using Pretext",
@@ -265,6 +260,26 @@
                     "description": "Path to BAM mapping file of Hi-C reads to the assembly to be scaffolded.",
                     "help_text": "Ideally, this BAM file was obtained with the Arima mapping pipeline.",
                     "fa_icon": "fas fa-file-csv"
+                }
+            }
+        },
+        "gap_closing_options": {
+            "title": "Gap closing options",
+            "type": "object",
+            "description": "Options for gap closing of scaffolded assembly",
+            "default": "",
+            "properties": {
+                "skip_gap_closing": {
+                    "type": "boolean",
+                    "description": "Skip the step consisting in closing gaps in the final assembly",
+                    "fa_icon": "fas fa-hand-scissors"
+                },
+                "gap_closer": {
+                    "type": "string",
+                    "description": "Gap closer to use",
+                    "enum": ["fgap", "tgsgapcloser", "samba"],
+                    "default": "fgap",
+                    "fa_icon": "fas fa-forward"
                 }
             }
         },
