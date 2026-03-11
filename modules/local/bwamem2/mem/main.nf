@@ -19,7 +19,7 @@ process BWAMEM2_MEM {
     script:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: reads instanceof Path ? "${reads.simpleName}_${fasta.simpleName}" : "${fasta.simpleName}"
+    def prefix = task.ext.prefix ?: reads instanceof Path ? "${reads.baseName}_on_${fasta.baseName}" : "${fasta.baseName}"
     def additional_alignments_flags = primary_alignments_only ? "-F 256 -F 2048" : ""
     """
     INDEX=`find -L ./ -name "*.amb" | sed 's/\\.amb\$//'`
