@@ -41,10 +41,7 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     bwamem2_input = ch_hic_reads
                       .combine( ch_fasta_fai, by: 0)
 
-    BWAMEM2_MEM(
-        bwamem2_input,
-        hic_primary_alignments_only
-    )
+    BWAMEM2_MEM( bwamem2_input )
 
     // ------------------------------------------------------------------------------------
     // ARIMA SCRIPT PROCESSING
@@ -64,7 +61,8 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     def mapq_filter = 10
     ARIMA_TWO_BAM_COMBINER (
         arima_combiner_input,
-        mapq_filter
+        mapq_filter,
+        hic_primary_alignments_only
     )
 
     // ------------------------------------------------------------------------------------

@@ -9,7 +9,6 @@ process BWAMEM2_MEM {
 
     input:
     tuple val(meta), path(reads), path(fasta), path(fai)
-    val primary_alignments_only
 
     output:
     tuple val(meta), path("*.bam"), emit: bam
@@ -20,7 +19,6 @@ process BWAMEM2_MEM {
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: reads instanceof Path ? "${reads.baseName}_on_${fasta.baseName}" : "${fasta.baseName}"
-    def additional_alignments_flags = primary_alignments_only ? "-F 256 -F 2048" : ""
     """
     INDEX=`find -L ./ -name "*.amb" | sed 's/\\.amb\$//'`
 
@@ -31,8 +29,6 @@ process BWAMEM2_MEM {
         $reads \\
         | samtools view \\
         -Sb \\
-        -F 4 \\
-        $additional_alignments_flags \\
         $args2 \\
         -@ ${task.cpus} \\
         -o ${prefix}.bam -

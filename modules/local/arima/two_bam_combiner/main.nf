@@ -10,6 +10,7 @@ process ARIMA_TWO_BAM_COMBINER {
     input:
     tuple val(meta), path(r1_bam, stageAs: "*/*"), path(r2_bam, stageAs: "*/*"), path(reference_genome_index)
     val mapq_filter
+    val primary_alignments_only
 
     output:
     tuple val(meta), path("*.combined.bam"),         emit: bam
@@ -18,9 +19,10 @@ process ARIMA_TWO_BAM_COMBINER {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def additional_alignments_flags = primary_alignments_only ? "-F 256 -F 2048" : ""
     """
-    two_read_bam_combiner.pl $r1_bam $r2_bam 'samtools' $mapq_filter \
-        | samtools view -bS -t $reference_genome_index - \
+    two_read_bam_combiner.pl $r1_bam $r2_bam 'samtools' $mapq_filter \\
+        | samtools view -bS -t $reference_genome_index -F 4 $additional_alignments_flags - \\
         | samtools sort -@ ${task.cpus} -o ${prefix}.combined.bam -
 
     """
