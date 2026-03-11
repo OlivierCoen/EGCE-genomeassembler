@@ -17,6 +17,7 @@ workflow ASSEMBLY_QC {
     ch_long_reads
     ch_hic_reads
     ch_assemblies
+    hic_primary_alignments_only
 
     main:
     ch_versions = channel.empty()
@@ -98,7 +99,8 @@ workflow ASSEMBLY_QC {
 
         ARIMA_MAPPING_PIPELINE_HIC (
             ch_hic_reads,
-            ch_assemblies
+            ch_assemblies,
+            hic_primary_alignments_only
         )
 
         def export_to_multiqc = true

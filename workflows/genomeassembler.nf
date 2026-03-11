@@ -123,7 +123,8 @@ workflow GENOME_ASSEMBLER {
 
         SCAFFOLDING_WITH_HIC(
             ch_hic_reads,
-            ch_assemblies
+            ch_assemblies,
+            params.hic_primary_alignments_only
         )
 
         ch_assemblies = SCAFFOLDING_WITH_HIC.out.scaffolded_assemblies
@@ -169,7 +170,8 @@ workflow GENOME_ASSEMBLER {
         ASSEMBLY_QC (
             ch_long_reads,
             ch_hic_reads,
-            ch_assemblies
+            ch_assemblies,
+            params.hic_primary_alignments_only
         )
         ch_versions = ch_versions.mix( ASSEMBLY_QC.out.versions )
 

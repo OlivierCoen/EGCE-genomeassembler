@@ -11,6 +11,7 @@ workflow SCAFFOLDING_WITH_HIC {
     take:
     ch_hic_reads
     ch_assemblies
+    hic_primary_alignments_only
 
     main:
 
@@ -32,7 +33,8 @@ workflow SCAFFOLDING_WITH_HIC {
 
         ARIMA_MAPPING_PIPELINE_HIC (
             ch_hic_reads,
-            ch_assemblies
+            ch_assemblies,
+            hic_primary_alignments_only
         )
 
         ch_hic_bam  =  ARIMA_MAPPING_PIPELINE_HIC.out.alignment

@@ -258,6 +258,12 @@
                     "help_text": "Ideally, this BAM file was obtained with the Arima mapping pipeline.",
                     "fa_icon": "fas fa-file-csv"
                 },
+                "hic_primary_alignments_only": {
+                    "type": "boolean",
+                    "description": "Consider only primary alignments when mapping Hi-C to assembly.",
+                    "fa_icon": "fas fa-hand-scissors",
+                    "help": "Consider only primary alignments when mapping Hi-C to assembly"
+                },
                 "skip_hic_contact_maps": {
                     "type": "boolean",
                     "description": "Skip computation of Hi-C contact maps using Pretext",

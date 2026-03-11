@@ -13,6 +13,7 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     take:
     ch_hic_read_pairs
     ch_reference_genome_fasta
+    hic_primary_alignments_only
 
     main:
 
@@ -40,10 +41,9 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
     bwamem2_input = ch_hic_reads
                       .combine( ch_fasta_fai, by: 0)
 
-    def sort_bam = false
-    BWAMEM2_MEM (
+    BWAMEM2_MEM(
         bwamem2_input,
-        sort_bam
+        hic_primary_alignments_only
     )
 
     // ------------------------------------------------------------------------------------
