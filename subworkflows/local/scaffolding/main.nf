@@ -1,16 +1,22 @@
 include { ARIMA_MAPPING_PIPELINE_HIC    } from '../arima_mapping_pipeline_hic'
 include { HIC_CONTACT_MAP               } from '../hic_contact_map'
+include { GAP_CLOSING                   } from '../gap_closing'
 
 include { SAMTOOLS_FAIDX                } from '../../../modules/local/samtools/faidx'
 include { YAHS                          } from '../../../modules/local/yahs'
 include { ASSEMBLY_STATS                } from '../../../modules/local/assembly_stats'
 
 
-workflow SCAFFOLDING_WITH_HIC {
+workflow SCAFFOLDING {
 
     take:
     ch_hic_reads
+    ch_long_reads
     ch_assemblies
+    skip_arima_hic_mapping_pipeline
+    skip_hic_contact_maps
+    skip_gap_closing
+    hic_reads_mapping
     hic_primary_alignments_only
 
     main:
@@ -19,10 +25,10 @@ workflow SCAFFOLDING_WITH_HIC {
     // MAPPING OF HI-C READS TO ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    if ( params.skip_arima_hic_mapping_pipeline ) {
+    if ( skip_arima_hic_mapping_pipeline ) {
 
-        if ( params.hic_reads_mapping ) {
-            ch_hic_bam = channel.fromPath( params.hic_reads_mapping, checkExists: true )
+        if ( hic_reads_mapping ) {
+            ch_hic_bam = channel.fromPath( hic_reads_mapping, checkExists: true )
         } else {
             error("You must provide a BAM file consisting of Hi-C reads mapped to the current assembly if you set --skip_arima_hic_mapping_pipeline")
         }
@@ -49,13 +55,13 @@ workflow SCAFFOLDING_WITH_HIC {
     YAHS (
         ch_hic_bam.join( ch_assemblies ).join( ch_fai )
     )
-    ch_scaffold_fasta = YAHS.out.fasta
+    ch_scaffolded_assembies = YAHS.out.fasta
 
     // ------------------------------------------------------------------------------------
     // MAKING CONTACT MAP AFTER SCAFFOLDING
     // ------------------------------------------------------------------------------------
 
-    if ( !params.skip_hic_contact_maps ) {
+    if ( !skip_hic_contact_maps ) {
         def export_to_multiqc = false
         HIC_CONTACT_MAP (
             YAHS.out.alignments,
@@ -64,13 +70,26 @@ workflow SCAFFOLDING_WITH_HIC {
         )
     }
 
+    // --------------------------------------------------------
+    // CLOSING GAPS IN SCAFFOLDED ASSEMBLY
+    // --------------------------------------------------------
+
+    if ( !skip_gap_closing ) {
+        GAP_CLOSING(
+            ch_long_reads,
+            ch_scaffolded_assembies
+        )
+        ch_scaffolded_assembies = GAP_CLOSING.out.gapclosed_assemblies
+
+    }
+
     // ------------------------------------------------------------------------------------
     // COMPUTING Nx / Lx FOR NEW SCAFFOLDED ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    ASSEMBLY_STATS ( ch_scaffold_fasta )
+    ASSEMBLY_STATS ( ch_scaffolded_assembies )
 
 
     emit:
-    scaffolded_assemblies          = ch_scaffold_fasta
+    scaffolded_assemblies          = ch_scaffolded_assembies
 }

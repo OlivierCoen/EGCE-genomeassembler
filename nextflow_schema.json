@@ -233,9 +233,9 @@
             "description": "Options for assembly scaffolding with Hi-C reads",
             "default": "",
             "properties": {
-                "skip_scaffolding_with_hic": {
+                "skip_scaffolding": {
                     "type": "boolean",
-                    "description": "Skip the first scaffolding with Hi-C step",
+                    "description": "Skip the first scaffolding",
                     "fa_icon": "fas fa-hand-scissors"
                 },
                 "skip_scaffolded_assembly_purging": {

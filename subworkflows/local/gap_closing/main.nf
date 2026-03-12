@@ -2,7 +2,7 @@ include { NTLINK_GAP_FILL                       } from '../../../modules/local/n
 
 include { POLISH                                } from '../polish'
 
-workflow CLOSE_GAPS {
+workflow GAP_CLOSING {
 
     take:
     ch_long_reads

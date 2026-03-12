@@ -9,9 +9,8 @@ include { DRAFT_ASSEMBLY                                                     } f
 include { POLISH                                                             } from '../subworkflows/local/polish'
 include { PURGE_DUPLICATES as DRAFT_ASSEMBLY_PURGING                         } from '../subworkflows/local/purge_duplicates'
 include { HIC_SHORT_READS_PREPARATION                                        } from '../subworkflows/local/hic_short_reads_preparation'
-include { SCAFFOLDING_WITH_HIC                                               } from '../subworkflows/local/scaffolding_with_hic'
+include { SCAFFOLDING                                                        } from '../subworkflows/local/scaffolding'
 include { PURGE_DUPLICATES as SCAFFOLDED_ASSEMBLY_PURGING                    } from '../subworkflows/local/purge_duplicates'
-include { CLOSE_GAPS                                                         } from '../subworkflows/local/close_gaps'
 include { ASSEMBLY_QC                                                        } from '../subworkflows/local/assembly_qc'
 include { REPORTING                                                          } from '../subworkflows/local/reporting'
 
@@ -110,18 +109,23 @@ workflow GENOME_ASSEMBLER {
      }
 
     // ------------------------------------------------------------------------------------
-    // SCAFFOLDING WITH HIC + PURGING
+    // SCAFFOLDING WITH HIC + PURGING + GAP CLOSING
     // ------------------------------------------------------------------------------------
 
-    if ( !params.skip_scaffolding_with_hic ) {
+    if ( !params.skip_scaffolding ) {
 
-        SCAFFOLDING_WITH_HIC(
+        SCAFFOLDING(
             ch_hic_reads,
+            ch_long_reads,
             ch_assemblies,
+            params.skip_arima_hic_mapping_pipeline,
+            params.skip_hic_contact_maps,
+            params.skip_gap_closing,
+            params.hic_reads_mapping,
             params.hic_primary_alignments_only
         )
 
-        ch_assemblies = SCAFFOLDING_WITH_HIC.out.scaffolded_assemblies
+        ch_assemblies = SCAFFOLDING.out.scaffolded_assemblies
 
     }
 
@@ -137,19 +141,6 @@ workflow GENOME_ASSEMBLER {
         )
 
         ch_assemblies = SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies
-
-    }
-
-    // --------------------------------------------------------
-    // CLOSING GAPS IN FINAL ASSEMBLY
-    // --------------------------------------------------------
-
-    if ( !params.skip_gap_closing ) {
-        CLOSE_GAPS (
-            ch_long_reads,
-            ch_assemblies
-        )
-        ch_assemblies = CLOSE_GAPS.out.gapclosed_assemblies
 
     }
 
