@@ -22,12 +22,6 @@ process PURGEDUPS_CALCUTS {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def assembly_mode_args = assembly_mode == "haplotype" ? "-d 1": "-d 0"
     """
-    if [ "\$(awk '{print \$2}' $stat | sort | uniq)" -eq "0" ]; then
-        echo 'No peaks detected in input file. Aborting'
-        touch no_peaks.flag.txt
-        exit 0
-    fi
-
     calcuts \\
         $assembly_mode_args \\
         $args \\

@@ -1,6 +1,6 @@
 include { PURGEDUPS_PURGEDUPS          } from '../../../modules/nf-core/purgedups/purgedups'
 include { PURGEDUPS_CALCUTS            } from '../../../modules/local/purgedups/calcuts'
-include { PURGEDUPS_PBCSTAT            } from '../../../modules/nf-core/purgedups/pbcstat'
+include { PURGEDUPS_PBCSTAT            } from '../../../modules/local/purgedups/pbcstat'
 include { PURGEDUPS_GETSEQS            } from '../../../modules/local/purgedups/getseqs'
 include { PURGEDUPS_SPLITFA            } from '../../../modules/nf-core/purgedups/splitfa'
 include { PURGEDUPS_HISTPLOT           } from '../../../modules/nf-core/purgedups/histplot'
@@ -38,16 +38,16 @@ workflow PURGE_DUPLICATES {
     PURGEDUPS_PBCSTAT(
         ch_paf_ref.map { meta, paf, ref -> [ meta, paf ] }
     )
-    ch_stats = PURGEDUPS_PBCSTAT.out.stat
+    // For assemblies where peaks were detected, there is a cutoff file
+    // for others (for cwhich the rest ot the purge_dups pipelines is not triggered), there is only a flag file
+    ch_stats    = PURGEDUPS_PBCSTAT.out.stat
+    ch_no_peaks = PURGEDUPS_PBCSTAT.out.no_peaks
 
     PURGEDUPS_CALCUTS(
         ch_stats,
         params.assembly_mode
     )
-    // For assemblies where peaks were detected, there is a cutoff file
-    // for others (for cwhich the rest ot the purge_dups pipelines is not triggered), there is only a flag file
     ch_cutoffs = PURGEDUPS_CALCUTS.out.cutoff
-    ch_no_peaks = PURGEDUPS_CALCUTS.out.no_peaks
 
     PURGEDUPS_HISTPLOT (
         ch_stats.join( ch_cutoffs )
@@ -81,7 +81,6 @@ workflow PURGE_DUPLICATES {
     ASSEMBLY_STATS ( ch_processed_assemblies )
 
     ch_versions = ch_versions
-                    .mix ( PURGEDUPS_PBCSTAT.out.versions )
                     .mix ( PURGEDUPS_SPLITFA.out.versions )
                     .mix ( PURGEDUPS_PURGEDUPS.out.versions )
 
