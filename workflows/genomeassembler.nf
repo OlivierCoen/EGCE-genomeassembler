@@ -170,8 +170,7 @@ workflow GENOME_ASSEMBLER {
         ASSEMBLY_QC (
             ch_long_reads,
             ch_hic_reads,
-            ch_assemblies,
-            params.hic_primary_alignments_only
+            ch_assemblies
         )
         ch_versions = ch_versions.mix( ASSEMBLY_QC.out.versions )
 

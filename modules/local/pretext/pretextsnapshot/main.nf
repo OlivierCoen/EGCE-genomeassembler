@@ -6,8 +6,8 @@ process PRETEXTSNAPSHOT {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine in ['apptainer', 'singularity'] && !task.ext.singularity_pull_docker_container ?
-        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/d4/d45a21691a46e7c4cb441377774522fb1b093631e4ca973daa0020ff5893d953/data':
-        'community.wave.seqera.io/library/pretextsnapshot_samtools:4647aca739f78355' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/f0/f048f2ad044b43e5be256953b8dc1131c24fbcbe614083674e7c1396ee70f0a1/data':
+        'community.wave.seqera.io/library/pretext-suite:0.0.2--4aad9349908e557f' }"
 
     input:
     tuple val(meta), path(pretext_map)
@@ -34,9 +34,5 @@ process PRETEXTSNAPSHOT {
         cp ${prefix}FullMap.png ${prefix}pretextsnapshot.png
     fi
     """
-    stub:
-    def prefix = task.ext.prefix ?: "${pretext_map.baseName}"
-    """
-    touch ${prefix}.FullMap.png
-    """
+
 }

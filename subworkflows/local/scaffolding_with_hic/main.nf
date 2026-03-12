@@ -43,39 +43,38 @@ workflow SCAFFOLDING_WITH_HIC {
     }
 
     // ------------------------------------------------------------------------------------
-    // MAKING CONTACT MAP BEFORE SCAFFOLDING
+    // SCAFFOLDING
+    // ------------------------------------------------------------------------------------
+
+    SAMTOOLS_FAIDX ( ch_assemblies )
+    ch_fai = SAMTOOLS_FAIDX.out.fai
+
+    YAHS (
+        ch_hic_bam.join( ch_assemblies ).join( ch_fai )
+    )
+    ch_scaffold_fasta = YAHS.out.fasta
+
+    // ------------------------------------------------------------------------------------
+    // MAKING CONTACT MAP AFTER SCAFFOLDING
     // ------------------------------------------------------------------------------------
 
     if ( !params.skip_hic_contact_maps ) {
         def export_to_multiqc = false
         HIC_CONTACT_MAP (
-            ch_hic_bam,
-            ch_assemblies,
+            YAHS.out.alignments,
+            YAHS.out.chrom_sizes,
             export_to_multiqc
         )
     }
 
     // ------------------------------------------------------------------------------------
-    // SCAFFOLDING
-    // ------------------------------------------------------------------------------------
-
-    SAMTOOLS_FAIDX ( ch_assemblies )
-
-    yahs_input = ch_hic_bam
-                    .join( ch_assemblies )
-                    .join( SAMTOOLS_FAIDX.out.fai )
-
-    YAHS ( yahs_input )
-    ch_scaffolded_assemblies = YAHS.out.scaffolds_fasta
-
-    // ------------------------------------------------------------------------------------
     // COMPUTING Nx / Lx FOR NEW SCAFFOLDED ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    ASSEMBLY_STATS ( ch_scaffolded_assemblies )
+    ASSEMBLY_STATS ( ch_scaffold_fasta )
 
 
     emit:
-    scaffolded_assemblies          = ch_scaffolded_assemblies
+    scaffolded_assemblies          = ch_scaffold_fasta
     versions                       = ch_versions                     // channel: [ versions.yml ]
 }

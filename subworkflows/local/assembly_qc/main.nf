@@ -17,7 +17,6 @@ workflow ASSEMBLY_QC {
     ch_long_reads
     ch_hic_reads
     ch_assemblies
-    hic_primary_alignments_only
 
     main:
     ch_versions = channel.empty()
@@ -89,26 +88,6 @@ workflow ASSEMBLY_QC {
 
         MERQURY( merqury_input )
 
-    }
-
-    // ------------------------------------------------------------------------------------
-    // HI-C CONTACT MAP
-    // ------------------------------------------------------------------------------------
-
-    if ( !params.skip_hic_contact_maps ) {
-
-        ARIMA_MAPPING_PIPELINE_HIC (
-            ch_hic_reads,
-            ch_assemblies,
-            hic_primary_alignments_only
-        )
-
-        def export_to_multiqc = true
-        HIC_CONTACT_MAP (
-            ARIMA_MAPPING_PIPELINE_HIC.out.alignment,
-            ch_assemblies,
-            export_to_multiqc
-        )
     }
 
     emit:

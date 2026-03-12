@@ -1,19 +1,27 @@
-include { PRETEXTMAP                             } from '../../../modules/local/pretextmap'
-include { PRETEXTSNAPSHOT                        } from '../../../modules/local/pretextsnapshot'
+include { JUICERTOOLS_PRE                        } from '../../../modules/local/juicer_tools/pre'
+include { MAKE_PAIRS                             } from '../../../modules/local/pretext/make_pairs'
+include { PRETEXTMAP                             } from '../../../modules/local/pretext/pretextmap'
+include { PRETEXTSNAPSHOT                        } from '../../../modules/local/pretext/pretextsnapshot'
+
+include { JUICER                                 } from '../juicer'
 
 
 workflow HIC_CONTACT_MAP {
 
     take:
-    ch_hic_bam // channel containing alignments of HI-C reads mapped to genome, as produced by the Arima mapping pipeline
-    ch_assemblies
+    ch_alignments
+    ch_chrom_sizes
     export_to_multiqc
 
     main:
 
-    PRETEXTMAP (
-        ch_hic_bam.join( ch_assemblies )
-    )
+    ch_alignments_chrom_sizes = ch_alignments.join( ch_chrom_sizes )
+
+    JUICERTOOLS_PRE( ch_alignments_chrom_sizes )
+
+    MAKE_PAIRS( ch_alignments_chrom_sizes )
+
+    PRETEXTMAP ( MAKE_PAIRS.out.pairs )
 
     PRETEXTSNAPSHOT (
         PRETEXTMAP.out.pretext,
