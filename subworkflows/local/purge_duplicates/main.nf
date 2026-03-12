@@ -44,7 +44,10 @@ workflow PURGE_DUPLICATES {
         ch_stats,
         params.assembly_mode
     )
+    // For assemblies where peaks were detected, there is a cutoff file
+    // for others (for cwhich the rest ot the purge_dups pipelines is not triggered), there is only a flag file
     ch_cutoffs = PURGEDUPS_CALCUTS.out.cutoff
+    ch_no_peaks = PURGEDUPS_CALCUTS.out.no_peaks
 
     PURGEDUPS_HISTPLOT (
         ch_stats.join( ch_cutoffs )
@@ -66,8 +69,16 @@ workflow PURGE_DUPLICATES {
     )
     ch_purged_assemblies = PURGEDUPS_GETSEQS.out.purged
 
+    // In some cases, PURGEDUPS_PBCSTAT does not detect peaks, and the final steps if not triggered
+    // We take the input assemblies in those cases
+    ch_no_peak_assemblies = ch_assemblies
+                                .join( ch_no_peaks )
+                                .map{ meta, assembly, flag_file -> [ meta, assembly ] }
+
+    ch_processed_assemblies = ch_purged_assemblies.mix( ch_no_peak_assemblies )
+
     // Stats
-    ASSEMBLY_STATS ( ch_purged_assemblies )
+    ASSEMBLY_STATS ( ch_processed_assemblies )
 
     ch_versions = ch_versions
                     .mix ( PURGEDUPS_PBCSTAT.out.versions )
@@ -76,6 +87,6 @@ workflow PURGE_DUPLICATES {
 
 
     emit:
-    purged_assemblies                      = ch_purged_assemblies
+    purged_assemblies                      = ch_processed_assemblies
     versions                               = ch_versions                     // channel: [ versions.yml ]
 }
