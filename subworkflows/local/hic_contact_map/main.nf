@@ -1,5 +1,4 @@
 include { JUICERTOOLS_PRE                        } from '../../../modules/local/juicer_tools/pre'
-include { MAKE_PAIRS                             } from '../../../modules/local/pretext/make_pairs'
 include { PRETEXTMAP                             } from '../../../modules/local/pretext/pretextmap'
 include { PRETEXTSNAPSHOT                        } from '../../../modules/local/pretext/pretextsnapshot'
 
@@ -19,9 +18,7 @@ workflow HIC_CONTACT_MAP {
 
     JUICERTOOLS_PRE( ch_alignments_chrom_sizes )
 
-    MAKE_PAIRS( ch_alignments_chrom_sizes )
-
-    PRETEXTMAP ( MAKE_PAIRS.out.pairs )
+    PRETEXTMAP ( ch_alignments_chrom_sizes )
 
     PRETEXTSNAPSHOT (
         PRETEXTMAP.out.pretext,

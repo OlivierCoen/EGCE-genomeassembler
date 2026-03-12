@@ -8,7 +8,7 @@ process PRETEXTMAP {
         'community.wave.seqera.io/library/pretext-suite:0.0.2--4aad9349908e557f' }"
 
     input:
-    tuple val(meta), path(pairs)
+    tuple val(meta), path(alignments), path(chrom_sizes)
 
     output:
     tuple val(meta), path("*.pretext"),                                                                      emit: pretext
@@ -16,9 +16,15 @@ process PRETEXTMAP {
 
     script:
     def args    = task.ext.args     ?: ''
-    def prefix  = task.ext.prefix   ?: "${pairs.baseName}"
+    def prefix  = task.ext.prefix   ?: "${meta.id}"
     """
-    echo $pairs | \\
+    ( awk \\
+        'BEGIN{print "## pairs format v1.0"} {print "#chromsize:\\t"\$1"\\t"\$2} END {print "#columns:\\treadID\\tchr1\\tpos1\\tchr2\\tpos2\\tstrand1\\tstrand2"}' \\
+        $chrom_sizes;
+    awk \\
+        '{print ".\\t"\$2"\\t"\$3"\\t"\$6"\\t"\$7"\\t.\t."}' \\
+        $alignments \\
+    ) | \\
         PretextMap \\
         $args \\
         -o ${prefix}.pretext
