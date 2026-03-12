@@ -51,7 +51,8 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
                             .groupTuple()
                             .map {
                                 meta, files ->
-                                    def (read_1, read_2) = files
+                                     // Lexicographic sort to have a consistent ordering in the channel
+                                    def (read_1, read_2) = files.sort { a, b -> a[0].name <=> b[0].name }
                                     [ meta, read_1, read_2 ]
                             }
                             .join( ch_reference_genome_index )
