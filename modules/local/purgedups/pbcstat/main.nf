@@ -25,7 +25,7 @@ process PURGEDUPS_PBCSTAT {
         $args \\
         $paf_alignment
 
-    if [ "\$(awk '{print \$2}' $stat | sort | uniq)" -eq "0" ]
+    if [ "\$(awk '{print \$2}' PB.stat | sort | uniq)" -eq "0" ]
     then
         echo 'No peaks detected in input file. Aborting'
         touch no_peaks.flag.txt
