@@ -8,7 +8,6 @@ include { BUSCO_BUSCO as BUSCO                     } from '../../../modules/loca
 include { MERQURY                                  } from '../../../modules/local/merqury'
 include { MERYL_COUNT                              } from '../../../modules/local/meryl/count'
 include { QUAST                                    } from '../../../modules/local/quast'
-//include { CONTIG_STATS                           } from '../../../modules/local/contig_stats'
 
 
 workflow ASSEMBLY_QC {
@@ -19,9 +18,6 @@ workflow ASSEMBLY_QC {
     ch_assemblies
 
     main:
-    ch_versions = channel.empty()
-
-    //CONTIG_STATS ( ch_assemblies )
 
     // ------------------------------------------------------------------------------------
     // QUAST
@@ -34,13 +30,11 @@ workflow ASSEMBLY_QC {
 
             MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_long_reads, ch_assemblies, bam_format )
             ch_bam_ref  = MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref
-            ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
         } else {
 
             MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_long_reads, ch_assemblies, bam_format )
             ch_bam_ref  = MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.bam_ref
-            ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
 
         }
 
@@ -89,8 +83,5 @@ workflow ASSEMBLY_QC {
         MERQURY( merqury_input )
 
     }
-
-    emit:
-    versions = ch_versions                     // channel: [ versions.yml ]
 
 }

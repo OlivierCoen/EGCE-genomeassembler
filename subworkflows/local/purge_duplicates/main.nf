@@ -19,20 +19,17 @@ workflow PURGE_DUPLICATES {
 
     main:
 
-    ch_versions = channel.empty()
-
     def bam_format = false
     if ( params.mapper == 'winnowmap' ) {
 
         MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
         ch_paf_ref  = MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.paf_ref
-        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 
         MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
         ch_paf_ref  = MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.paf_ref
-        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
+
     }
 
     PURGEDUPS_PBCSTAT(
@@ -80,12 +77,7 @@ workflow PURGE_DUPLICATES {
     // Stats
     ASSEMBLY_STATS ( ch_processed_assemblies )
 
-    ch_versions = ch_versions
-                    .mix ( PURGEDUPS_SPLITFA.out.versions )
-                    .mix ( PURGEDUPS_PURGEDUPS.out.versions )
-
 
     emit:
     purged_assemblies                      = ch_processed_assemblies
-    versions                               = ch_versions                     // channel: [ versions.yml ]
 }

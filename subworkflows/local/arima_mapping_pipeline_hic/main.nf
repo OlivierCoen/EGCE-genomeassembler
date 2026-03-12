@@ -17,8 +17,6 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
 
     main:
 
-    ch_versions = channel.empty()
-
     // ------------------------------------------------------------------------------------
     // SEPARATING HIC READS 1 AND 2
     // ------------------------------------------------------------------------------------
@@ -84,14 +82,7 @@ workflow ARIMA_MAPPING_PIPELINE_HIC {
         SAMTOOLS_INDEX.out.bai
     )
 
-    ch_versions = ch_versions
-                    .mix ( BWAMEM2_INDEX.out.versions )
-                    .mix ( PICARD_ADDORREPLACEREADGROUPS.out.versions )
-                    .mix ( PICARD_MARKDUPLICATES.out.versions )
-                    .mix ( SAMTOOLS_INDEX.out.versions )
-
 
     emit:
     alignment = PICARD_MARKDUPLICATES.out.bam
-    versions = ch_versions                     // channel: [ versions.yml ]
 }

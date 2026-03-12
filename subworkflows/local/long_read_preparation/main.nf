@@ -21,8 +21,6 @@ workflow LONG_READ_PREPARATION {
 
     main:
 
-    ch_versions = channel.empty()
-
     // the pipeline accepts reads in fasta / fastq format
     ch_reads = ch_reads
                 .filter {
@@ -49,7 +47,6 @@ workflow LONG_READ_PREPARATION {
 
         PORECHOP_ABI( ch_reads, [] )
         ch_reads    = PORECHOP_ABI.out.reads
-        ch_versions = ch_versions.mix ( PORECHOP_ABI.out.versions )
 
     }
 
@@ -67,9 +64,7 @@ workflow LONG_READ_PREPARATION {
         } else { // seqkit seq
 
             SEQKIT_SEQ( ch_reads )
-
             ch_reads    = SEQKIT_SEQ.out.fastx
-            ch_versions = ch_versions.mix ( SEQKIT_SEQ.out.versions )
 
         }
 
@@ -90,5 +85,4 @@ workflow LONG_READ_PREPARATION {
 
     emit:
     prepared_reads      = ch_reads
-    versions            = ch_versions                     // channel: [ versions.yml ]
 }

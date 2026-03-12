@@ -10,8 +10,6 @@ workflow CLOSE_GAPS {
 
     main:
 
-    ch_versions = channel.empty()
-
     NTLINK_GAP_FILL (
         ch_assemblies.join ( ch_long_reads )
     )
@@ -24,5 +22,4 @@ workflow CLOSE_GAPS {
 
     emit:
     gapclosed_assemblies       = POLISH.out.assemblies
-    versions                   = ch_versions                     // channel: [ versions.yml ]
 }

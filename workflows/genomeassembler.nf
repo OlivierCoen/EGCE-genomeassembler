@@ -30,8 +30,6 @@ workflow GENOME_ASSEMBLER {
 
     main:
 
-    ch_versions = channel.empty()
-
     // ------------------------------------------------------------------------------------
     // INPUT DATA POST-PARSING
     // ------------------------------------------------------------------------------------
@@ -59,7 +57,6 @@ workflow GENOME_ASSEMBLER {
 
         LONG_READ_PREPARATION ( ch_long_reads )
         ch_long_reads = LONG_READ_PREPARATION.out.prepared_reads
-        ch_versions   = ch_versions.mix( LONG_READ_PREPARATION.out.versions )
 
     }
 
@@ -71,7 +68,6 @@ workflow GENOME_ASSEMBLER {
 
         DRAFT_ASSEMBLY ( ch_long_reads )
         ch_assemblies = DRAFT_ASSEMBLY.out.assemblies
-        ch_versions   = ch_versions.mix( DRAFT_ASSEMBLY.out.versions )
 
     }
 
@@ -86,7 +82,6 @@ workflow GENOME_ASSEMBLER {
             ch_assemblies
         )
         ch_assemblies = POLISH.out.assemblies
-        ch_versions   = ch_versions.mix( POLISH.out.versions )
 
     }
 
@@ -100,7 +95,7 @@ workflow GENOME_ASSEMBLER {
             ch_assemblies
         )
         ch_assemblies = DRAFT_ASSEMBLY_PURGING.out.purged_assemblies
-        ch_versions   = ch_versions.mix( DRAFT_ASSEMBLY_PURGING.out.versions )
+
     }
 
     // --------------------------------------------------------
@@ -111,7 +106,6 @@ workflow GENOME_ASSEMBLER {
 
         HIC_SHORT_READS_PREPARATION ( ch_hic_reads )
         ch_hic_reads = HIC_SHORT_READS_PREPARATION.out.prepared_hic_short_reads
-        ch_versions  = ch_versions.mix( HIC_SHORT_READS_PREPARATION.out.versions )
 
      }
 
@@ -128,7 +122,6 @@ workflow GENOME_ASSEMBLER {
         )
 
         ch_assemblies = SCAFFOLDING_WITH_HIC.out.scaffolded_assemblies
-        ch_versions   = ch_versions.mix( SCAFFOLDING_WITH_HIC.out.versions )
 
     }
 
@@ -144,7 +137,6 @@ workflow GENOME_ASSEMBLER {
         )
 
         ch_assemblies = SCAFFOLDED_ASSEMBLY_PURGING.out.purged_assemblies
-        ch_versions   = ch_versions.mix( SCAFFOLDED_ASSEMBLY_PURGING.out.versions )
 
     }
 
@@ -158,7 +150,7 @@ workflow GENOME_ASSEMBLER {
             ch_assemblies
         )
         ch_assemblies = CLOSE_GAPS.out.gapclosed_assemblies
-        ch_versions   = ch_versions.mix( CLOSE_GAPS.out.versions )
+
     }
 
     // ------------------------------------------------------------------------------------
@@ -172,7 +164,6 @@ workflow GENOME_ASSEMBLER {
             ch_hic_reads,
             ch_assemblies
         )
-        ch_versions = ch_versions.mix( ASSEMBLY_QC.out.versions )
 
      }
 
@@ -182,7 +173,6 @@ workflow GENOME_ASSEMBLER {
     // ------------------------------------------------------------------------------------
 
     REPORTING (
-        ch_versions,
         params.multiqc_config,
         params.multiqc_logo,
         params.multiqc_methods_description,

@@ -15,8 +15,6 @@ workflow SCAFFOLDING_WITH_HIC {
 
     main:
 
-    ch_versions = channel.empty()
-
     // ------------------------------------------------------------------------------------
     // MAPPING OF HI-C READS TO ASSEMBLY
     // ------------------------------------------------------------------------------------
@@ -38,7 +36,6 @@ workflow SCAFFOLDING_WITH_HIC {
         )
 
         ch_hic_bam  =  ARIMA_MAPPING_PIPELINE_HIC.out.alignment
-        ch_versions = ch_versions.mix ( ARIMA_MAPPING_PIPELINE_HIC.out.versions )
 
     }
 
@@ -76,5 +73,4 @@ workflow SCAFFOLDING_WITH_HIC {
 
     emit:
     scaffolded_assemblies          = ch_scaffold_fasta
-    versions                       = ch_versions                     // channel: [ versions.yml ]
 }

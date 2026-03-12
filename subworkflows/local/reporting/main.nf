@@ -9,7 +9,6 @@ include { methodsDescriptionText                                  } from '../uti
 workflow REPORTING {
 
     take:
-    ch_versions
     multiqc_config
     multiqc_logo
     multiqc_methods_description
@@ -17,6 +16,7 @@ workflow REPORTING {
 
     main:
 
+    ch_versions = channel.empty()
     ch_multiqc_files = channel.empty()
 
     // ------------------------------------------------------------------------------------
@@ -96,19 +96,19 @@ workflow REPORTING {
     // DATA
     // ------------------------------------------------------------------------------------
 
-    ch_multiqc_files
-        .mix( channel.topic('mqc_busco_batch_summary') )
-        .mix( channel.topic('mqc_busco_short_summaries_txt') )
-        .mix( channel.topic('mqc_nx_assembly_stats') )
-        .mix( channel.topic('mqc_lx_assembly_stats') )
-        .mix( channel.topic('mqc_fastqc_zip') )
-        .mix( channel.topic('mqc_flye_report') )
-        .mix( channel.topic('mqc_assembly_qv') )
-        .mix( channel.topic('mqc_contigs_qv') )
-        .mix( channel.topic('mqc_nanoq_report') )
-        .mix( channel.topic('mqc_quast_report') )
-        .mix( channel.topic('mqc_pretextsnapshot') )
-        .set { ch_multiqc_files }
+    ch_multiqc_files = ch_multiqc_files
+                    .mix( channel.topic('mqc_busco_batch_summary') )
+                    .mix( channel.topic('mqc_busco_short_summaries_txt') )
+                    .mix( channel.topic('mqc_nx_assembly_stats') )
+                    .mix( channel.topic('mqc_lx_assembly_stats') )
+                    .mix( channel.topic('mqc_fastqc_zip') )
+                    .mix( channel.topic('mqc_flye_report') )
+                    .mix( channel.topic('mqc_assembly_qv') )
+                    .mix( channel.topic('mqc_contigs_qv') )
+                    .mix( channel.topic('mqc_nanoq_report') )
+                    .mix( channel.topic('mqc_quast_report') )
+                    .mix( channel.topic('mqc_pretextsnapshot') )
+
 
     MULTIQC (
         ch_multiqc_files.collect(),

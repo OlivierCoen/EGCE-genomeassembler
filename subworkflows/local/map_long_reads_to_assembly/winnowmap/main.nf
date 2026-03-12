@@ -12,8 +12,6 @@ workflow MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP {
 
     main:
 
-    ch_versions = channel.empty()
-
     def winnowmap_meryl_k_value = 15
     MERYL_COUNT(
         ch_assembly_fasta,
@@ -37,5 +35,4 @@ workflow MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP {
     paf_ref = WINNOWMAP.out.paf_ref
     bam_ref = WINNOWMAP.out.bam_ref
     bai     = WINNOWMAP.out.index
-    versions = ch_versions                     // channel: [ versions.yml ]
 }

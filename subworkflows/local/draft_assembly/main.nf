@@ -17,8 +17,6 @@ workflow DRAFT_ASSEMBLY {
 
     main:
 
-    ch_versions = channel.empty()
-    ch_flye_report = channel.empty()
     ch_alternate_assemblies = channel.empty()
 
      if ( params.assembler == "flye" ) {
@@ -45,8 +43,5 @@ workflow DRAFT_ASSEMBLY {
     emit:
     assemblies                       = ch_assemblies
     alternate_assemblies             = ch_alternate_assemblies
-    flye_report                      = ch_flye_report
-    versions                         = ch_versions
-
 
 }

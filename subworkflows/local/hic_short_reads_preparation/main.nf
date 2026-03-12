@@ -10,7 +10,6 @@ workflow HIC_SHORT_READS_PREPARATION {
 
     main:
 
-    ch_versions = channel.empty()
     ch_fastp_json = channel.empty()
 
     // ---------------------------------------------------------------------
@@ -34,7 +33,6 @@ workflow HIC_SHORT_READS_PREPARATION {
             false, false, false
         )
         ch_fastp_json      = FASTP.out.json
-        ch_versions        = ch_versions.mix ( FASTP.out.versions )
         ch_hic_short_reads = FASTP.out.reads
     }
 
@@ -51,5 +49,4 @@ workflow HIC_SHORT_READS_PREPARATION {
     emit:
     prepared_hic_short_reads        = ch_hic_short_reads
     fastp_json                      = ch_fastp_json
-    versions                        = ch_versions
 }

@@ -29,7 +29,6 @@ workflow AUTO_ASSEMBLY {
 
     main:
 
-    ch_versions = channel.empty()
     ch_flye_report = channel.empty()
 
     // --------------------------------------------------------
@@ -80,6 +79,5 @@ workflow AUTO_ASSEMBLY {
     assemblies                       = ch_assemblies
     draft_assembly_versions          = ch_draft_assembly_versions
     reads                            = ch_prepared_reads
-    versions                         = ch_versions                     // channel: [ versions.yml ]
 
 }

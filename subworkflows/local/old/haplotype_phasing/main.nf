@@ -26,7 +26,6 @@ workflow HAPLOTYPE_PHASING {
     ch_assemblies
 
     main:
-    ch_versions = channel.empty()
 
     // --------------------------------------------------------
     // ALIGNING READS TO REFERENCE
@@ -38,14 +37,12 @@ workflow HAPLOTYPE_PHASING {
         MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
         MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref.set { ch_bam_ref }
         MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bai.set { ch_bai }
-        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 
         MAP_TO_REFERENCE_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
         MAP_TO_REFERENCE_MINIMAP2.out.bam_ref.set { ch_bam_ref }
         MAP_TO_REFERENCE_MINIMAP2.out.bai.set { ch_bai }
-        ch_versions = ch_versions.mix ( MAP_TO_REFERENCE_MINIMAP2.out.versions )
 
     }
 
@@ -151,5 +148,5 @@ workflow HAPLOTYPE_PHASING {
     emit:
     haplotype_reads
     stats = WHATSHAP_STATS.out.stats
-    versions = ch_versions                     // channel: [ versions.yml ]
+
 }

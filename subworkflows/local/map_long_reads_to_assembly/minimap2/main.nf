@@ -10,8 +10,6 @@ workflow MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 {
 
     main:
 
-    ch_versions = channel.empty()
-
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
@@ -33,8 +31,6 @@ workflow MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 {
 
         BAM_STATS( aln_to_assembly_bam_ref_bai )
 
-        ch_versions = ch_versions
-                        .mix(BAM_STATS.out.versions)
     }
     */
 
@@ -42,5 +38,4 @@ workflow MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 {
     paf_ref = MINIMAP2_ALIGN.out.paf_ref
     bam_ref = MINIMAP2_ALIGN.out.bam_ref
     bai = MINIMAP2_ALIGN.out.index
-    versions = ch_versions
 }

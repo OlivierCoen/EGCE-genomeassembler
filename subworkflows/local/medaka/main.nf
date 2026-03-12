@@ -14,8 +14,6 @@ workflow MEDAKA_WORKFLOW {
 
     main:
 
-    ch_versions = channel.empty()
-
     // ---------------------------------------------------
     // Alignment to respective assembly
     // ---------------------------------------------------
@@ -25,13 +23,11 @@ workflow MEDAKA_WORKFLOW {
 
         MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP ( ch_reads, ch_assemblies, bam_format )
         ch_bam_ref  = MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.bam_ref
-        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_WINNOWMAP.out.versions )
 
     } else {
 
         MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2 ( ch_reads, ch_assemblies, bam_format )
         ch_bam_ref  = MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.bam_ref
-        ch_versions = ch_versions.mix ( MAP_LONG_READS_TO_ASSEMBLY_MINIMAP2.out.versions )
 
     }
 
@@ -80,5 +76,4 @@ workflow MEDAKA_WORKFLOW {
 
     emit:
     assembly = MEDAKA_SEQUENCE.out.polished_assembly
-    versions = ch_versions                     // channel: [ versions.yml ]
 }
