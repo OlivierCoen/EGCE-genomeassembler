@@ -35,7 +35,6 @@ First, prepare a samplesheet with your input data that looks as follows:
 ```
 
 It can also be a `CSV` samplesheet:
-`samplesheet.csv`:
 
 ```csv
 name,platform,reads,hic_fastq_1,hic_fastq_2,genome_size,assembly

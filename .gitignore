@@ -10,3 +10,4 @@ null/
 .nf-test/
 .idea/
 local/local.config
+data/
