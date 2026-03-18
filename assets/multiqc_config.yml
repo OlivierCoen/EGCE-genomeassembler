@@ -17,7 +17,7 @@ report_section_order:
     order: 1098
   nanoq_report:
     order: 1002
-  fastqc_prepared:
+  fastqc_preprocessed:
     order: 1001
   fastqc_raw:
     order: 1000
@@ -41,11 +41,11 @@ module_order:
       path_filters:
         - "*_raw_fastqc.zip"
   - fastqc:
-      anchor: "fastqc_prepared"
+      anchor: "fastqc_preprocessed"
       name: "FastQC (trimmed and / or filtered)"
       info: "This section of the report shows FastQC results after adapter trimming and / or filtering."
       path_filters:
-        - "*_prepared_fastqc.zip"
+        - "*_preprocessed_fastqc.zip"
 
 export_plots: true
 

@@ -61,13 +61,6 @@
                             "modules"
                         ]
                     },
-                    "porechop/abi": {
-                        "branch": "master",
-                        "git_sha": "f84336b7fa91a65aa61d215b8c109fbb8e4b4ac6",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
                     "purgedups/histplot": {
                         "branch": "master",
                         "git_sha": "b8a610052d125039739a7a7fa9e2bd9526e33818",
@@ -106,13 +99,6 @@
                     "samtools/index": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
-                    "seqkit/seq": {
-                        "branch": "master",
-                        "git_sha": "9fe7867a4f012db581d7bd560228ded1074eb0e5",
                         "installed_by": [
                             "modules"
                         ]

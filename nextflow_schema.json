@@ -83,19 +83,14 @@
                     "description": "Skip FastQC before long read preparation",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_long_reads_trimming": {
+                "skip_long_reads_preprocessing": {
                     "type": "boolean",
-                    "description": "Skip trimming during long read preparation",
+                    "description": "Skip long read preprocessing",
                     "fa_icon": "fas fa-hand-scissors"
                 },
-                "skip_long_reads_filtering": {
+                "skip_long_reads_fastqc_preprocessed": {
                     "type": "boolean",
-                    "description": "Skip filtering during long read preparation",
-                    "fa_icon": "fas fa-hand-scissors"
-                },
-                "skip_long_reads_fastqc_prepared": {
-                    "type": "boolean",
-                    "description": "Skip FastQC after long read preparation",
+                    "description": "Skip FastQC after long read preprocessing",
                     "fa_icon": "fas fa-hand-scissors"
                 },
                 "skip_long_read_nanoq": {
@@ -103,11 +98,11 @@
                     "description": "Skip NanoQ",
                     "fa_icon": "fas fa-check-circle"
                 },
-                "filtering_tool": {
+                "preprocessing_tool": {
                     "type": "string",
                     "description": "Quality control tool to use",
-                    "enum": ["chopper", "seqkit_seq"],
-                    "default": "chopper"
+                    "enum": ["fastplong", "chopper"],
+                    "default": "fastplong"
                 }
             },
             "fa_icon": "fas fa-forward"

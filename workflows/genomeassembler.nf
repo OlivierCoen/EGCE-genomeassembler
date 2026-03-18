@@ -54,7 +54,14 @@ workflow GENOME_ASSEMBLER {
 
     if ( !params.skip_long_read_preparation ) {
 
-        LONG_READ_PREPARATION ( ch_long_reads )
+        LONG_READ_PREPARATION (
+            ch_long_reads,
+            params.preprocessing_tool,
+            params.skip_long_reads_fastqc_raw,
+            params.skip_long_reads_preprocessing,
+            params.skip_long_reads_fastqc_preprocessed,
+            params.skip_long_read_nanoq
+        )
         ch_long_reads = LONG_READ_PREPARATION.out.prepared_reads
 
     }
