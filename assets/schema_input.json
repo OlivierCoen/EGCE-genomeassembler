@@ -49,6 +49,14 @@
                 "description": "Path to Fastq file (compressed) for Hi-C reads (R2).",
                 "errorMessage": "FastQ file for Hi-C reads cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             },
+            "hic_bam": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bam$",
+                "description": "Path to bam file for combined Hi-C reads. Ideally, this BAM file was obtained with the Arima mapping pipeline.",
+                "errorMessage": "Bam file for Hi-C reads cannot contain spaces and must have extension '.bam'"
+            },
             "assembly": {
                 "type": "string",
                 "format": "file-path",
@@ -59,6 +67,6 @@
                 "fa_icon": "fas fa-file-csv"
             }
         },
-        "required": ["name", "platform", "reads", "hic_fastq_1", "hic_fastq_2"]
+        "required": ["name", "platform", "reads"]
     }
 }

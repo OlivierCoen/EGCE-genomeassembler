@@ -37,13 +37,15 @@ workflow GENOME_ASSEMBLER {
     ch_input = ch_input.multiMap{
                             meta, reads, hic_fastq_1, hic_fastq_2, assembly ->
                                 reads: reads ? [ meta, reads ] : null
-                                hic_reads: hic_fastq_1 && hic_fastq_2 ? [ meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
+                                hic_reads: hic_bam ? null : hic_fastq_1 && hic_fastq_2 ? [ meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
+                                hic_bam: hic_bam ? [ meta, hic_fastq_1 ] : null
                                 assembly: assembly ? [ meta, assembly ] : null
                         }
 
     ch_long_reads = ch_input.reads
     ch_assemblies = ch_input.assembly
     ch_hic_reads = ch_input.hic_reads
+    ch_hic_bam = ch_input.hic_bam
 
     // ch_all_draft_assembly_versions_and_alternatives = ch_assemblies
 
@@ -123,12 +125,12 @@ workflow GENOME_ASSEMBLER {
 
         SCAFFOLDING(
             ch_hic_reads,
+            ch_hic_bam,
             ch_long_reads,
             ch_assemblies,
             params.skip_arima_hic_mapping_pipeline,
             params.skip_hic_contact_maps,
             params.skip_gap_closing,
-            params.hic_reads_mapping,
             params.hic_primary_alignments_only
         )
 

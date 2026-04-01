@@ -11,12 +11,12 @@ workflow SCAFFOLDING {
 
     take:
     ch_hic_reads
+    ch_hic_bam
     ch_long_reads
     ch_assemblies
     skip_arima_hic_mapping_pipeline
     skip_hic_contact_maps
     skip_gap_closing
-    hic_reads_mapping
     hic_primary_alignments_only
 
     main:
@@ -25,15 +25,7 @@ workflow SCAFFOLDING {
     // MAPPING OF HI-C READS TO ASSEMBLY
     // ------------------------------------------------------------------------------------
 
-    if ( skip_arima_hic_mapping_pipeline ) {
-
-        if ( hic_reads_mapping ) {
-            ch_hic_bam = channel.fromPath( hic_reads_mapping, checkExists: true )
-        } else {
-            error("You must provide a BAM file consisting of Hi-C reads mapped to the current assembly if you set --skip_arima_hic_mapping_pipeline")
-        }
-
-    } else {
+    if ( !skip_arima_hic_mapping_pipeline ) {
 
         ARIMA_MAPPING_PIPELINE_HIC (
             ch_hic_reads,
@@ -41,7 +33,8 @@ workflow SCAFFOLDING {
             hic_primary_alignments_only
         )
 
-        ch_hic_bam  =  ARIMA_MAPPING_PIPELINE_HIC.out.alignment
+        ch_new_hic_bam  =  ARIMA_MAPPING_PIPELINE_HIC.out.alignment
+        ch_hic_bam = ch_hic_bam.mix( ch_new_hic_bam )
 
     }
 
