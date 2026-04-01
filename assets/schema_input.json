@@ -61,7 +61,7 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.f(ast)?a\\.gz$",
+                "pattern": "^\\S+\\.f(ast)?a(\\.gz)?$",
                 "description": "Path to assembly fasta file (compressed).",
                 "help_text": "You can provide an assembly combine specific steps to start at a desired step in the pipeline.",
                 "fa_icon": "fas fa-file-csv"
