@@ -35,10 +35,10 @@ workflow GENOME_ASSEMBLER {
 
     // multiMap the input to separate input files in different channels
     ch_input = ch_input.multiMap{
-                            meta, reads, hic_fastq_1, hic_fastq_2, assembly ->
+                            meta, reads, hic_fastq_1, hic_fastq_2, hic_bam, assembly ->
                                 reads: reads ? [ meta, reads ] : null
                                 hic_reads: hic_bam ? null : hic_fastq_1 && hic_fastq_2 ? [ meta, [ hic_fastq_1, hic_fastq_2 ] ] : null
-                                hic_bam: hic_bam ? [ meta, hic_fastq_1 ] : null
+                                hic_bam: hic_bam ? [ meta, hic_bam ] : null
                                 assembly: assembly ? [ meta, assembly ] : null
                         }
 
