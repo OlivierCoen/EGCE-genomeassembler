@@ -28,5 +28,3 @@ samtools fastq --reference Col-CEN_v1.2.Chr1_5MB-7MB.fasta SRR22354810_1.merged.
 samtools fastq --reference Col-CEN_v1.2.Chr1_5MB-7MB.fasta SRR22354810_2.filtered.sorted.bam > SRR22354810_2.sampled.fq
 ```
 samtools version used: 1.22
-
-Since both Fastq files not ha
