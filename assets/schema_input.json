@@ -22,7 +22,7 @@
             },
             "genome_size": {
                 "type": "number",
-                "errorMessage": "Genome size must be provided and must contain digits only",
+                "errorMessage": "Genome size must contain digits only",
                 "meta": ["genome_size"]
             },
             "reads": {

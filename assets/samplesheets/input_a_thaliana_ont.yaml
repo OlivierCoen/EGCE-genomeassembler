@@ -4,4 +4,4 @@
   reads: tests/test_data/long_reads/a_thaliana/ONT-Col-0_test_data.fastq.gz
   hic_fastq_1: tests/test_data/hic_short_reads/a_thaliana/SRR22354810_1.sampled.fq.gz
   hic_fastq_2: tests/test_data/hic_short_reads/a_thaliana/SRR22354810_2.sampled.fq.gz
-
+  #hic_bam: tests/test_data/hic_short_reads/a_thaliana/a_thaliana_ont_test.marked.bam
